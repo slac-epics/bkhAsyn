@@ -1,0 +1,23 @@
+record(longout, "$(P):900W_REG$(N)"){
+  field(DESC, "$(DESC):")
+  field(OUT,  "$(P):900W_REG$(N)_Write PP")
+}
+record(longout, "$(P):900W_REG$(N)_Write"){
+  field(SDIS, "$(P):900W_REG$(N)_Sync.PACT")
+  field(DISV, "1")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT) $(N) 1)LO_CREG")
+}
+record(longin, "$(P):900W_REG$(N)_RBV"){
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT),$(N),1)LI_CREG")
+  field(SCAN, "I/O Intr")
+  field(FLNK, "$(P):900W_REG$(N)_Sync")
+  field(PINI, "YES")
+}
+record(longout, "$(P):900W_REG$(N)_Sync"){
+  field(DOL,  "$(P):900W_REG$(N)_RBV NPP")
+  field(OMSL, "closed_loop")
+  field(OUT,  "$(P):900W_REG$(N) PP")
+}
+

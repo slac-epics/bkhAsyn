@@ -1,0 +1,149 @@
+record(stringin, "$(P):900R_NAME"){
+  field(DESC, "$(IOC)")
+  field(VAL,  "$(LOC)")
+}
+record(stringin, "$(P):900R_MID"){
+  field(DESC, "Bus Coupler ID:")
+  field(DTYP, "asynOctetRead")
+  field(INP,  "@asyn($(RPORT),0,1)SI_MID")
+  field(SCAN, "I/O Intr")
+}
+record(bo, "$(P):900W_WD_RESET"){
+  field(DESC, "Reset:")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(WPORT),0,1)BO_WDRST")
+  field(HIGH, "0.1")
+  field(ZNAM, "off")
+  field(ONAM, "on")
+  field(VAL,  "0")
+}
+record(bo, "$(P):900R_CINIT"){
+  field(DESC, "Init:")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(RPORT),0,1)BO_CINIT")
+  field(HIGH, "0.1")
+  field(ZNAM, "off")
+  field(ONAM, "on")
+  field(VAL,  "0")
+}
+record(bo, "$(P):900R_REF"){
+  field(DESC, "Refresh:")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(RPORT),0,1)BO_REFRESH")
+  field(HIGH, "0.1")
+  field(ZNAM, "off")
+  field(ONAM, "on")
+  field(VAL,  "0")
+}
+
+record(longout, "$(P):DBG_MADDR"){
+  field(DESC, "Mem Addr:")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn(DEBUG,0,1)LO_MADDR")
+  field(VAL,  "0")
+  field(PINI, "YES")
+}
+record(longout, "$(P):DBG_MFUNC"){
+  field(DESC, "Modbus Func:")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn(DEBUG,0,1)LO_MFUNC")
+  field(VAL,  "3")
+  field(PINI, "YES")
+}
+record(longout, "$(P):DBG_MVAL"){
+  field(DESC, "Mem Value:")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn(DEBUG,0,1)LO_MVAL")
+}
+record(longout, "$(P):DBG_MVAL"){
+  field(DESC, "RBV:")
+  field(DTYP, "asynInt32")
+  field(SCAN, "I/O Intr")
+  field(OUT,  "@asyn(DEBUG,0,1)LI_MVAL")
+}
+record(bo, "$(P):DBG_GETMEM"){
+  field(DESC, "Get:")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn(DEBUG,0,1)BO_MGET")
+  field(ZNAM, "off")
+  field(ONAM, "on")
+  field(VAL,  "0")
+}
+record(bo, "$(P):DBG_PUTMEM"){
+  field(DESC, "Put:")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn(DEBUG,0,1)BO_MPUT")
+  field(HIGH, "0.1")
+  field(ZNAM, "off")
+  field(ONAM, "on")
+  field(VAL,  "0")
+}
+record(bo, "$(P):DBG_EN_HIST"){
+  field(DESC, "Enable:")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn(DEBUG,0,1)BO_THIST")
+  field(ZNAM, "off")
+  field(ONAM, "on")
+  field(VAL,  "0")
+}
+record(bo, "$(P):DBG_GET_HIST"){
+  field(DESC, "Get:")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn(DEBUG,0,1)BO_GETHIST")
+  field(HIGH, "0.1")
+  field(ZNAM, "off")
+  field(ONAM, "on")
+  field(VAL,  "0")
+}
+record(bo, "$(P):DBG_CLR_HIST"){
+  field(DESC, "Clear:")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn(DEBUG,0,1)BO_CLRHIST")
+  field(HIGH, "0.1")
+  field(ZNAM, "off")
+  field(ONAM, "on")
+  field(VAL,  "0")
+}
+record(waveform, "$(P):DBG_TIME_HIST"){
+  field(DESC, "Time Histo")
+  field(DTYP, "asynInt32ArrayIn")
+  field(SCAN, "I/O Intr")
+  field(INP,  "@asyn(DEBUG,0,1)WF_THIST")
+  field(FTVL, "LONG")
+  field(NELM, "200")
+}
+
+#--- Next 4 records are used to control how many messages
+#--- are allowed in the low priority message queue (in drvMBus) ----
+record(longout, "$(P):DBG_ALW_INLQ"){
+  field(DESC, "Allow In Low Prio Q")
+  field(OUT,  "$(P):DBG_ALW_INLQ_Write PP")
+}
+record(longout, "$(P):DBG_ALW_INLQ_Write"){
+  field(SDIS, "$(P):DBG:ALW_INLQ_Sync.PACT")
+  field(DISV, "1")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn(DEBUG,0,1)LO_ALLOWINLQ")
+}
+record(longin, "$(P):DBG:ALW_INLQ_RBV"){
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn(DEBUG,0,1)LI_ALLOWINLQ")
+  field(SCAN, "I/O Intr")
+  field(FLNK, "$(P):DBG:ALW_INLQ_Sync")
+  field(PINI, "YES")
+}
+record(longout, "$(P):DBG:ALW_INLQ_Sync"){
+  field(DOL,  "$(P):DBG:ALW_INLQ_RBV NPP")
+  field(OMSL, "closed_loop")
+  field(OUT,  "$(P):DBG_ALW_INLQ PP")
+}
+
+#-- an error flag for "Resource unavailable..." -----------------
+record(bi, "$(P):9000_ERROR"){
+  field(DESC, "Error flag:")
+  field(ZNAM, "OK")
+  field(ONAM, "Error")
+  field(ZSV,  "NO_ALARM")
+  field(OSV,  "MAJOR")
+}
+

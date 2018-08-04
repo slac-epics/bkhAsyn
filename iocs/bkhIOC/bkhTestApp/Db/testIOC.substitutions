@@ -1,0 +1,108 @@
+file bkhBo.db {
+pattern
+    {ADDR,          R, ATTR,     DESC,   PORT}
+    {   0, 2114_1_CH1,    Q, "Chan01", 2114_1}
+    {   1, 2114_1_CH2,    Q, "Chan02", 2114_1}
+    {   2, 2114_1_CH3,    Q, "Chan03", 2114_1}
+    {   3, 2114_1_CH4,    Q, "Chan04", 2114_1}
+}
+
+file bkhBi.db {
+pattern 
+    {ADDR,          R, ATTR,     DESC,   PORT,      ZSV,      OSV}
+    {   0, 1104_1_CH1,    Q, "Chan01", 1104_1, NO_ALARM,    MINOR}
+    {   1, 1104_1_CH2,    Q, "Chan02", 1104_1, NO_ALARM, NO_ALARM}
+    {   2, 1104_1_CH3,    Q, "Chan03", 1104_1, NO_ALARM, NO_ALARM}
+    {   3, 1104_1_CH4,    Q, "Chan04", 1104_1, NO_ALARM, NO_ALARM}
+}
+
+file bkhAo.db {
+pattern 
+    {ADDR,          R, ATTR,    DESC,    PORT, EGU, EOFF,        ESLO, PREC, DRVL, DRVH, LOPR, HOPR}
+    {   0, 4132_1_CH1,    V, "Chan01", 4132_1,   V,    0, 0.000305185,    3,  -10,   10,  -10,   10}
+    {   1, 4132_1_CH2,    V, "Chan02", 4132_1,   V,    0, 0.000305185,    3,  -10,   10,  -10,   10}
+}
+
+file bkhAi.db {
+pattern 
+    {ADDR,          R, ATTR,     DESC,   PORT, EGU, EOFF,         ESLO, PREC,  LOLO,   LOW,  HIGH,  HIHI,     LLSV,      LSV,      HSV,     HHSV}
+    {   0, 3172_1_CH1,    V, "Chan01", 3172_1,   V,    0, 0.0000305185,    3,    "",    "",    "",   1.9, NO_ALARM, NO_ALARM, NO_ALARM,    MAJOR}
+    {   1, 3172_1_CH2,    V, "Chan02", 3172_1,   V,    0, 0.0000305185,    3,    "",    "",    "",   1.9, NO_ALARM, NO_ALARM, NO_ALARM,    MAJOR}
+}
+
+file bkhAi.db {
+pattern 
+    {ADDR,          R, ATTR,     DESC,   PORT, EGU, EOFF,        ESLO, PREC,  LOLO,   LOW,  HIGH,  HIHI,     LLSV,      LSV,      HSV,     HHSV}
+    {   0, 3102_1_CH1,    V, "Chan01", 3102_1,    V,   0, 0.000305185,    3,  -9.8,    "",    "",   9.8,    MAJOR, NO_ALARM, NO_ALARM,    MAJOR}
+    {   1, 3102_1_CH2,    V, "Chan02", 3102_1,    V,   0, 0.000305185,    3,  -9.8,    "",    "",   9.8,    MAJOR, NO_ALARM, NO_ALARM,    MAJOR}
+}
+
+file bkhTemp.db {
+pattern 
+    {ADDR,          R,     DESC,   PORT, EGU,       CALC, EGU_ALT, ESLO, PREC,  LOLO,   LOW,  HIGH,  HIHI,     LLSV,      LSV,      HSV,     HHSV}
+    {   0, 3314_1_CH1, "Chan01", 3314_1,   C, "A*1.8+32",       F,  0.1,    2,    "",    "",    "",    40, NO_ALARM, NO_ALARM, NO_ALARM,    MAJOR}
+    {   1, 3314_1_CH2, "Chan02", 3314_1,   C, "A*1.8+32",       F,  0.1,    2,    "",    "",    "",    30, NO_ALARM, NO_ALARM, NO_ALARM,    MAJOR}
+    {   2, 3314_1_CH3, "Chan03", 3314_1,   C, "A*1.8+32",       F,  0.1,    2,    "",    "",    "",  29.0, NO_ALARM, NO_ALARM, NO_ALARM,    MAJOR}
+    {   3, 3314_1_CH4, "Chan04", 3314_1,   C, "A*1.8+32",       F,  0.1,    2,    "",    "",    "",    20, NO_ALARM, NO_ALARM, NO_ALARM,    MAJOR}
+}
+
+file readwrite.db {
+pattern 
+    {   MOD,   PORT}
+    {3172_1, 3172_1}
+    {3102_1, 3102_1}
+    {4132_1, 4132_1}
+    {3314_1, 3314_1}
+}
+
+file bkhADrv.db {
+pattern	
+    {   MOD,   PORT}
+    {2114_1, 2114_1}
+    {1104_1, 1104_1}
+    {3172_1, 3172_1}
+    {3102_1, 3102_1}
+    {4132_1, 4132_1}
+    {3314_1, 3314_1}
+}
+
+file bkhAErr.db {
+pattern	
+    {   MOD,   PORT}
+    {2114_1, 2114_1}
+    {1104_1, 1104_1}
+    {3172_1, 3172_1}
+    {3102_1, 3102_1}
+    {4132_1, 4132_1}
+    {3314_1, 3314_1}
+}
+
+file b9000.db {
+	{ RPORT=B900R, WPORT=B900W}
+}
+
+file b9000RRegs.db {
+pattern	
+    { N,                 DESC,  PORT}
+	{10,      "PLC Interface", B900R}
+	{11, "Bus Term Diagnossi", B900R}
+	{12, "Bus Coupler Status", B900R}
+	{16, "anlg output length", B900R}
+	{17, "anlg inputs length", B900R}
+	{18, "Outpt Image length", B900R}
+	{19, "Input Image length", B900R}
+	{32, "Watchdog curr time", B900R}
+}
+
+file b9000WRegs.db {
+pattern	
+    { N,                  DESC,  PORT}
+	{ 0,       "PLC Interface", B900W}
+	{ 1,  "Bus Term Diagnossi", B900W}
+	{22, "Watchdog Tmout (ms)", B900W}
+	{23,      "Watchdog Reset", B900W}
+	{24,       "Watchdog type", B900W}
+	{25,     "Modbus TCP mode", B900W}
+}
+
+

@@ -1,0 +1,20 @@
+
+This is a support module for Beckhoff Bus Couplers and Bus Terminals, 
+created by Zen Szalata.
+It has been tested successfully with BK9000 couplers and many different bus terminals.
+
+Configuring a new IOC involves two major steps:
+1. Add config commands to st.cmd file.
+2. Create database file(s).  For this you can use the db files from this support module, 
+or create your own.
+
+This module contains an example IOC for a setup with ADCs, a DAC, Digital Input/Output, 
+and Temperature modules.
+
+Note: when configuring your bus coupler's network settings,
+it is wise to set the "Watchdog Timeout" to zero, otherwise the I/O might
+time out.  It can also be set via channel access, with the following PV:
+$(P):900W_REG22
+
+For documentation on Beckhoff hardware, see:
+https://beckhoff.com/

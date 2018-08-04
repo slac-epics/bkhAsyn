@@ -1,0 +1,35 @@
+# This template is for a digital output module.
+#----------------------------------------------------------
+record(bo, "$(P):$(R)_$(ATTR)SETPT"){
+  field(DESC, "$(DESC="")")
+  field(OUT,  "$(P):$(R)_write PP")
+  field(ZNAM, "Off")
+  field(ONAM, "On")
+}
+record(bo, "$(P):$(R)_write"){
+  field(ASG,  "Internal")
+  field(SDIS, "$(P):$(R)_sync.PACT")
+  field(DISV, "1")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR),1)BO_BVAL")
+  field(ZNAM, "Off")
+  field(ONAM, "On")
+}
+record(bi, "$(P):$(R)_rbv"){
+  field(ASG,  "Internal")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT),$(ADDR),1)BI_BVAL")
+  field(SCAN, "I/O Intr")
+  field(ZNAM, "Off")
+  field(ONAM, "On")
+  field(FLNK, "$(P):$(R)_sync")
+  field(PINI, "YES")
+}
+record(bo, "$(P):$(R)_sync"){
+  field(ASG,  "Internal")
+  field(DOL,  "$(P):$(R)_rbv NPP")
+  field(OMSL, "closed_loop")
+  field(OUT,  "$(P):$(R)_$(ATTR)SETPT PP")
+  field(ZNAM, "Off")
+  field(ONAM, "On")
+}

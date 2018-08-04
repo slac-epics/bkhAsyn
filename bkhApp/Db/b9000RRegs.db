@@ -1,0 +1,7 @@
+record(longin, "$(P):900R_REG$(N)"){
+  field(DESC, "$(DESC):")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT) $(N) 1)LI_CREG")
+  field(SCAN, "I/O Intr")
+  field(PINI, "YES")
+}

@@ -1,0 +1,34 @@
+# This template is for an analog input module.
+#----------------------------------------------------------
+record(longin, "$(P):$(R)_SBYTE"){
+  field(DESC, "$(DESC="")")
+  field(DTYP, "asynInt32")
+  field(SCAN, "I/O Intr")
+  field(INP,  "@asyn($(PORT) $(ADDR) 1)LI_SBYTE")
+}
+record(longin, "$(P):$(R)_RAW"){
+  field(DESC, "$(DESC="")")
+  field(DTYP, "asynInt32")
+  field(SCAN, "I/O Intr")
+  field(INP,  "@asyn($(PORT) $(ADDR) 1)LI_DATA")
+  field(FLNK, "$(P):$(R)_$(ATTR=V)")
+}
+record(ai, "$(P):$(R)_$(ATTR=V)"){
+  field(DESC, "$(DESC="")")
+  field(DTYP, "Raw Soft Channel")
+  field(INP,  "$(P):$(R)_RAW")
+  field(LINR, "SLOPE")
+  field(EGU,  "$(EGU)")
+  field(ESLO, "$(ESLO)")
+  field(EOFF, "$(EOFF)")
+  field(PREC, "$(PREC)")
+  field(LOLO, "$(LOLO="")")
+  field(LOW,  "$(LOW="")")
+  field(HIGH, "$(HIGH="")")
+  field(HIHI, "$(HIHI="")")
+  field(LSV,  "$(LSV="")")
+  field(LLSV, "$(LLSV="")")
+  field(HSV,  "$(HSV="")")
+  field(HHSV, "$(HHSV="")")
+  
+}

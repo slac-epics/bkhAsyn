@@ -1,0 +1,6 @@
+record(stringin, "$(P):$(MOD)_DRV_NAME"){
+  field(DESC, "Driver name")
+  field(DTYP, "asynOctetRead")
+  field(INP,  "@asyn($(PORT),0,1)SI_NAME")
+  field(SCAN, "I/O Intr")
+}

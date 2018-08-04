@@ -1,0 +1,15 @@
+# for reading status byte and integer data word.
+#------------------------------------------------------
+record(longin, "$(P):M$(MOD)_SBYTE$(N)"){
+  field(DESC, "$(DESC)")
+  field(DTYP, "asynInt32")
+  field(SCAN, "I/O Intr")
+  field(INP,  "@asyn($(PORT) $(CH) 1)LI_SBYTE")
+}
+record(longin, "$(P):M$(MOD)_CH$(N)"){
+  field(DESC, "$(DESC)")
+  field(DTYP, "asynInt32")
+  field(SCAN, "I/O Intr")
+  field(INP,  "@asyn($(PORT) $(CH) 1)LI_DATA")
+  field(EGU,  "$(EGU)")
+}

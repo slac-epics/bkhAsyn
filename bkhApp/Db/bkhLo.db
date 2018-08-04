@@ -1,0 +1,31 @@
+# bkhLo.db
+# writes data to the control byte.  The specific usage is to
+# reset the KL1512 counter channel.
+#---------------------------------------------------------------------------
+record(bo, "$(P):M$(MOD)_CH$(N)_CSB"){
+  field(DESC, "$(DESC):")
+  field(FLNK, "$(P):M$(MOD)_CH$(N)_CSB_Seq PP")
+}
+record(seq, "$(P):M$(MOD)_CH$(N)_CSB_Seq"){
+  field(DESC, "delay and write data")
+  field(ASG,  "Internal")
+  field(SELM, "All")
+  field(DOL1, "0")
+  field(DLY1, "0.0")
+  field(LNK1, "$(P):M$(MOD)_CH$(N)_CSB_Start PP NMS")
+  field(DOL2, "2")
+  field(DLY2, "0.5")
+  field(LNK2, "$(P):M$(MOD)_CH$(N)_CSB_End PP NMS")
+}
+record(longout, "$(P):M$(MOD)_CH$(N)_CSB_Start"){
+  field(ASG,  "Internal")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT) $(CH) 1)LO_CBYTE")
+  field(VAL,  "0")
+}
+record(longout, "$(P):M$(MOD)_CH$(N)_CSB_End"){
+  field(ASG,  "Internal")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT) $(CH) 1)LO_CBYTE")
+  field(VAL,  "2")
+}

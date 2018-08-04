@@ -1,0 +1,13 @@
+record(stringin, "$(P):NAME"){
+  field(DTYP, "asynOctetRead")
+  field(INP,  "@asyn($(PORT),$(ADDR),1)SI_NAME")
+  field(SCAN, "I/O Intr")
+  field(PINI, "1")
+}
+record(bo, "$(P):INIT_DONE"){
+  field(DESC, "Init Done:")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR),1)BO_INITD")
+  field(ZNAM, "Not")
+  field(ONAM, "Yes")
+}

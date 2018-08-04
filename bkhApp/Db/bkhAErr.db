@@ -1,0 +1,20 @@
+record(bi, "$(P):$(MOD)_ERROR"){
+  field(DESC, "Error flag:")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT) 0 1)BI_ERROR")
+  field(SCAN, "I/O Intr")
+  field(ZNAM, "No_Error")
+  field(ONAM, "Error")
+}
+record(waveform, "$(P):$(MOD)_MSG"){
+  field(DESC, "error message")
+  field(SCAN, "I/O Intr")
+  field(DTYP, "asynOctetRead")
+  field(FTVL, "CHAR")
+  field(NELM, "100")
+  field(INP,  "@asyn($(PORT),0,1)WF_MESSAGE")
+}
+record(bo, "$(P):$(MOD)_TEST"){
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT) 0 1)BO_TEST")
+}
