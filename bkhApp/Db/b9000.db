@@ -25,6 +25,7 @@ record(bo, "$(P):900R_CINIT"){
   field(ZNAM, "off")
   field(ONAM, "on")
   field(VAL,  "0")
+  field(PINI, "YES")
 }
 record(bo, "$(P):900R_REF"){
   field(DESC, "Refresh:")
