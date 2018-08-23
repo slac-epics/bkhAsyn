@@ -68,7 +68,7 @@ x 12
 y 88
 w 236
 h 20
-controlPv "$(P):$(MOD)_CH1_$(ATTR)SETPT.DESC"
+controlPv "$(P):$(MOD)_CH01_$(ATTR)SETPT.DESC"
 font "helvetica-bold-r-12.0"
 fontAlign "right"
 fgColor index 13
@@ -90,7 +90,7 @@ x 256
 y 88
 w 124
 h 20
-controlPv "$(P):$(MOD)_CH1_$(ATTR)SETPT"
+controlPv "$(P):$(MOD)_CH01_$(ATTR)SETPT"
 font "helvetica-bold-r-12.0"
 fgColor index 13
 fgAlarm
@@ -113,7 +113,7 @@ x 388
 y 88
 w 56
 h 20
-controlPv "$(P):$(MOD)_CH1_SBYTE"
+controlPv "$(P):$(MOD)_CH01_SBYTE"
 format "hex"
 font "helvetica-bold-r-12.0"
 fontAlign "center"
@@ -194,7 +194,7 @@ x 12
 y 116
 w 236
 h 20
-controlPv "$(P):$(MOD)_CH2_$(ATTR)SETPT.DESC"
+controlPv "$(P):$(MOD)_CH02_$(ATTR)SETPT.DESC"
 font "helvetica-bold-r-12.0"
 fontAlign "right"
 fgColor index 13
@@ -216,7 +216,7 @@ x 256
 y 116
 w 124
 h 20
-controlPv "$(P):$(MOD)_CH2_$(ATTR)SETPT"
+controlPv "$(P):$(MOD)_CH02_$(ATTR)SETPT"
 font "helvetica-bold-r-12.0"
 fgColor index 13
 fgAlarm
@@ -239,7 +239,7 @@ x 388
 y 116
 w 56
 h 20
-controlPv "$(P):$(MOD)_CH2_SBYTE"
+controlPv "$(P):$(MOD)_CH02_SBYTE"
 format "hex"
 font "helvetica-bold-r-12.0"
 fontAlign "center"

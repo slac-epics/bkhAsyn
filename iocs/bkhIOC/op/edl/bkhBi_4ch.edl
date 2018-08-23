@@ -68,7 +68,7 @@ x 24
 y 92
 w 304
 h 20
-controlPv "$(P):$(MOD)_CH1_Q.DESC"
+controlPv "$(P):$(MOD)_CH01_Q.DESC"
 font "helvetica-bold-r-12.0"
 fontAlign "right"
 fgColor index 13
@@ -90,7 +90,7 @@ x 24
 y 120
 w 304
 h 20
-controlPv "$(P):$(MOD)_CH2_Q.DESC"
+controlPv "$(P):$(MOD)_CH02_Q.DESC"
 font "helvetica-bold-r-12.0"
 fontAlign "right"
 fgColor index 13
@@ -112,7 +112,7 @@ x 24
 y 148
 w 304
 h 20
-controlPv "$(P):$(MOD)_CH3_Q.DESC"
+controlPv "$(P):$(MOD)_CH03_Q.DESC"
 font "helvetica-bold-r-12.0"
 fontAlign "right"
 fgColor index 13
@@ -134,7 +134,7 @@ x 24
 y 176
 w 304
 h 20
-controlPv "$(P):$(MOD)_CH4_Q.DESC"
+controlPv "$(P):$(MOD)_CH04_Q.DESC"
 font "helvetica-bold-r-12.0"
 fontAlign "right"
 fgColor index 13
@@ -156,7 +156,7 @@ x 340
 y 92
 w 64
 h 20
-controlPv "$(P):$(MOD)_CH1_Q"
+controlPv "$(P):$(MOD)_CH01_Q"
 font "helvetica-bold-r-12.0"
 fontAlign "center"
 fgColor index 15
@@ -179,7 +179,7 @@ x 340
 y 120
 w 64
 h 20
-controlPv "$(P):$(MOD)_CH2_Q"
+controlPv "$(P):$(MOD)_CH02_Q"
 font "helvetica-bold-r-12.0"
 fontAlign "center"
 fgColor index 15
@@ -202,7 +202,7 @@ x 340
 y 148
 w 64
 h 20
-controlPv "$(P):$(MOD)_CH3_Q"
+controlPv "$(P):$(MOD)_CH03_Q"
 font "helvetica-bold-r-12.0"
 fontAlign "center"
 fgColor index 15
@@ -225,7 +225,7 @@ x 340
 y 176
 w 64
 h 20
-controlPv "$(P):$(MOD)_CH4_Q"
+controlPv "$(P):$(MOD)_CH04_Q"
 font "helvetica-bold-r-12.0"
 fontAlign "center"
 fgColor index 15

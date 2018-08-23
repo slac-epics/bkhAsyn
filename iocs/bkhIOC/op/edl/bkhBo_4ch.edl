@@ -68,7 +68,7 @@ x 24
 y 92
 w 304
 h 20
-controlPv "$(P):$(MOD)_CH1_QSETPT.DESC"
+controlPv "$(P):$(MOD)_CH01_QSETPT.DESC"
 font "helvetica-bold-r-12.0"
 fontAlign "right"
 fgColor index 13
@@ -96,7 +96,7 @@ selectColor index 2
 inconsistentColor index 0
 topShadowColor index 1
 botShadowColor index 13
-controlPv "$(P):$(MOD)_CH1_QSETPT"
+controlPv "$(P):$(MOD)_CH01_QSETPT"
 font "helvetica-bold-r-12.0"
 orientation "horizontal"
 endObjectProperties
@@ -111,7 +111,7 @@ x 24
 y 120
 w 304
 h 20
-controlPv "$(P):$(MOD)_CH2_QSETPT.DESC"
+controlPv "$(P):$(MOD)_CH02_QSETPT.DESC"
 font "helvetica-bold-r-12.0"
 fontAlign "right"
 fgColor index 13
@@ -133,7 +133,7 @@ x 24
 y 148
 w 304
 h 20
-controlPv "$(P):$(MOD)_CH3_QSETPT.DESC"
+controlPv "$(P):$(MOD)_CH03_QSETPT.DESC"
 font "helvetica-bold-r-12.0"
 fontAlign "right"
 fgColor index 13
@@ -155,7 +155,7 @@ x 24
 y 176
 w 304
 h 20
-controlPv "$(P):$(MOD)_CH4_QSETPT.DESC"
+controlPv "$(P):$(MOD)_CH04_QSETPT.DESC"
 font "helvetica-bold-r-12.0"
 fontAlign "right"
 fgColor index 13
@@ -183,7 +183,7 @@ selectColor index 2
 inconsistentColor index 0
 topShadowColor index 1
 botShadowColor index 13
-controlPv "$(P):$(MOD)_CH2_QSETPT"
+controlPv "$(P):$(MOD)_CH02_QSETPT"
 font "helvetica-bold-r-12.0"
 orientation "horizontal"
 endObjectProperties
@@ -204,7 +204,7 @@ selectColor index 2
 inconsistentColor index 0
 topShadowColor index 1
 botShadowColor index 13
-controlPv "$(P):$(MOD)_CH3_QSETPT"
+controlPv "$(P):$(MOD)_CH03_QSETPT"
 font "helvetica-bold-r-12.0"
 orientation "horizontal"
 endObjectProperties
@@ -225,7 +225,7 @@ selectColor index 2
 inconsistentColor index 0
 topShadowColor index 1
 botShadowColor index 13
-controlPv "$(P):$(MOD)_CH4_QSETPT"
+controlPv "$(P):$(MOD)_CH04_QSETPT"
 font "helvetica-bold-r-12.0"
 orientation "horizontal"
 endObjectProperties

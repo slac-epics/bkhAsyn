@@ -68,12 +68,12 @@ displayFileName {
   6 "bkh9000.edl"
 }
 symbols {
-  0 "MOD=2114_1"
-  1 "MOD=1104_1"
-  2 "MOD=3172_1, ATTR=V"
-  3 "MOD=3102_1, ATTR=V"
-  4 "MOD=3314_1"
-  5 "MOD=4132_1, ATTR=V"
+  0 "MOD=2114_01"
+  1 "MOD=1104_01"
+  2 "MOD=3172_01, ATTR=V"
+  3 "MOD=3102_01, ATTR=V"
+  4 "MOD=3314_01"
+  5 "MOD=4132_01, ATTR=V"
 }
 noScroll
 endObjectProperties

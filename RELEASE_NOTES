@@ -1,6 +1,7 @@
 
 R0.1.2  M. Dunning - 2018-08-23
     - Add template files for conversions
+    - Example edm screens: make module numbers two digits
 
 R0.1.1  M. Dunning - 2018-08-22
     - Add PINI to 900R_CINIT record
