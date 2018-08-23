@@ -15,6 +15,10 @@ DB += bkhBo.db
 DB += bkhLi.db
 DB += bkhLo.db
 DB += bkhTemp.db
+DB += bi_convert.template
+DB += bo_convert.template
+DB += ai_convert.template
+DB += ai_convert_autosave.template
 
 include $(TOP)/configure/RULES
 
