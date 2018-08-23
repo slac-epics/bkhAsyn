@@ -1,0 +1,8 @@
+
+record(bo, "$(INPV)") {
+    field(DESC, "$(DESC="")")
+    field(OUT,  "$(OUTPV) PP")
+    field(ZNAM, "$(ZNAM="Off")")
+    field(ONAM, "$(ONAM=On)")
+}
+

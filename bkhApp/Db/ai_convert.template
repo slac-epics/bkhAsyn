@@ -1,0 +1,33 @@
+
+record(calc, "$(INPV)_conv") {
+    field(DESC, "Convert using poly coeff")
+    field(ASG,  "Internal")
+    field(INPA, "$(INPV) CPP")
+    field(INPB, "$(C0=0)")
+    field(INPC, "$(C1=1)")
+    field(INPD, "$(C2=0)")
+    field(INPE, "$(C3=0)")
+    field(INPF, "$(C4=0)")
+    field(INPG, "$(C5=0)")
+    field(INPH, "$(C6=0)")
+    field(CALC, "B + A*C + A^2*D + A^3*E + A^4*F + A^5*G")
+    field(FLNK, "$(OUTPV)")
+}
+
+
+record(ai, "$(OUTPV)") {
+    field(DESC, "$(DESC="")")
+    field(INP,  "$(INPV)_conv")
+    field(EGU,  "$(EGU="")")
+    field(PREC, "$(PREC=2)")
+    field(LOLO, "$(LOLO="")")
+    field(LOW,  "$(LOW="")")
+    field(HIGH, "$(HIGH="")")
+    field(HIHI, "$(HIHI="")")
+    field(LLSV, "$(LLSV=NO_ALARM)")
+    field(LSV,  "$(LSV=NO_ALARM)")
+    field(HSV,  "$(HSV=NO_ALARM)")
+    field(HHSV, "$(HHSV=NO_ALARM)")
+    field(HYST, "$(HYST="")")
+}
+

@@ -1,0 +1,10 @@
+
+record(bi, "$(OUTPV)") {
+    field(DESC, "$(DESC="")")
+    field(INP,  "$(INPV) CPP")
+    field(ZNAM, "$(ZNAM=Off)")
+    field(ONAM, "$(ONAM=On)")
+    field(ZSV,  "$(ZSV=NO_ALARM)")
+    field(OSV,  "$(OSV=NO_ALARM)")
+}
+

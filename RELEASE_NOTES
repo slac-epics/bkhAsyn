@@ -1,8 +1,12 @@
-R0.1.0  M. Dunning - 2018-08-02
-    - First stable release
+
+R0.1.2  M. Dunning - 2018-08-23
+    - Add template files for conversions
 
 R0.1.1  M. Dunning - 2018-08-22
     - Add PINI to 900R_CINIT record
     - Example IOC: add helpful comments to st.cmd; remove unneeded dbpf commands; 
             make numbers two digits long
+
+R0.1.0  M. Dunning - 2018-08-02
+    - First stable release
 
