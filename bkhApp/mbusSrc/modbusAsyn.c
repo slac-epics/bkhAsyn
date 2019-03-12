@@ -228,7 +228,6 @@ int doModbusIO(PLC_ID pPlc,int slave,int function,int start,
                       "%s::doModbusIO port %s WRITE_SINGLE_COIL"
                       " address=0%o value=0x%x\n",
                       driver, pPlc->oport, start, bitOutput);
-//printf( "doModbusIO:start=0x%x,bit=0x%x\n",start,bitOutput);
       break;
     case MODBUS_WRITE_SINGLE_REGISTER:
       writeSingleReq = (modbusWriteSingleRequest *)pPlc->modbusRequest;
@@ -310,15 +309,20 @@ int doModbusIO(PLC_ID pPlc,int slave,int function,int start,
   dT = epicsTimeDiffInSeconds(&endTime, &startTime);
   msec = (int)(dT*1000. + 0.5);
                                          
-  if (status != asynSuccess) {
-    asynPrint(pPlc->pasynUserTrace, ASYN_TRACE_ERROR,
-	"%s::doModbusIO port %s error calling writeRead,"
-	" error=%s, nwrite=%d/%d, nread=%d, msec=%d\n",
-	driver, pPlc->oport,pPlc->pasynUserOctet->errorMessage,
-	(int)nwrite,requestSize,(int)nread,msec);
-    pPlc->IOErrors++;
-    goto done;
-  }
+    if (status != asynSuccess) {
+        // If this is the first error, print a message
+        if (!pPlc->IOErrors) {
+            asynPrint(pPlc->pasynUserTrace, ASYN_TRACE_ERROR,
+            "%s::doModbusIO port %s error calling writeRead,"
+            " error=%s, nwrite=%d/%d, nread=%d, msec=%d\n",
+            driver, pPlc->oport,pPlc->pasynUserOctet->errorMessage,
+            (int)nwrite,requestSize,(int)nread,msec);
+        }
+        pPlc->IOErrors++;
+        // Reset error count so we see periodic messages, but don't get flooded
+        if (pPlc->IOErrors > 10000) pPlc->IOErrors = 0;
+        goto done;
+    }
                
   pPlc->lastIOMsec = msec;
   if (msec > pPlc->maxIOMsec) pPlc->maxIOMsec = msec;

@@ -259,8 +259,6 @@ static asynStatus writeIt(void *ppvt, asynUser *pasynUser,
       status = pPvt->pasynOctet->write(pPvt->octetPvt, pasynUser,
                           pPvt->buffer, nWrite,&nbytesActual);
       *nbytesTransfered = (nbytesActual > numchars) ? numchars : nbytesActual;
-if(status) printf( "modbusInterpose:writeIt: stat=%d\n",status);
-//      epicsThreadSleep(0.02);
       break;
 
     case modbusLinkRTU:
@@ -334,7 +332,6 @@ static asynStatus readIt(void *ppvt, asynUser *pasynUser,
       nRead = maxchars + mbapSize + 1;
       status = pPvt->pasynOctet->read(pPvt->octetPvt, pasynUser,
                        pPvt->buffer, nRead, &nbytesActual, eomReason);
-if(status) printf( "modbufInterpose::readIt: stat=%d\n",status);
       if (status != asynSuccess) return status;
       /* Copy bytes beyond mbapHeader to output buffer */
       nRead = nbytesActual;

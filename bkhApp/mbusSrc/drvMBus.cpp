@@ -35,7 +35,7 @@ static char* __getTime(){
   epicsTimeGetCurrent( &etm);
   epicsTimeToTM( &tt,&ns,&etm);
   year=tt.tm_year+1900;
-  sprintf( tms,"%d/%02d/%02d %02d:%02d:%02d",year,tt.tm_mon+1,
+  sprintf( tms,"%ld/%02d/%02d %02d:%02d:%02d",year,tt.tm_mon+1,
         tt.tm_mday,tt.tm_hour,tt.tm_min,tt.tm_sec);
   return(tms);
 }
@@ -57,7 +57,6 @@ void drvMBus::IOThread(){
  *---------------------------------------------------------------------------*/
   static const char* iam="IOThread"; int inq,stat; asynStatus st;
   msgq_t msgq;
-printf( "%s::%s:=== tout=%f ======\n",dname,iam,_tout);
   while(1){
     stat=_pmqH->tryReceive( &msgq,sizeof(msgq));
     if(stat==-1){
@@ -68,8 +67,6 @@ printf( "%s::%s:=== tout=%f ======\n",dname,iam,_tout);
     else{
       st=mbusMemIO( msgq);
       if(st){
-	printf( "%s::IOThread:=-=-= six=%d,maddr=%d,pix=%d\n",
-		dname,msgq.six,msgq.maddr,msgq.pix);
 	fflush(0);
       }
     }
@@ -190,10 +187,6 @@ asynStatus drvMBus::mbusMemIO( msgq_t msgq){
     case normal_e:
       if(msgq.func>MODBUS_READ_INPUT_REGISTERS) *pw=msgq.d;
       st=doModbusIO( _pmb,_pmb->slave,msgq.func,msgq.maddr,pw,msgq.len);
-      if(st){
-	errlogPrintf( "%s::mbusMemIO:doModbusIO:six=%d failed, st=%d\n",
-			dname,msgq.six,st);
-      }
       iodone.addr=msgq.addr; iodone.a=msgq.a; iodone.pix=msgq.pix;
       iodone.func=msgq.func; iodone.len=msgq.len; iodone.pdrv=msgq.pdrv;
       iodone.stat=st;
@@ -202,10 +195,7 @@ asynStatus drvMBus::mbusMemIO( msgq_t msgq){
 	return(asynError);
       }
 if(st){
-printf( "%s::mbusMemIO: pdrv=%p,maddr=0x%x,addr=%d,pix=%d,func=%d"
-",len=%d,w=(%d,%d)\n",dname,iodone.pdrv,msgq.maddr,msgq.addr,msgq.pix,
-msgq.func,msgq.len,pw[0],pw[1]);
-fflush(0);
+    fflush(0);
 }
       (*_cb)(iodone);
       break;
@@ -223,7 +213,6 @@ void drvMBus::_doSpecial1( msgq_t msgq){
 /*-----------------------------------------------------------------------------
  * Read Beckhoff motor set point (set position) registers.
  *---------------------------------------------------------------------------*/
-//printf( "%s::doSpecial1:--------------------\n",dname);
   _readSpecial( msgq,2,3);
 }
 void drvMBus::_doSpecial2( msgq_t msgq){
@@ -233,8 +222,6 @@ void drvMBus::_doSpecial2( msgq_t msgq){
   static iodone_t iodone; epicsUInt16 w; int st;
   st=_readSpecialOne( msgq,msgq.rn,&w);
   if(!st) iodone.data[0]=w; else iodone.data[0]=0;
-//printf( "%s::doSpecial2:---- st=%d,addr=%d,rn=%d,pix=%d,w=0x%x\n",
-//dname,st,msgq.addr,msgq.rn,msgq.pix,w);
   iodone.addr=msgq.addr; iodone.a=msgq.a; iodone.pix=msgq.pix;
   iodone.func=msgq.func; iodone.len=msgq.len; iodone.pdrv=msgq.pdrv;
   iodone.stat=st;
@@ -249,7 +236,6 @@ void drvMBus::_doSpecial3( msgq_t msgq){
  *---------------------------------------------------------------------------*/
   static iodone_t iodone; int st;
   st=_writeSpecialOne( msgq,msgq.rn,msgq.d);
-//printf( "%s::doSpecial3:---- st=%d ----\n",dname,st);
   iodone.addr=msgq.addr; iodone.a=msgq.a; iodone.pix=msgq.pix;
   iodone.func=msgq.func; iodone.len=msgq.len; iodone.pdrv=msgq.pdrv;
   iodone.stat=st;
@@ -299,7 +285,6 @@ void drvMBus::_doSpecial4( msgq_t msgq){
       }
     }
   }
-//printf ( "%s::doSpecial4:---- st=%d ----\n",dname,st);
   iodone.addr=msgq.addr; iodone.a=msgq.a; iodone.pix=msgq.pix;
   iodone.func=msgq.func; iodone.len=msgq.len; iodone.pdrv=msgq.pdrv;
   iodone.stat=st;
@@ -320,7 +305,6 @@ void drvMBus::_doSpecial5( msgq_t msgq){
   // next write 0 to data out register, needed for next move
   maddr=msgq.maddr+woff+1;
   if(!st) st=doModbusIO( _pmb,_pmb->slave,wfunc,maddr,&w,1);
-//printf( "%s::doSpecial5:-- st=%d,d=%d\n",dname,st,msgq.d);
   iodone.addr=msgq.addr; iodone.a=msgq.a; iodone.pix=msgq.pix;
   iodone.func=msgq.func; iodone.len=msgq.len; iodone.pdrv=msgq.pdrv;
   iodone.stat=st;
@@ -346,8 +330,6 @@ int drvMBus::_writeSpecialOne( msgq_t msgq,int rn,epicsUInt16 v){
   st=doModbusIO( _pmb,_pmb->slave,wfunc,maddr+1,&w,1);
   if(st) return(st);
   st=doModbusIO( _pmb,_pmb->slave,wfunc,maddr,&cbe,1);
-//printf( "%s::writeSpecialOne: maddr=0x%x,cbe=0x%x,v=%d(0x%x),rn=%d\n",
-//dname,maddr,cbe,v,v,rn);
   return(st);
 }
 void drvMBus::_readSpecial( msgq_t msgq,int r1,int r2){
@@ -365,10 +347,6 @@ void drvMBus::_readSpecial( msgq_t msgq,int r1,int r2){
     st=_readSpecialOne( msgq,r2,&w);
     if(!st) iodone.data[1]=w;
   }
-//printf( "%s::readSpecial: maddr=%d,pix=%d,r1=%d,r2=%d,"
-//"d=%d(0x%x),%d(0x%x),st=%d\n",
-//dname,msgq.maddr,msgq.pix,r1,r2,iodone.data[0],iodone.data[0],
-//iodone.data[1],iodone.data[1],st);
   iodone.addr=msgq.addr; iodone.a=msgq.a; iodone.pix=msgq.pix;
   iodone.func=msgq.func; iodone.len=msgq.len; iodone.pdrv=msgq.pdrv;
   iodone.stat=st;

@@ -90,7 +90,6 @@ void drvBkhAsyn::resultCB( iodone_t* p){
  * parameter index in the parameter library,
  *---------------------------------------------------------------------------*/
   if(p->stat){
-    errlogPrintf( "%s::%s:resultCB:Error\n",dname,_port);
     _setError( "Bad Status in resultCB",1);
     _errInResult=1;
     return;
