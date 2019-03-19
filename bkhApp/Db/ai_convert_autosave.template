@@ -3,7 +3,7 @@ record(ao, "$(OUTPV)_C0") {
     field(DESC, "0th order coeff.")
     field(VAL,  "$(C0=0)")
     field(PREC, "4")
-    field(FLNK, "$(INPV)_conv")
+    field(FLNK, "$(OUTPV)_conv")
     info(autosaveFields, "VAL")
 }
 
@@ -11,7 +11,7 @@ record(ao, "$(OUTPV)_C1") {
     field(DESC, "1st order coeff.")
     field(VAL,  "$(C1=0)")
     field(PREC, "4")
-    field(FLNK, "$(INPV)_conv")
+    field(FLNK, "$(OUTPV)_conv")
     info(autosaveFields, "VAL")
 }
 
@@ -19,7 +19,7 @@ record(ao, "$(OUTPV)_C2") {
     field(DESC, "2nd order coeff.")
     field(VAL,  "$(C2=0)")
     field(PREC, "4")
-    field(FLNK, "$(INPV)_conv")
+    field(FLNK, "$(OUTPV)_conv")
     info(autosaveFields, "VAL")
 }
 
@@ -27,7 +27,7 @@ record(ao, "$(OUTPV)_C3") {
     field(DESC, "3rd order coeff.")
     field(VAL,  "$(C3=0)")
     field(PREC, "4")
-    field(FLNK, "$(INPV)_conv")
+    field(FLNK, "$(OUTPV)_conv")
     info(autosaveFields, "VAL")
 }
 
@@ -35,7 +35,7 @@ record(ao, "$(OUTPV)_C4") {
     field(DESC, "4th order coeff.")
     field(VAL,  "$(C4=0)")
     field(PREC, "4")
-    field(FLNK, "$(INPV)_conv")
+    field(FLNK, "$(OUTPV)_conv")
     info(autosaveFields, "VAL")
 }
 
@@ -43,14 +43,21 @@ record(ao, "$(OUTPV)_C5") {
     field(DESC, "5th order coeff.")
     field(VAL,  "$(C5=0)")
     field(PREC, "4")
-    field(FLNK, "$(INPV)_conv")
+    field(FLNK, "$(OUTPV)_conv")
     info(autosaveFields, "VAL")
 }
 
-record(calc, "$(INPV)_conv") {
+record(ai, "$(OUTPV)_RAW") {
+    field(DESC, "$(DESC="")")
+    field(INP,  "$(INPV) CPP MS")
+    field(PREC, "$(PREC=2)")
+    field(FLNK, "$(OUTPV)_conv")
+}
+
+record(calc, "$(OUTPV)_conv") {
     field(DESC, "Convert using poly coeff")
     field(ASG,  "Internal")
-    field(INPA, "$(INPV) CPP")
+    field(INPA, "$(OUTPV)_RAW NPP MS")
     field(INPB, "$(OUTPV)_C0")
     field(INPC, "$(OUTPV)_C1")
     field(INPD, "$(OUTPV)_C2")
@@ -61,10 +68,9 @@ record(calc, "$(INPV)_conv") {
     field(FLNK, "$(OUTPV)")
 }
 
-
 record(ai, "$(OUTPV)") {
     field(DESC, "$(DESC="")")
-    field(INP,  "$(INPV)_conv")
+    field(INP,  "$(OUTPV)_conv")
     field(EGU,  "$(EGU="")")
     field(PREC, "$(PREC=2)")
     field(LOLO, "$(LOLO="")")
