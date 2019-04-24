@@ -111,7 +111,7 @@ void drvMBus::_emptyQueue( epicsMessageQueue* pmq){
     if(stat==-1) break;
     i=pmq->pending();
   }
-printf( "%s::emptyQ: j=%d, i=%d\n",dname,j,i);
+//printf( "%s::emptyQ: j=%d, i=%d\n",dname,j,i);
 }
 void drvMBus::report(){
 /*-----------------------------------------------------------------------------
@@ -152,8 +152,8 @@ asynStatus drvMBus::mbusDoIO( prio_t prio,int six,int saddr,int addr,int chan,
   if((prio==prioL_e)&&(j>=_allowInLQ)){
     _emptyQueue( pmq);
     _npurgLQ++;
-printf( "%s::mbusDoIO: prio=%d,inq=%d,allow=%d,purg=%d\n",
-dname,prio,j,_allowInLQ,_npurgLQ);
+//printf( "%s::mbusDoIO: prio=%d,inq=%d,allow=%d,purg=%d\n",
+//dname,prio,j,_allowInLQ,_npurgLQ);
   }
   stat=pmq->trySend( &msgq,sizeof(msgq));
   if(stat==-1){
