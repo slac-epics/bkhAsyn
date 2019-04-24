@@ -5,6 +5,7 @@ record(bi, "$(P):$(MOD)_ERROR"){
   field(SCAN, "I/O Intr")
   field(ZNAM, "No_Error")
   field(ONAM, "Error")
+  field(FLNK, "$(P):$(MOD)_ERROR_PUSH")
 }
 record(waveform, "$(P):$(MOD)_MSG"){
   field(DESC, "error message")
@@ -18,3 +19,12 @@ record(bo, "$(P):$(MOD)_TEST"){
   field(DTYP, "asynInt32")
   field(OUT,  "@asyn($(PORT) 0 1)BO_TEST")
 }
+
+record(bo, "$(P):$(MOD)_ERROR_PUSH"){
+  field(DESC, "Push to global error flag")
+  field(ASG,  "Internal")
+  field(DOL,  "$(P):$(MOD)_ERROR")
+  field(OMSL, "closed_loop")
+  field(OUT,  "$(P):9000_ERROR PP")
+}
+

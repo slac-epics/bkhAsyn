@@ -4,6 +4,7 @@ R0.1.4  M. Dunning - 2019-04-23
             Now driver will print an error message every 5 minutes
             and print a helpful message when back to normal.
     - Add bkh*_simple.db files which allow more freedom on PV name structure.
+    - Add global error flag
 
 R0.1.3  M. Dunning - 2019-03-19
     - Reduce flood of cryptic error messages printed by driver if a device is disconnected.
