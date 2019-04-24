@@ -15,6 +15,8 @@
                                  /* Note: this value actually has no effect,
                                   * the real timeout is set in
                                   *  modbusInterposeConfig */
+#define MAX_IO_ERRORS        300 /* Max IO errors before an error message is printed */
+
 typedef enum {
   dataTypeUInt16,      /* 16-bit unsigned               drvUser=UINT16 */
   dataTypeInt16SM,     /* 16-bit sign and magnitude     drvUser=INT16SM */

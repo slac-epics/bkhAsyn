@@ -1,4 +1,10 @@
 
+R0.1.4  M. Dunning - 2019-04-23
+    - Round two of reducing flood of cryptic error messages printed by driver.
+            Now driver will print an error message every 5 minutes
+            and print a helpful message when back to normal.
+    - Add bkh*_simple.template files which allow more freedom on PV name structure.
+
 R0.1.3  M. Dunning - 2019-03-19
     - Reduce flood of cryptic error messages printed by driver if a device is disconnected.
             Now we should only see a sensible message periodically.
