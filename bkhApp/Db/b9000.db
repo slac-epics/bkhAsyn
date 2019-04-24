@@ -1,6 +1,6 @@
 record(stringin, "$(P):900R_NAME"){
-  field(DESC, "$(IOC)")
-  field(VAL,  "$(LOC)")
+  field(DESC, "$(IOC="")")
+  field(VAL,  "$(LOC="")")
 }
 record(stringin, "$(P):900R_MID"){
   field(DESC, "Bus Coupler ID:")
