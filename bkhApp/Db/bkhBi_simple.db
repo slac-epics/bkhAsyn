@@ -1,0 +1,12 @@
+# This template is for a digital input module.
+#----------------------------------------------------------
+record(bi, "$(P)$(R="")$(ATTR)"){
+  field(DESC, "$(DESC="")")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT) $(ADDR) 1)BI_BVAL")
+  field(SCAN, "I/O Intr")
+  field(ZNAM, "$(ZNAM="Off")")
+  field(ONAM, "$(ONAM="On")")
+  field(ZSV,  "$(ZSV=NO_ALARM)")
+  field(OSV,  "$(OSV=NO_ALARM)")
+}

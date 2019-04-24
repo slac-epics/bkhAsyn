@@ -1,0 +1,48 @@
+# This template is for an analog temperature device.
+#----------------------------------------------------------
+record(longin, "$(P)$(R="")$(ATTR="TEMP")_SBYTE"){
+  field(DESC, "$(DESC)")
+  field(DTYP, "asynInt32")
+  field(SCAN, "I/O Intr")
+  field(INP,  "@asyn($(PORT) $(ADDR) 1)LI_SBYTE")
+}
+record(longin, "$(P)$(R="")$(ATTR="TEMP")_RAW"){
+  field(DESC, "$(DESC)")
+  field(DTYP, "asynInt32")
+  field(SCAN, "I/O Intr")
+  field(INP,  "@asyn($(PORT) $(ADDR) 1)LI_DATA")
+  field(FLNK, "$(P)$(R="")$(ATTR="TEMP")")
+}
+record(ai, "$(P)$(R="")$(ATTR="TEMP")"){
+  field(DESC, "$(DESC)")
+  field(DTYP, "Raw Soft Channel")
+  field(INP,  "$(P)$(R="")$(ATTR="TEMP")_RAW")
+  field(LINR, "SLOPE")
+  field(EGU,  "$(EGU=C)")
+  field(ESLO, "$(ESLO)")
+  field(PREC, "$(PREC)")
+  field(LOLO, "$(LOLO="")")
+  field(LOW,  "$(LOW="")")
+  field(HIGH, "$(HIGH="")")
+  field(HIHI, "$(HIHI="")")
+  field(LSV,  "$(LSV="")")
+  field(LLSV, "$(LLSV="")")
+  field(HSV,  "$(HSV="")")
+  field(HHSV, "$(HHSV="")")
+  field(FLNK, "$(P)$(R="")$(ATTR="TEMP")_calc")
+}
+record(calc, "$(P)$(R="")$(ATTR="TEMP")_calc"){
+  field(DESC, "Convert units")
+  field(ASG,  "Internal")
+  field(CALC, "$(CALC=A*1.8+32)")
+  field(INPA, "$(P)$(R="")$(ATTR="TEMP") NPP MS")
+  field(FLNK, "$(P)$(R="")$(ATTR="TEMP")$(ALT="_ALT")")
+}
+record(ai, "$(P)$(R="")$(ATTR="TEMP")$(ALT="_ALT")"){
+  field(DESC, "$(DESC)")
+  field(DTYP, "Soft Channel")
+  field(INP,  "$(P)$(R="")$(ATTR="TEMP")_calc NPP MS")
+  field(EGU,  "$(EGU$(ALT="_ALT")=F)")
+  field(PREC, "$(PREC)")
+}
+
