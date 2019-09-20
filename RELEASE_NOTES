@@ -1,4 +1,8 @@
 
+R0.1.5  M. Dunning - 2019-09-20
+    - Build for beatnik
+    - Make __getTime() rtems friendly
+
 R0.1.4  M. Dunning - 2019-04-23
     - Round two of reducing flood of cryptic error messages printed by driver.
             Now driver will print an error message every 5 minutes
