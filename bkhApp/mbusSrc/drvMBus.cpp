@@ -31,12 +31,8 @@ static char* __getTime(){
  * Returns a pointer to an ASCI coded string of the current date time.
  *----------------------------------------------------------------------------*/
   epicsTimeStamp etm; static char tms[64];
-  struct tm tt; long year; ulong ns;
-  epicsTimeGetCurrent( &etm);
-  epicsTimeToTM( &tt,&ns,&etm);
-  year=tt.tm_year+1900;
-  sprintf( tms,"%ld/%02d/%02d %02d:%02d:%02d",year,tt.tm_mon+1,
-        tt.tm_mday,tt.tm_hour,tt.tm_min,tt.tm_sec);
+  epicsTimeGetCurrent(&etm);
+  epicsTimeToStrftime(tms, sizeof(tms), "%Y%m%d_%H:%M:%S.%06f", &etm);
   return(tms);
 }
 
