@@ -14,7 +14,7 @@
  *    pressing the Go button or move relative button, then:
  *    - clear bit 5 in the Control Byte register,
  *    - start a thread in which:
- *    -- read the Status Word register and test bit 0 and 1 to see if still 
+ *    -- read the Status Word register and test bit 0 and 1 to see if still
  *       at limit.
  *    -- if the limit switch is still active, repeat the read until clear,
  *    -- when the limit swith is no longer active,set bit 5 in Control Byte
@@ -45,6 +45,7 @@
 #include <epicsExport.h>
 #include <envDefs.h>
 #include <iocsh.h>
+#include <ellLib.h>
 #include <asynOctetSyncIO.h>
 #include <asynInt32SyncIO.h>
 
@@ -54,13 +55,40 @@
 #define STRLEN	128
 
 static const char *dname="drvBkhAMot";
-static drvBkhAMot* pthis;
+static ELLLIST *pmotor_list = NULL;
 
 static const int roRegN[]={6,8,9};
 static const int rwrRegN[]={38,39,40,50,58};
 static const int rweRegN[]={32,33,34,35,36,38,39,40,41,46,50,52};
 
 extern "C"{
+
+static void init_pmotor_list(void)
+{
+  if(!pmotor_list) {
+    pmotor_list = (ELLLIST*) malloc(sizeof(ELLLIST));
+    ellInit(pmotor_list);
+  }
+}
+
+static drvBkhAMot* findMotor(const char *port)
+{
+  motorList_t *p = NULL;
+
+  if(!pmotor_list || !ellCount(pmotor_list)) {
+    return (drvBkhAMot*) NULL;
+  }
+
+  p = (motorList_t *) ellFirst(pmotor_list);
+  while(p) {
+    if(!strcmp(port, p->port)) break;
+    p = (motorList_t *)ellNext(&p->node);
+  }
+
+  if(p && p->pmotor) return p->pmotor;
+  else               return (drvBkhAMot*) NULL;
+}
+
 static void exitHndlC( void* pvt){
   drvBkhAMot* pthis=(drvBkhAMot*)pvt;
   pthis->exitHndl();
@@ -478,7 +506,7 @@ asynStatus drvBkhAMot::_stop( int ix){
   asynStatus stat=asynSuccess; int cb;
   cb=_cb;
   if(_homing) _stophoming=1;
-  // set start to 0 and if not keeping energized also set enable to 0 
+  // set start to 0 and if not keeping energized also set enable to 0
   if(_keepEn) cb=cb&0xdb;
   else{
     cb=cb&0xfa;
@@ -513,7 +541,7 @@ asynStatus drvBkhAMot::_ifAtLimit( int dir){
  * moving motor with an active limit switch.
  *---------------------------------------------------------------------------*/
   asynStatus stat=asynSuccess; int i1,i2,sw,apos,spos,adir;
-  
+
   getIntegerParam( 0,_liSWord,&sw);
   if(!(sw&3)) return(stat);
   i1=sw&1; i2=sw&2;
@@ -755,9 +783,9 @@ printf( "%s::writeInt32: ix=%d,kx=%d,addr=%d,v=%d,spos=%d\n",dname,ix,kx,addr,v,
   stat=callParamCallbacks();
   return(stat);
 }
-drvBkhAMot::drvBkhAMot( int id,const char* port,int addr,int func,
+drvBkhAMot::drvBkhAMot(const char* name, int id,const char* port,int addr,int func,
 	int len,int nchan,int tmof,int nparm,int tmos):
-	drvBkhAsyn( id,port,addr,func,len,nchan,tmos,nparm,1){
+	drvBkhAsyn((char*)name,id,port,addr,func,len,nchan,tmos,nparm,1){
 /*-----------------------------------------------------------------------------
  * Constructor for the drvBkhAMot class. Calls constructor for the drvBkhAsyn
  * base class. Where
@@ -775,6 +803,7 @@ drvBkhAMot::drvBkhAMot( int id,const char* port,int addr,int func,
   _port=(char*)callocMustSucceed( strlen(port)+1,sizeof(char),dname);
 
   strcpy((char*)_port,port);
+  _name = epicsStrDup(name);
   _saddr=addr; _mfunc=func; _mlen=len;
   _toutf=(float)tmof/1000.0;;
   _touts=(float)tmos/1000.0;;
@@ -880,7 +909,6 @@ drvBkhAMot::drvBkhAMot( int id,const char* port,int addr,int func,
   createParam( loSPosAbsStr,	asynParamInt32,		&_loSPosAbs);
 
   _firstix=_liAbsPos;
-
   _readPosition();
   setIntegerParam( 0,_liState,_mstate);
   callParamCallbacks(0);
@@ -909,7 +937,7 @@ void drvBkhAMot::motorSetup( const char* port,int h,int n,int p){
 
 extern "C" {
 
-int drvBkhAMotConfig( const char* port,int func,int addr,int len,
+int drvBkhAMotConfig(const char* name, const char* port,int func,int addr,int len,
 		int nchan,int tmof,int tmos){
 /*-----------------------------------------------------------------------------
  * EPICS iocsh callable function to call constructor for the drvBkhAMot class.
@@ -921,8 +949,17 @@ int drvBkhAMotConfig( const char* port,int func,int addr,int len,
  *  tmof is the timeout in ms for fast update (motor moving),
  *  tmos is the timeout in ms for slow update (motor not moving).
  *---------------------------------------------------------------------------*/
+  drvBkhAMot *pthis;
+  motorList_t *p;
   int nparms=MOT_PARAMS+BKH_PARAMS;
-  pthis=new drvBkhAMot( motorE,port,addr,func,len,nchan,tmof,nparms,tmos);
+  pthis=new drvBkhAMot(name,motorE,port,addr,func,len,nchan,tmof,nparms,tmos);
+
+  init_pmotor_list();
+  p = (motorList_t *) malloc(sizeof(motorList_t));
+  p->port = epicsStrDup(port);
+  p->pmotor = pthis;
+  ellAdd(pmotor_list, &p->node);
+
   return(asynSuccess);
 }
 void drvBkhAMotSetup( const char* port,int home,int nlim,int plim){
@@ -932,6 +969,8 @@ void drvBkhAMotSetup( const char* port,int home,int nlim,int plim){
  * nlim if 1 negative limit switch is present, 0 not present.
  * plim if 1 positive limit switch is present, 0 not present.
  *---------------------------------------------------------------------------*/
+ drvBkhAMot *pthis = findMotor(port);
+
   if(!pthis){
     errlogPrintf( "%s::drvBkhAMotSetup: no driver object\n",dname);
     return;
@@ -939,19 +978,20 @@ void drvBkhAMotSetup( const char* port,int home,int nlim,int plim){
   pthis->motorSetup( port,home,nlim,plim);
 }
 
-static const iocshArg confArg0={"port",iocshArgString};
-static const iocshArg confArg1={"func",iocshArgInt};
-static const iocshArg confArg2={"addr",iocshArgInt};
-static const iocshArg confArg3={"len",iocshArgInt};
-static const iocshArg confArg4={"nchan",iocshArgInt};
-static const iocshArg confArg5={"tmof",iocshArgInt};
-static const iocshArg confArg6={"tmos",iocshArgInt};
+static const iocshArg confArg0={"mbus_name", iocshArgString};
+static const iocshArg confArg1={"port",iocshArgString};
+static const iocshArg confArg2={"func",iocshArgInt};
+static const iocshArg confArg3={"addr",iocshArgInt};
+static const iocshArg confArg4={"len",iocshArgInt};
+static const iocshArg confArg5={"nchan",iocshArgInt};
+static const iocshArg confArg6={"tmof",iocshArgInt};
+static const iocshArg confArg7={"tmos",iocshArgInt};
 static const iocshArg* const confArgs[]={&confArg0,&confArg1,&confArg2,
-		&confArg3,&confArg4,&confArg5,&confArg6};
-static const iocshFuncDef confFuncDef={"drvBkhAMotConfig",7,confArgs};
+		&confArg3,&confArg4,&confArg5,&confArg6,&confArg7};
+static const iocshFuncDef confFuncDef={"drvBkhAMotConfig",8,confArgs};
 static void confCallFunc(const iocshArgBuf *args){
-  drvBkhAMotConfig( args[0].sval,args[1].ival,args[2].ival,args[3].ival,
-		args[4].ival,args[5].ival,args[6].ival);
+  drvBkhAMotConfig( args[0].sval, args[1].sval,args[2].ival,args[3].ival,args[4].ival,
+		args[5].ival,args[6].ival,args[7].ival);
 }
 
 static const iocshArg setupA0={"port",iocshArgString};

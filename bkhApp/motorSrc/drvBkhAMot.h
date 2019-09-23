@@ -1,5 +1,5 @@
 /* drvBkhAMot.h
- * 
+ *
  * Asyn driver that inherits from the drvBkhAsyn class.  In turn, drvBkhAsyn
  * is derived from asynPortDriver.cpp written by Mark Rivers.
  * Started on 6/26/2013, zms
@@ -46,6 +46,7 @@
  * spix5_e	Write 32 bit Set Point
  *---------------------------------------------------------------------------*/
 #include <epicsMessageQueue.h>
+#include <ellLib.h>
 #include "drvBkhAsyn.h"
 
 #define MINV_REG	38
@@ -152,7 +153,7 @@ enum{ unknownH,moveToLimH,atLimMoveH,homedH};
 
 class drvBkhAMot: public drvBkhAsyn{
 public:
-  drvBkhAMot( int id,const char* port,int addr,int func,int len,
+  drvBkhAMot(const char* name, int id,const char* port,int addr,int func,int len,
 		int nchan,int msec,int nparm,int ro);
 
   void		motorSetup( const char* port,int home,int nlim,int plim);
@@ -191,7 +192,7 @@ protected:
 	_liREmrAcc, _liRMaxDec,_loRMinVelo,_loRMaxVelo,_loRMaxAcc,
 	_loREmrAcc, _loRMaxDec,_liEFeatr,  _liEMSteps, _liEEncInc,
 	_liECoilIA, _liECoilIB,_liEMinVelo,_liEMaxVelo,_liEMaxAcc,
-	_liEAccThr, _liEStepSz,_liEEmrAcc, _liEFeatr2, _loEFeatr, 
+	_liEAccThr, _liEStepSz,_liEEmrAcc, _liEFeatr2, _loEFeatr,
 	_loEMSteps, _loEEncInc,_loECoilIA, _loECoilIB, _loEMinVelo,
 	_loEMaxVelo,_loEMaxAcc,_loEAccThr, _loEStepSz, _loEEmrAcc,
 	_loEFeatr2, _boEnabled,_boDebug,   _boRdSetPt, _boReadPos,
@@ -213,7 +214,7 @@ enum{	ixLiAbsPos,  ixLoSetPos, ixLiSPos,    ixLiSetPos,  ixState,
 	ixLiREmrAcc, ixLiRMaxDec,ixLoRMinVelo,ixLoRMaxVelo,ixLoRMaxAcc,
 	ixLoREmrAcc, ixLoRMaxDec,ixLiEFeatr,  ixLiEMSteps, ixLiEEncInc,
 	ixLiECoilIA, ixLiECoilIB,ixLiEMinVelo,ixLiEMaxVelo,ixLiEMaxAcc,
-	ixLiEAccThr, ixLiEStepSz,ixLiEEmrAcc, ixLiEFeatr2, ixLoEFeatr, 
+	ixLiEAccThr, ixLiEStepSz,ixLiEEmrAcc, ixLiEFeatr2, ixLoEFeatr,
 	ixLoEMSteps, ixLoEEncInc,ixLoECoilIA, ixLoECoilIB, ixLoEMinVelo,
 	ixLoEMaxVelo,ixLoEMaxAcc,ixLoEAccThr, ixLoEStepSz, ixLoEEmrAcc,
 	ixLoEFeatr2, ixBoEnabled,ixBoDebug,   ixBoRdSetPt, ixBoReadPos,
@@ -225,7 +226,8 @@ enum{	ixLiAbsPos,  ixLoSetPos, ixLiSPos,    ixLiSetPos,  ixState,
 private:
   int		_id;		// unique type identifier for this driver
   char*		_port;
-  int		_saddr;
+	char* _name;
+	int		_saddr;
   int		_mfunc;		// modbus function for this driver
   int		_mlen;
   int		_cb;
@@ -261,3 +263,10 @@ private:
   int		_movingOffLim;	// when true is of moving away from limit sw
   int		_debug;		// when true, debugging
 };
+
+
+typedef struct {
+    ELLNODE    node;
+		char       *port;
+		drvBkhAMot *pmotor;
+} motorList_t;

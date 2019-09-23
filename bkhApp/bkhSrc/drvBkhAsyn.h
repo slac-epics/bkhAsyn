@@ -82,7 +82,7 @@ typedef enum{ couplerE,analogSE,analogUE,digiInE,digiOutE,motorE} type_e;
 
 class drvBkhAsyn: public asynPortDriver{
 public:
-  drvBkhAsyn( int id,const char* port,int addr,int func,int len,
+  drvBkhAsyn(char* name, int id,const char* port,int addr,int func,int len,
 		int nchan,int msec,int nparm,int mflag=0);
 
   virtual void resultCB( iodone_t* p);
@@ -151,6 +151,8 @@ enum{	ixWfMessage,  ixSiName,     ixLiRReg,   ixLiSByte,  ixLiDataIn,
 private:
   int		_id;		// unique type identifier for this driver,
   char*		_port;
+  char* _name;
+  drvMBus *_pmbus;
   int		_saddr;		// modbus start memory address for this
   int		_mfunc;		// modbus function for this driver
   int		_mlen;		//modbus memory segment length

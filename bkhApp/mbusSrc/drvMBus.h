@@ -23,6 +23,7 @@
 #include <epicsMessageQueue.h>
 #include <epicsMutex.h>
 #include <shareLib.h>
+#include <ellLib.h>
 #include "asynDriver.h"
 #include "modbus.h"
 #include "modbusAsyn.h"
@@ -92,7 +93,7 @@ public:
   epicsInt32*	getHist();
   int		getAllowInLQ(){return(_allowInLQ);}
   void		putAllowInLQ( int n){ _allowInLQ=n;}
- 
+
 protected:
   void		_emptyQueue( epicsMessageQueue* pmq);
   asynStatus	mbusMemIO( msgq_t msgq);
@@ -123,6 +124,13 @@ private:
   int		_npurgHQ;	// number of times hi prio queue was purged.
 };
 
-epicsShareExtern drvMBus* pmbus;
+// epicsShareExtern drvMBus* pmbus;
+typedef struct {
+    ELLNODE  node;
+    char     *name;
+    drvMBus  *pmbus;
+} mbusList_t;
+
+drvMBus* findMBus(char *name);
 
 #endif // _drvMBus_h

@@ -16,6 +16,7 @@
 #include <epicsExit.h>
 #include <envDefs.h>
 #include <epicsExport.h>
+#include <ellLib.h>
 #include <iocsh.h>
 
 #include "drvMBus.h"
@@ -24,7 +25,8 @@
 
 static const char *dname="drvMBus";
 
-drvMBus* pmbus = 0;
+// drvMBus* pmbus = 0;
+static ELLLIST *pmbus_list = NULL;
 
 static char* __getTime(){
 /*------------------------------------------------------------------------------
@@ -45,6 +47,32 @@ static void IOThreadC( void* p){
   drvMBus* pthis=(drvMBus*)p;
   pthis->IOThread();
 }
+}
+
+static void init_pmbus_list(void)
+{
+  if(!pmbus_list) {
+    pmbus_list = (ELLLIST*) malloc(sizeof(ELLLIST));
+    ellInit(pmbus_list);
+  }
+}
+
+drvMBus* findMBus(char *name)
+{
+    mbusList_t *p = NULL;
+
+    if(!pmbus_list || !ellCount(pmbus_list)) {
+      return (drvMBus*) NULL;
+    }
+
+    p = (mbusList_t *) ellFirst(pmbus_list);
+    while(p) {
+      if(!strcmp(name, p->name)) break;
+      p = (mbusList_t *)ellNext(&p->node);
+    }
+
+    if(p && p->pmbus) return p->pmbus;
+    else              return (drvMBus*) NULL;
 }
 
 void drvMBus::IOThread(){
@@ -425,10 +453,19 @@ int drvMBusConfig( const char* port,int slave,int addr,int len,
  *---------------------------------------------------------------------------*/
   modbusDataType_t dt=(modbusDataType_t)dtype;
   drvd_t dd;
+
+  drvMBus *pmbus = NULL;
+  mbusList_t *p  = (mbusList_t *)malloc(sizeof(mbusList_t));
+
   strncpy( dd.port,port,PLEN); dd.port[PLEN-1]=0;
   strncpy( dd.name,name,PLEN); dd.name[PLEN-1]=0;
   dd.slave=slave; dd.addr=addr; dd.len=len; dd.dt=dt;
   pmbus=new drvMBus( dd,msec);
+
+  p->name = epicsStrDup(dd.name);
+  p->pmbus = pmbus;
+  ellAdd(pmbus_list, &p->node);
+
   return(asynSuccess);
 }
 static const iocshArg confArg0={"port",iocshArgString};
@@ -436,7 +473,7 @@ static const iocshArg confArg1={"slave",iocshArgInt};
 static const iocshArg confArg2={"addr",iocshArgInt};
 static const iocshArg confArg3={"len",iocshArgInt};
 static const iocshArg confArg4={"dtype",iocshArgInt};
-static const iocshArg confArg5={"name",iocshArgString};
+static const iocshArg confArg5={"mbus_name",iocshArgString};
 static const iocshArg confArg6={"msec",iocshArgInt};
 static const iocshArg* const confArgs[]={&confArg0,&confArg1,&confArg2,
                 &confArg3,&confArg4,&confArg5,&confArg6};
