@@ -1,3 +1,5 @@
+R0.1.5-multi_instances    Kukhee Kim - 2019-09-23
+    - support multiple instances in a single ioc
 
 R0.1.5  M. Dunning - 2019-09-20
     - Build for beatnik
@@ -21,9 +23,8 @@ R0.1.2  M. Dunning - 2018-08-23
 
 R0.1.1  M. Dunning - 2018-08-22
     - Add PINI to 900R_CINIT record
-    - Example IOC: add helpful comments to st.cmd; remove unneeded dbpf commands; 
+    - Example IOC: add helpful comments to st.cmd; remove unneeded dbpf commands;
             make numbers two digits long
 
 R0.1.0  M. Dunning - 2018-08-02
     - First stable release
-
