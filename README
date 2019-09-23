@@ -1,14 +1,14 @@
 
-This is a support module for Beckhoff Bus Couplers and Bus Terminals, 
+This is a support module for Beckhoff Bus Couplers and Bus Terminals,
 created by Zen Szalata.
 It has been tested successfully with BK9000 couplers and many different bus terminals.
 
 Configuring a new IOC involves two major steps:
 1. Add config commands to st.cmd file.
-2. Create database file(s).  For this you can use the db files from this support module, 
+2. Create database file(s).  For this you can use the db files from this support module,
 or create your own.
 
-This module contains an example IOC for a setup with ADCs, a DAC, Digital Input/Output, 
+This module contains an example IOC for a setup with ADCs, a DAC, Digital Input/Output,
 and Temperature modules.
 
 Note: when configuring your bus coupler's network settings,
@@ -18,3 +18,43 @@ $(P):900W_REG22
 
 For documentation on Beckhoff hardware, see:
 https://beckhoff.com/
+
+
+-------------------------------------
+Support Mulitple Instances in an ioc
+-------------------------------------
+
+
+# ===========================================
+#              DRIVER SETUP
+# ===========================================
+
+# ************************************
+# **** Driver setup for Beckhoff ****
+drvAsynIPPortConfigure("$(BKH_P)", "$(BKH_IP):502", 0,0,1)
+modbusInterposeConfig("$(BKH_P)", 0, 1000)
+drvMBusConfig("$(BKH_P)", 0, 0, 125, 0, "$(MBUS_NAME)", 10)
+#
+#
+# drvBkhAsynConfig(id, port, func, addr, len, nch, msec)
+# id is a unique module type identifier: 0 - coupler, 1 - analogSigned,
+#     2 - analogUnsigned, 3 - digitalIn, 4 - digitalOut, 5 - motor.
+# port is the asyn port name for the driver (pick a unique short name for each module as below)
+# func is the modbus function (e.g. 5 - digitalOut, 2 - digitalIn, 3 - analog In/Out)
+# addr is the modbus starting address of the memory image (group all modules of the same modbus function together)
+# len is the length of the memory image, in bits (digital modules) or 16 bit words (analog modules)
+# nch is the number of channels
+# msec is poll routine timeout in milliseconds
+#
+# These are standard bus coupler commands
+drvBkhAsynConfig($(MBUS_NAME), 0,   "$(MBUS_NAME)_DEBUG", 3,      0, 125,  2,    0)
+drvBkhAsynConfig($(MBUS_NAME), 0,   "$(MBUS_NAME)_B900R", 3, 0x1000,  33, 33,    0)
+drvBkhAsynConfig($(MBUS_NAME), 0,   "$(MBUS_NAME)_B900W", 3, 0x110a,  26, 26,    0)
+#
+# These are for the bus terminals
+drvBkhAsynConfig($(MBUS_NAME), 3, "1408_01", 2,      0,  16, 16,  200)
+drvBkhAsynConfig($(MBUS_NAME), 4, "2408_01", 5,      0,   8,  8,    0)
+drvBkhAsynConfig($(MBUS_NAME), 4, "2124_01", 5,      8,  24, 24,    0)
+drvBkhAsynConfig($(MBUS_NAME), 1, "3222_01", 3,      0,   4,  2,  200)
+drvBkhAsynConfig($(MBUS_NAME), 2, "3172_01", 3,      4,  12,  6,  200)
+drvBkhAsynConfig($(MBUS_NAME), 2, "3122_01", 3,     16,   4,  2,  200)
