@@ -462,6 +462,7 @@ int drvMBusConfig( const char* port,int slave,int addr,int len,
   dd.slave=slave; dd.addr=addr; dd.len=len; dd.dt=dt;
   pmbus=new drvMBus( dd,msec);
 
+  init_pmbus_list();
   p->name = epicsStrDup(dd.name);
   p->pmbus = pmbus;
   ellAdd(pmbus_list, &p->node);
