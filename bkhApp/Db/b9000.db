@@ -40,32 +40,32 @@ record(bo, "$(P):900R_REF"){
 record(longout, "$(P):DBG_MADDR"){
   field(DESC, "Mem Addr:")
   field(DTYP, "asynInt32")
-  field(OUT,  "@asyn(DEBUG,0,1)LO_MADDR")
+  field(OUT,  "@asyn($(DPORT),0,1)LO_MADDR")
   field(VAL,  "0")
   field(PINI, "YES")
 }
 record(longout, "$(P):DBG_MFUNC"){
   field(DESC, "Modbus Func:")
   field(DTYP, "asynInt32")
-  field(OUT,  "@asyn(DEBUG,0,1)LO_MFUNC")
+  field(OUT,  "@asyn($(DPORT),0,1)LO_MFUNC")
   field(VAL,  "3")
   field(PINI, "YES")
 }
 record(longout, "$(P):DBG_MVAL"){
   field(DESC, "Mem Value:")
   field(DTYP, "asynInt32")
-  field(OUT,  "@asyn(DEBUG,0,1)LO_MVAL")
+  field(OUT,  "@asyn($(DPORT),0,1)LO_MVAL")
 }
 record(longout, "$(P):DBG_MVAL"){
   field(DESC, "RBV:")
   field(DTYP, "asynInt32")
   field(SCAN, "I/O Intr")
-  field(OUT,  "@asyn(DEBUG,0,1)LI_MVAL")
+  field(OUT,  "@asyn($(DPORT),0,1)LI_MVAL")
 }
 record(bo, "$(P):DBG_GETMEM"){
   field(DESC, "Get:")
   field(DTYP, "asynInt32")
-  field(OUT,  "@asyn(DEBUG,0,1)BO_MGET")
+  field(OUT,  "@asyn($(DPORT),0,1)BO_MGET")
   field(ZNAM, "off")
   field(ONAM, "on")
   field(VAL,  "0")
@@ -73,7 +73,7 @@ record(bo, "$(P):DBG_GETMEM"){
 record(bo, "$(P):DBG_PUTMEM"){
   field(DESC, "Put:")
   field(DTYP, "asynInt32")
-  field(OUT,  "@asyn(DEBUG,0,1)BO_MPUT")
+  field(OUT,  "@asyn($(DPORT),0,1)BO_MPUT")
   field(HIGH, "0.1")
   field(ZNAM, "off")
   field(ONAM, "on")
@@ -82,7 +82,7 @@ record(bo, "$(P):DBG_PUTMEM"){
 record(bo, "$(P):DBG_EN_HIST"){
   field(DESC, "Enable:")
   field(DTYP, "asynInt32")
-  field(OUT,  "@asyn(DEBUG,0,1)BO_THIST")
+  field(OUT,  "@asyn($(DPORT),0,1)BO_THIST")
   field(ZNAM, "off")
   field(ONAM, "on")
   field(VAL,  "0")
@@ -90,7 +90,7 @@ record(bo, "$(P):DBG_EN_HIST"){
 record(bo, "$(P):DBG_GET_HIST"){
   field(DESC, "Get:")
   field(DTYP, "asynInt32")
-  field(OUT,  "@asyn(DEBUG,0,1)BO_GETHIST")
+  field(OUT,  "@asyn($(DPORT),0,1)BO_GETHIST")
   field(HIGH, "0.1")
   field(ZNAM, "off")
   field(ONAM, "on")
@@ -99,7 +99,7 @@ record(bo, "$(P):DBG_GET_HIST"){
 record(bo, "$(P):DBG_CLR_HIST"){
   field(DESC, "Clear:")
   field(DTYP, "asynInt32")
-  field(OUT,  "@asyn(DEBUG,0,1)BO_CLRHIST")
+  field(OUT,  "@asyn($(DPORT),0,1)BO_CLRHIST")
   field(HIGH, "0.1")
   field(ZNAM, "off")
   field(ONAM, "on")
@@ -109,7 +109,7 @@ record(waveform, "$(P):DBG_TIME_HIST"){
   field(DESC, "Time Histo")
   field(DTYP, "asynInt32ArrayIn")
   field(SCAN, "I/O Intr")
-  field(INP,  "@asyn(DEBUG,0,1)WF_THIST")
+  field(INP,  "@asyn($(DPORT),0,1)WF_THIST")
   field(FTVL, "LONG")
   field(NELM, "200")
 }
@@ -124,11 +124,11 @@ record(longout, "$(P):DBG_ALW_INLQ_Write"){
   field(SDIS, "$(P):DBG:ALW_INLQ_Sync.PACT")
   field(DISV, "1")
   field(DTYP, "asynInt32")
-  field(OUT,  "@asyn(DEBUG,0,1)LO_ALLOWINLQ")
+  field(OUT,  "@asyn($(DPORT),0,1)LO_ALLOWINLQ")
 }
 record(longin, "$(P):DBG:ALW_INLQ_RBV"){
   field(DTYP, "asynInt32")
-  field(INP,  "@asyn(DEBUG,0,1)LI_ALLOWINLQ")
+  field(INP,  "@asyn($(DPORT),0,1)LI_ALLOWINLQ")
   field(SCAN, "I/O Intr")
   field(FLNK, "$(P):DBG:ALW_INLQ_Sync")
   field(PINI, "YES")
@@ -147,4 +147,3 @@ record(bi, "$(P):9000_ERROR"){
   field(ZSV,  "NO_ALARM")
   field(OSV,  "MAJOR")
 }
-
