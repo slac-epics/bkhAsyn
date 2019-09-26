@@ -1,3 +1,13 @@
+
+R0.1.5-1.0   Kukhee Kim - 2019-09-25
+    - support multiple instances in a a single ioc
+    - Please, check up README file to use new driver configuration command 
+      (introducing mbus_name identifier to support multiple instances)
+    - update example ioc to use new driver configuration command
+    - Please, check database template substitution file in the example ioc
+      (example for how to use port name for multiple instances)
+
+
 R0.1.5-multi_instances    Kukhee Kim - 2019-09-23
     - support multiple instances in a single ioc
 
