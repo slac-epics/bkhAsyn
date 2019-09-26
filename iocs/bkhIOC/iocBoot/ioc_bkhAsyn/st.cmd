@@ -15,7 +15,7 @@ epicsEnvSet("LOC", "B34")
 epicsEnvSet("MBUS", "MBUS1")
 
 # Initialize IP port
-drvAsynIPPortConfigure("$(P)", "172.16.17.2:502", 0,0,1)
+drvAsynIPPortConfigure("$(P)", "134.79.218.123:502", 0,0,1)
 
 #asynSetTraceIOMask("$(P)", 0, 4)
 #asynSetTraceMask("$(P)", 0, 0x9)
@@ -37,7 +37,7 @@ modbusInterposeConfig("$(P)", 0, 1000)
 # mbus_name is a unique identifier for bus couplers
 # msec is the poll routine timeout in milliseconds (10 is fine)
 #------------------------------------------------------------------------------
-drvMBusConfig("$(MBUS)", "$(P)", 0, 0, 125, 0, "$(P)", 10)
+drvMBusConfig("$(P)", 0, 0, 125, 0, "$(MBUS)", 10)
 
 # drvBkhAsynConfig(mbus_name, id, port, func, addr, len, nch, msec)
 # mbus_name is a unique identifier for bus couplers
