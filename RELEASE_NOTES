@@ -1,3 +1,9 @@
+R0.2.0  Kukhee Kim - 2019-09-26
+   - merge R0.1.5-multi_instances into master branch
+   - support multiple instances in an ioc
+   - build against asyn R4.32-1.0.0   
+  
+
 R0.1.5-1.1   Kukhee Kim - 2019-09-26
     - support asyn R4.32-1.0.0
 
