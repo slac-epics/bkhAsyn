@@ -465,9 +465,8 @@ asynStatus drvBkhAsyn::_getChans(char* pd, int nch, int len, int pix){
  * channel data.  len is the number of channels times number of words per
  * channel.
  *---------------------------------------------------------------------------*/
-  int i, n = len/nch; 
+  int i, iv, n = len/nch; 
   epicsUInt16* pw = (epicsUInt16*)pd; 
-  int iv, i1, i2;
 
   if(len!=n*nch){
     errlogPrintf("%s::_getChans: nch=%d, len=%d are inconsistent\n",
@@ -476,10 +475,10 @@ asynStatus drvBkhAsyn::_getChans(char* pd, int nch, int len, int pix){
   }
 
   for(i=0; i<nch; i++){
-    i1 = iv = (*pw);
+    iv = (*pw);
     setIntegerParam(i, _liSByte, iv);
     pw++;
-    i2 = iv = (*pw);
+    iv = (*pw);
     if(pix==CHNUPDT){
       if((_id==analogSE)&&((iv)&0x8000)) iv = (iv)|0xffff0000;
     }
@@ -608,7 +607,6 @@ asynStatus drvBkhAsyn::writeInt32(asynUser* pau, epicsInt32 v){
  *        paUser->reason define the command to be sent.
  *---------------------------------------------------------------------------*/
   asynStatus stat = asynSuccess; 
-  word w; 
   int maddr, n; 
   epicsInt32* pwf;
   int addr, chan, wfunc, aa, ff, vv, rnum;
@@ -664,7 +662,6 @@ asynStatus drvBkhAsyn::writeInt32(asynUser* pau, epicsInt32 v){
     case ixBoMPut:    getIntegerParam(0, _loMAddr, &aa);
             getIntegerParam(0, _loMFunc, &ff);
             getIntegerParam(0, _loMVal, &vv);
-            w = vv;
             stat = doIO(prioH_e, normal_e, aa, 0, ff, 0, vv); break;
     case ixBoTHist:    _pmbus->doHist(v); break;
     case ixBoClrHist:    if(!v) break;
