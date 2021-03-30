@@ -6,17 +6,20 @@
  * pointer is made available to the other class objects.
  * Started on 1/9/2015, zms
  *---------------------------------------------------------------------------*/
+
 #ifndef _drvBkhErr_h
 #define _drvBkhErr_h
+
 #include <epicsMutex.h>
 #include <ellLib.h>
 #include "asynPortDriver.h"
 
 #ifndef MIN
-#define MIN(a,b)        (((a)<(b))?(a):(b))
+#define MIN(a, b)        (((a)<(b))?(a):(b))
 #endif
+
 #ifndef MAX
-#define MAX(a,b)        (((a)>(b))?(a):(b))
+#define MAX(a, b)        (((a)>(b))?(a):(b))
 #endif
 
 typedef unsigned char   byte;
@@ -24,7 +27,7 @@ typedef epicsUInt16     word;
 typedef unsigned int    uint;
 typedef struct{
   ELLNODE       node;
-  int           eiId,flag;
+  int           eiId, flag;
   char          port[16];
 } errItem_t;
 
@@ -32,26 +35,26 @@ typedef struct{
 #define WFLEN		100
 
 #define wfMessageStr    "WF_MESSAGE"
-#define siNameStr	"SI_NAME"
-#define biErrorStr	"BI_ERROR"
-#define boTestStr	"BO_TEST"
+#define siNameStr	    "SI_NAME"
+#define biErrorStr	    "BI_ERROR"
+#define boTestStr	    "BO_TEST"
 
 class drvBkhErr: public asynPortDriver{
 public:
-  drvBkhErr( const char* port);
+  drvBkhErr(const char* port);
 
-  virtual asynStatus readInt32( asynUser* pau,epicsInt32* v);
-  virtual asynStatus writeInt32( asynUser* pau,epicsInt32 v);
-  virtual void report( FILE* fp,int level);
+  virtual asynStatus readInt32(asynUser* pau, epicsInt32* v);
+  virtual asynStatus writeInt32(asynUser* pau, epicsInt32 v);
+  virtual void report(FILE* fp, int level);
   void		exitHndl();
-  void		initDone( int flg);
-  int		registerClient( const char* port);
-  void		setErrorFlag( int id,int flag);
+  void		initDone(int flg);
+  int		registerClient(const char* port);
+  void		setErrorFlag(int id, int flag);
   void		errLock();
   void		errUnlock();
 
 protected:
-  void		_message( const char*);
+  void		_message(const char*);
   void		_refresh();
 
   int	_wfMessage, _siName, _biError, _boTest;
@@ -60,7 +63,7 @@ protected:
 #define LAST_ITEM  _boTest
 #define PARMS (&LAST_ITEM - &FIRST_ITEM + 1)
 
-enum{	ixWfMessage, ixSiName, ixBiError, ixBoTest};
+enum {ixWfMessage, ixSiName, ixBiError, ixBoTest};
 
 private:
   epicsMutexId	_mutexId;
@@ -76,3 +79,4 @@ private:
 epicsShareExtern drvBkhErr* pbkherr;
 
 #endif // _drvBkhErr_h
+

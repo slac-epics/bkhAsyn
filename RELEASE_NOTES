@@ -1,4 +1,8 @@
 
+R0.2.2  M. Dunning - 2021-xx-xx
+    - Add OSV for module error record
+    - Minor code cleanup
+
 R0.2.1  M. Dunning - 2020-10-06
     - Use asyn R4.39-0.0.1
 
