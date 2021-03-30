@@ -83,7 +83,6 @@ void drvBkhErr::_message(const char* p){
   int n = MIN(WFLEN, MAX(0, strlen(p)+1));
   char str[WFLEN];
 
-printf("%s::_message: n=%d, %s\n", dname, n, p);
   if(!n) return;
 
   strncpy(str, p, n); str[WFLEN-1] = 0;
@@ -144,7 +143,6 @@ void drvBkhErr::setErrorFlag(int id, int flag){
   setIntegerParam(_biError, 1-eflag);
   setIntegerParam(_biError, eflag);
 
-printf("%s::setErrorFlag:id=%d, flag=%d, eflag=%d, %s\n", dname, id, flag, eflag, _msg);
   _message(_msg);
   callParamCallbacks();
   errUnlock();
@@ -230,7 +228,7 @@ drvBkhErr::drvBkhErr(const char* port): asynPortDriver(port, NSLOTS, PARMS,
   setIntegerParam(_biError, 0);
   callParamCallbacks();
   epicsAtExit(exitHndlC, this);
-  printf("%s::%s: _locPort=%s configured\n", dname, dname, port);
+  printf("%s::%s: Port %s configured\n", dname, dname, port);
 }
 
 // Configuration routine.  Called directly, or from the iocsh function below
