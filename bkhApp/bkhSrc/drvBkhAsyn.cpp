@@ -58,7 +58,10 @@ void drvBkhAsyn::updateThread(){
   static const char* iam = "updateThread";
   int updt = CHNUPDT;
 
-  printf("%s::%s:%s:===== motor=%d ===\n", dname, _port, iam, _motor);
+  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+            "%s::%s: updateThread started for port %s (motor=%d)\n", 
+            dname, iam, _port, _motor);
+
   if(_motor) updt = MOTUPDT;
   epicsThreadSleep(1.0);
 
@@ -74,7 +77,8 @@ void drvBkhAsyn::updateThread(){
 void drvBkhAsyn::exitHndl(){
 /*-----------------------------------------------------------------------------
  *---------------------------------------------------------------------------*/
-  errlogPrintf("%s::%s:exitHndl: Clear ID\n", dname, _port);
+  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+    "%s::%s: Exiting...\n", dname, _port);
 }
 
 void drvBkhAsyn::updateUser(double tmo){}
@@ -537,9 +541,9 @@ void drvBkhAsyn::report(FILE* fp, int level){
  *---------------------------------------------------------------------------*/
   _pmbus->report();
   printf("Report for %s::%s -- id=%d -------------\n", dname, _port, _id);
-  printf("  start modbus address = %d (0x%x), ", _saddr, _saddr);
-  printf("  modbus function = %d, length = %d\n", _mfunc, _mlen);
-  printf("  number of channels = %d\n", _nchan);
+  printf("  Start modbus address = %d (0x%x), ", _saddr, _saddr);
+  printf("  Modbus function = %d, Length = %d\n", _mfunc, _mlen);
+  printf("  Number of channels = %d\n", _nchan);
   asynPortDriver::report(fp, level);
   errlogFlush();
 }
@@ -822,7 +826,7 @@ drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func,
   }
 
   epicsAtExit(exitHndlC, this);
-  printf("%s::%s: _locPort=%s configured\n", dname, dname, port);
+  printf("%s::%s: Port %s configured\n", dname, dname, port);
 }
 
 // Configuration routine.  Called directly, or from the iocsh function below
