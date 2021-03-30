@@ -115,6 +115,7 @@ protected:
   mBus_t*	_pmb;		// pointer to the modbus data structure.
 
 private:
+  asynUser *pasynUser;
   epicsMutexId  _mutexId;       // mutex for interlocking access to IO
   int		_halt;		// if true disallow IO
   iocb_t	_cb;		// IO done callback
