@@ -5,6 +5,7 @@ record(bi, "$(P):$(MOD)_ERROR"){
   field(SCAN, "I/O Intr")
   field(ZNAM, "No_Error")
   field(ONAM, "Error")
+  field(OSV,  "MAJOR")
   field(FLNK, "$(P):$(MOD)_ERROR_PUSH")
 }
 record(waveform, "$(P):$(MOD)_MSG"){
