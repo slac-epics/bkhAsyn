@@ -18,8 +18,10 @@
  * are performed with a single request.
  * Started on 6/26/2013, zms
  *---------------------------------------------------------------------------*/
+
 #ifndef _drvMBus_h
 #define _drvMBus_h
+
 #include <epicsMessageQueue.h>
 #include <epicsMutex.h>
 #include <shareLib.h>
@@ -31,9 +33,11 @@
 #ifndef SIZE
 #define SIZE(x)         (sizeof(x)/sizeof(x[0]))
 #endif
+
 #ifndef MIN
 #define MIN(a,b)        (((a)<(b))?(a):(b))
 #endif
+
 #ifndef MAX
 #define MAX(a,b)        (((a)>(b))?(a):(b))
 #endif
@@ -54,6 +58,7 @@ typedef struct{
   int	len;
   int	stat;
 } iodone_t;
+
 typedef void (*iocb_t)( iodone_t);
 
 typedef struct{
@@ -71,13 +76,12 @@ typedef struct{
   void*	pdrv;
 } msgq_t;
 
-typedef enum{prioH_e,prioL_e} prio_t;
-typedef enum{normal_e,spix0_e,spix1_e,spix2_e,spix3_e,spix4_e,spix5_e} spix_t;
+typedef enum {prioH_e,prioL_e} prio_t;
+typedef enum {normal_e,spix0_e,spix1_e,spix2_e,spix3_e,spix4_e,spix5_e} spix_t;
 
 class drvMBus{
 public:
   drvMBus( drvd_t dd,int msec);
-
   void		IOThread();
   asynStatus	mbusDoIO( prio_t prio,int six,int saddr,int addr,int chan,
 			int n,int a,int rn,int pix,int func,int len,
@@ -134,3 +138,4 @@ typedef struct {
 drvMBus* findMBus(char *name);
 
 #endif // _drvMBus_h
+
