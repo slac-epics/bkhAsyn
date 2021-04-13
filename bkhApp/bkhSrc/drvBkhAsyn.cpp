@@ -31,6 +31,9 @@
 
 #define STRLEN 128
 
+static const int RRegs[] = {10, 11, 12, 16, 17, 18, 19, 32};
+static const int RWRegs[] = {0, 1, 22, 23, 24, 25};
+
 static const char *dname = "drvBkhAsyn";
 
 static void IODoneCB(iodone_t data){
@@ -536,12 +539,14 @@ void drvBkhAsyn::_refresh(const int arr[], int size){
 /*-----------------------------------------------------------------------------
  * Request reading an array of registers.
  *---------------------------------------------------------------------------*/
-  static int rlist[]={10,11,12,16,17,18,19,32};
-  int i,n=SIZE(rlist); asynStatus stat;
-  for( i=0; i<n; i++){
-    stat=readOne( rlist[i],_liCReg);
-    if(stat!=asynSuccess){
-      errlogPrintf( "%s::_refresh: i=%d, failed in _readOne\n",dname,i);
+  asynStatus stat;
+
+  printf("_refresh: dname=%s, _port=%s, _saddr=%d\n", dname, _port, _saddr);
+
+  for(int i=0; i<size; i++){
+    stat = readOne(arr[i], _liCReg);
+    if(stat != asynSuccess){
+      errlogPrintf("%s::_refresh: i=%d, failed in _readOne\n", dname, i);
       break;
     }
   }
@@ -702,7 +707,10 @@ asynStatus drvBkhAsyn::writeInt32(asynUser* pau, epicsInt32 v){
             break;
     case ixBoBitVal:    stat = writeChan(addr, v); break;
     case ixBoRefresh:
-            _refresh()
+            _refresh(RRegs, SIZE(RRegs)); 
+            break;
+    case ixRefreshRW:
+            _refresh(RWRegs, SIZE(RWRegs)); 
             break;
     case ixBoWDRst:    stat = watchdogReset(); break;
     case ixLoMAddr:    setIntegerParam(0, _loMAddr, v);
@@ -864,6 +872,7 @@ drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func,
   createParam(loAllowInLQStr,     asynParamInt32,         &_loAllowInLQ);
   createParam(liPollTmoStr,     asynParamInt32,         &_liPollTmo);
   createParam(loPollTmoStr,     asynParamInt32,         &_loPollTmo);
+  createParam(refreshRWStr,     asynParamInt32,         &_refreshRW);
 
   _firstix = _wfMessage;
   callParamCallbacks();

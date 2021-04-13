@@ -81,6 +81,7 @@ typedef enum {couplerE, analogSE, analogUE, digiInE, digiOutE, motorE} type_e;
 #define loAllowInLQStr    "LO_ALLOWINLQ"
 #define liPollTmoStr    "LI_POLLTMO"
 #define loPollTmoStr    "LO_POLLTMO"
+#define refreshRWStr    "REFRESH_RW"
 
 class drvBkhAsyn: public asynPortDriver{
 public:
@@ -121,7 +122,7 @@ protected:
   void         _gotMID(word* pd, int len);
   void         _gotData(int addr, int pix, word* pd, int len);
   void         _gotChannels(int func, word* pd, int len, int pix);
-  void         _refresh();
+  void         _refresh(const int arr[], int size);
   void         _getRegisters();
 
   int _wfMessage,  _siName,     _liRReg,    _liSByte,   _liDataIn,
@@ -132,12 +133,12 @@ protected:
       _loMAddr,    _loMVal,     _liMVal,    _loMFunc,   _boMGet,
       _boMPut,     _boWDRst,    _wfTHist,   _boTHist,   _boGetHist,
       _boClrHist,  _biError,    _boTest,    _boCInit,   _liAllowInLQ,
-      _loAllowInLQ,_liPollTmo,  _loPollTmo;
+      _loAllowInLQ,_liPollTmo,  _loPollTmo, _refreshRW;
 
 //#define FIRST_ITEM _wfMessage
 //#define LAST_ITEM  _loPollTmo
 //#define BKH_PARAMS (&LAST_ITEM - &FIRST_ITEM + 1)
-#define BKH_PARAMS 43
+#define BKH_PARAMS 44
 
 enum {ixWfMessage,  ixSiName,     ixLiRReg,   ixLiSByte,  ixLiDataIn,
       ixLiSWord,    ixLoCByte,    ixLiCByte,  ixLoDataOut,ixLiDataOut,
@@ -147,7 +148,7 @@ enum {ixWfMessage,  ixSiName,     ixLiRReg,   ixLiSByte,  ixLiDataIn,
       ixLoMAddr,    ixLoMVal,     ixLiMVal,   ixLoMFunc,  ixBoMGet,
       ixBoMPut,     ixBoWDRst,    ixWfTHist,  ixBoTHist,  ixBoGetHist,
       ixBoClrHist,  ixBiError,    ixBoTest,   ixBoCInit,  ixLiAllowInLQ,
-      ixLoAllowInLQ,ixLiPollTmo,  ixLoPollTmo};
+      ixLoAllowInLQ,ixLiPollTmo,  ixLoPollTmo,ixRefreshRW};
 
 private:
   int      _id;        // unique type identifier for this driver,
