@@ -72,8 +72,10 @@ void drvBkhAsyn::updateThread(){
   while(1) {
     epicsThreadSleep(_tout);
     if (_initdone) {
+      lock();
       readChanls(updt);
       updateUser(_tout);
+      unlock();
     }
   }
 }
