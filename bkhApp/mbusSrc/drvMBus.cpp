@@ -83,6 +83,34 @@ drvMBus* findMBus(char *name) {
     }
 }
 
+drvMBus::drvMBus(drvd_t dd, int msec){
+/*-----------------------------------------------------------------------------
+ * Constructor for the drvMBus class. Configures modbus IO routine using data
+ * in structure dd.  msec is the IOThread delay in miliseconds.
+ *---------------------------------------------------------------------------*/
+  mBus_t* pmb = 0;
+
+  pmb = modbusAsynConfig(dd.port, dd.slave, 3, dd.addr, dd.len, dd.dt, dd.name);
+
+  _pmb = pmb; _halt = 0; _cb = 0; _tout = msec/1000.0;
+  _maxInLQ = _maxInHQ = _npurgLQ = _npurgHQ = 0; _allowInLQ = NMSGQL;
+  
+  _mutexId = epicsMutexMustCreate();
+
+  _pmqH= new epicsMessageQueue(NMSGQH, sizeof(msgq_t));
+  _pmqL= new epicsMessageQueue(NMSGQL, sizeof(msgq_t));
+
+  if (msec) {
+    epicsThreadCreate(dname, epicsThreadPriorityHigh,
+                epicsThreadGetStackSize(epicsThreadStackMedium),
+                (EPICSTHREADFUNC)IOThreadC, this);
+  }
+  
+  epicsAtExit(exitHndlC, this);
+  
+  printf("%s::%s: Port %s configured\n", dname, dname, dd.port);
+}
+
 void drvMBus::IOThread(){
 /*-----------------------------------------------------------------------------
  * Process tasks, one at a time.
@@ -238,8 +266,8 @@ asynStatus drvMBus::mbusDoIO(prio_t prio, int six, int saddr, int addr, int chan
       _npurgLQ++;
     }
     stat = pmq->trySend(&msgq, sizeof(msgq));
-    printf("%s::mbusDoIO: prio=%d, inqL=%d, allow=%d, inqH=%d, purg=%d, %d\n",
-        dname, prio, j, _allowInLQ, k, _npurgLQ, _npurgHQ);
+    //printf("%s::mbusDoIO: prio=%d, inqL=%d, allow=%d, inqH=%d, purg=%d, %d\n",
+    //    dname, prio, j, _allowInLQ, k, _npurgLQ, _npurgHQ);
   }
 
   return(asynSuccess);
@@ -289,7 +317,11 @@ asynStatus drvMBus::mbusMemIO(msgq_t msgq){
     default:    return(asynError);
   }
 
-  if(st) return(asynError); else return(asynSuccess);
+  if(st) {
+    return(asynError);
+  } else {
+    return(asynSuccess);
+  }
 }
 
 void drvMBus::_doSpecial0(msgq_t msgq){
@@ -315,13 +347,20 @@ void drvMBus::_doSpecial2(msgq_t msgq){
   int st;
 
   st = _readSpecialOne(msgq, msgq.rn, &w);
-  if(!st) iodone.data[0] = w; else iodone.data[0] = 0;
+  if (!st) {
+    iodone.data[0] = w;
+  } else {
+    iodone.data[0] = 0;
+  }
+
   iodone.addr = msgq.addr; iodone.a = msgq.a; iodone.pix = msgq.pix;
   iodone.func = msgq.func; iodone.len = msgq.len; iodone.pdrv = msgq.pdrv;
   iodone.stat = st;
+
   if (!_cb) {
     errlogPrintf("%s::_doSpecial2: bad callback address\n", dname);
   }
+
   (*_cb)(iodone);
 }
 
@@ -333,12 +372,15 @@ void drvMBus::_doSpecial3(msgq_t msgq){
   int st;
 
   st = _writeSpecialOne(msgq, msgq.rn, msgq.d);
+
   iodone.addr = msgq.addr; iodone.a = msgq.a; iodone.pix = msgq.pix;
   iodone.func = msgq.func; iodone.len = msgq.len; iodone.pdrv = msgq.pdrv;
   iodone.stat = st;
+
   if (!_cb) {
     errlogPrintf("%s::_doSpecial3: bad callback address\n", dname);
   }
+
   (*_cb)(iodone);
 }
 
@@ -439,14 +481,18 @@ int drvMBus::_writeSpecialOne(msgq_t msgq, int rn, epicsUInt16 v){
   int rfunc = MODBUS_READ_HOLDING_REGISTERS;
 
   maddr = msgq.maddr + woff;
+
   st = doModbusIO(_pmb, _pmb->slave, rfunc, maddr, &cbe, 1);
   if(st) return(st);
+
   w = 0xc0 + rn;        // register number to control byte
   st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr, &w, 1);
   if(st) return(st);
+
   w = v;
   st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr+1, &w, 1);
   if(st) return(st);
+
   st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr, &cbe, 1);
   return(st);
 }
@@ -460,18 +506,22 @@ void drvMBus::_readSpecial(msgq_t msgq, int r1, int r2){
   int st; epicsUInt16 w;
 
   iodone.data[0] = iodone.data[1] = 0;
+
   st = _readSpecialOne(msgq, r1, &w);
   if(!st){
     iodone.data[0] = w;
     st = _readSpecialOne(msgq, r2, &w);
     if(!st) iodone.data[1] = w;
   }
+
   iodone.addr = msgq.addr; iodone.a = msgq.a; iodone.pix = msgq.pix;
   iodone.func = msgq.func; iodone.len = msgq.len; iodone.pdrv = msgq.pdrv;
   iodone.stat = st;
+
   if(!_cb){
     errlogPrintf("%s::_readSpecial: bad callback address\n", dname);
   }
+
   (*_cb)(iodone);
 }
 
@@ -491,10 +541,13 @@ int drvMBus::_readSpecialOne(msgq_t msgq, int r, epicsUInt16* v){
 
   st = doModbusIO(_pmb, _pmb->slave, rfunc, maddr, &cbe, 1);
   if(st) return(st);
+
   st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr, &cb, 1);
   if(st) return(st);
+
   st = doModbusIO(_pmb, _pmb->slave, rfunc, msgq.maddr + 1, v, 1);
   if(st) return(st);
+
   st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr, &cbe, 1);
   return(st);
 }
@@ -523,29 +576,6 @@ void drvMBus::clearHist(){
  * Zeroes the time histogram array.
  *---------------------------------------------------------------------------*/
   memset(_pmb->timeHistogram, 0, sizeof(_pmb->timeHistogram));
-}
-
-drvMBus::drvMBus(drvd_t dd, int msec){
-/*-----------------------------------------------------------------------------
- * Constructor for the drvMBus class. Configures modbus IO routine using data
- * in structure dd.  msec is the IOThread delay in miliseconds.
- *---------------------------------------------------------------------------*/
-  mBus_t* pmb = 0;
-  pmb = modbusAsynConfig(dd.port, dd.slave, 3, dd.addr, dd.len, dd.dt, dd.name);
-
-  _pmb = pmb; _halt = 0; _cb = 0; _tout = msec/1000.0;
-  _maxInLQ = _maxInHQ = _npurgLQ = _npurgHQ = 0; _allowInLQ = NMSGQL;
-  _mutexId = epicsMutexMustCreate();
-  _pmqH= new epicsMessageQueue(NMSGQH, sizeof(msgq_t));
-  _pmqL= new epicsMessageQueue(NMSGQL, sizeof(msgq_t));
-
-  if (msec) {
-    epicsThreadCreate(dname, epicsThreadPriorityHigh,
-                epicsThreadGetStackSize(epicsThreadStackMedium),
-                (EPICSTHREADFUNC)IOThreadC, this);
-  }
-  epicsAtExit(exitHndlC, this);
-  printf("%s::%s: Port %s configured\n", dname, dname, dd.port);
 }
 
 

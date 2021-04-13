@@ -56,6 +56,119 @@ static void updateThreadC(void* p){
 }
 }
 
+drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func, int len,
+    int nchan, int msec, int nparm, int mflag):
+    asynPortDriver(port, nchan,
+        asynInt32Mask|asynInt32ArrayMask|asynOctetMask|asynDrvUserMask,
+        asynInt32Mask|asynInt32ArrayMask|asynOctetMask,
+        ASYN_CANBLOCK|ASYN_MULTIDEVICE, 1, 0, 0){
+/*-----------------------------------------------------------------------------
+ * Constructor for the drvBkhAsyn class. Calls constructor for the
+ * asynPortDriver base class. Where
+ *  port is the asyn port number.
+ *  addr is the modbus memory segment start address,
+ *  func is modbus default function for this object,
+ *  len is modbus memory segment length,
+ *  nchan is the actual number of channels that will be added.
+ *  msec  is IO thread timeout in mili seconds.
+ * Parameters passed to the asynPortDriver constructor:
+ *  port name
+ *  max address
+ *  parameter table size
+ *  interface mask
+ *  interrupt mask,
+ *  asyn flags,
+ *  auto connect
+ *  priority
+ *  stack size
+ *---------------------------------------------------------------------------*/
+  _port = (char*)callocMustSucceed(strlen(port)+1, sizeof(char), dname);
+  strcpy((char*)_port, port);
+  _name = epicsStrDup(name);
+  _nchan = MIN(nchan, NCHAN); 
+  _tout = msec/1000.0;
+  _saddr = addr; _mfunc = func; _mlen = len; _motor = mflag; _id = id;
+  _errInResult = _errInWrite = 0;
+
+  createParam(wfMessageStr,    asynParamOctet,         &_wfMessage);
+  createParam(siNameStr,     asynParamOctet,         &_siName);
+  createParam(liRRegStr,     asynParamInt32,         &_liRReg);
+  createParam(liSByteStr,     asynParamInt32,         &_liSByte);
+  createParam(liDataInStr,     asynParamInt32,         &_liDataIn);
+
+  createParam(liSWordStr,     asynParamInt32,         &_liSWord);
+  createParam(loCByteStr,     asynParamInt32,         &_loCByte);
+  createParam(liCByteStr,     asynParamInt32,         &_liCByte);
+  createParam(loDataOutStr,     asynParamInt32,         &_loDataOut);
+  createParam(liDataOutStr,     asynParamInt32,         &_liDataOut);
+
+  createParam(loCWordStr,     asynParamInt32,         &_loCWord);
+  createParam(liCWordStr,     asynParamInt32,         &_liCWord);
+  createParam(loRChanStr,     asynParamInt32,         &_loRChan);
+  createParam(loRegNumStr,     asynParamInt32,         &_loRegNum);
+  createParam(liSBValStr,     asynParamInt32,         &_liSBVal);
+
+  createParam(liRegValStr,     asynParamInt32,         &_liRegVal);
+  createParam(loWRegValStr,     asynParamInt32,         &_loWRegVal);
+  createParam(liWRegValStr,     asynParamInt32,         &_liWRegVal);
+  createParam(siMIDStr,     asynParamOctet,         &_siMID);
+  createParam(loCRegStr,     asynParamInt32,         &_loCReg);
+
+  createParam(liCRegStr,     asynParamInt32,         &_liCReg);
+  createParam(boBitValStr,     asynParamInt32,         &_boBitVal);
+  createParam(biBitValStr,     asynParamInt32,         &_biBitVal);
+  createParam(boInitStr,     asynParamInt32,         &_boInit);
+  createParam(boRefreshStr,     asynParamInt32,         &_boRefresh);
+
+  createParam(loMAddrStr,     asynParamInt32,         &_loMAddr);
+  createParam(loMValStr,     asynParamInt32,         &_loMVal);
+  createParam(liMValStr,     asynParamInt32,         &_liMVal);
+  createParam(loMFuncStr,     asynParamInt32,         &_loMFunc);
+  createParam(boMGetStr,     asynParamInt32,         &_boMGet);
+
+  createParam(boMPutStr,     asynParamInt32,         &_boMPut);
+  createParam(boWDRstStr,     asynParamInt32,         &_boWDRst);
+  createParam(wfTHistStr,     asynParamInt32Array,     &_wfTHist);
+  createParam(boTHistStr,     asynParamInt32,         &_boTHist);
+  createParam(boGetHistStr,     asynParamInt32,         &_boGetHist);
+
+  createParam(boClrHistStr,     asynParamInt32,         &_boClrHist);
+  createParam(biErrorStr,     asynParamInt32,         &_biError);
+  createParam(boTestStr,     asynParamInt32,         &_boTest);
+  createParam(boCInitStr,     asynParamInt32,         &_boCInit);
+
+  createParam(liAllowInLQStr,     asynParamInt32,         &_liAllowInLQ);
+  createParam(loAllowInLQStr,     asynParamInt32,         &_loAllowInLQ);
+  createParam(liPollTmoStr,     asynParamInt32,         &_liPollTmo);
+  createParam(loPollTmoStr,     asynParamInt32,         &_loPollTmo);
+  createParam(refreshRWStr,     asynParamInt32,         &_refreshRW);
+
+  _firstix = _wfMessage;
+  callParamCallbacks();
+
+  _pmbus = findMBus(_name);
+
+  if(pbkherr) _myErrId = pbkherr->registerClient(port);
+
+  if (!_pmbus) {
+    _setError("ERROR: Modbus pointer is null", 1);
+  }
+  else {
+    _pmbus->registerCB(IODoneCB);
+    _setError("No error", 0);
+  }
+
+  if ((func <= MODBUS_READ_INPUT_REGISTERS) && msec) {
+    epicsThreadCreate(dname, epicsThreadPriorityLow,
+        epicsThreadGetStackSize(epicsThreadStackMedium),
+        (EPICSTHREADFUNC)updateThreadC, this);
+  }
+
+  epicsAtExit(exitHndlC, this);
+  printf("%s::%s: Port %s configured\n", dname, dname, port);
+
+}
+
 void drvBkhAsyn::updateThread(){
 /*-----------------------------------------------------------------------------
  * request periodic updates.
@@ -451,7 +564,6 @@ void drvBkhAsyn::_gotData(int addr, int pix, word* pd, int len){
   int v;
 
   if (!pd) {
-    printf("uh-oh\n");
     return;
   }
 
@@ -471,7 +583,7 @@ void drvBkhAsyn::_message(const char* p){
  * Puts a null terminated string in p in the _wfMessage waveform record.
  *---------------------------------------------------------------------------*/
   int n = MIN(STRLEN, MAX(0, strlen(p) + 1));
-  if(!n) return;
+  if (!n) return;
   setStringParam(0, _wfMessage, p);
 }
 
@@ -622,7 +734,7 @@ asynStatus drvBkhAsyn::readInt32(asynUser* pau, epicsInt32* v){
         break;
     case ixBiBitVal:
         stat = readOne(addr, _biBitVal);
-        //*v = 0;
+        *v = 0;
         break;
     case ixLiCByte:
         stat = doReadH(_saddr + WOFFST, addr, 2, 0, _loCByte);
@@ -672,7 +784,9 @@ asynStatus drvBkhAsyn::writeInt32(asynUser* pau, epicsInt32 v){
   int ix = pau->reason-_firstix;
 
   stat = getAddress(pau, &addr); 
-  if(stat != asynSuccess) return stat;
+  if (stat != asynSuccess) return stat;
+
+  printf("writeInt32: _port=%s, addr=%d, v=%d\n", _port, addr, v);
 
   switch(ix){
     case ixBoInit:    
@@ -685,82 +799,110 @@ asynStatus drvBkhAsyn::writeInt32(asynUser* pau, epicsInt32 v){
     case ixBoCInit:
             readMID(_siMID);
             break;
-    case ixLoPollTmo:    _tout = (float)v/1000.0;
-            setIntegerParam(_liPollTmo, v); break;
-    case ixLoRChan:    setIntegerParam(0, _loRChan, v); break;
-    case ixLoRegNum:    getIntegerParam(0, _loRChan, &chan);
+    case ixLoPollTmo:
+            _tout = (float)v/1000.0;
+            setIntegerParam(_liPollTmo, v);
+            break;
+    case ixLoRChan:
+            setIntegerParam(0, _loRChan, v);
+            break;
+    case ixLoRegNum:
+            getIntegerParam(0, _loRChan, &chan);
             setIntegerParam(0, _loRegNum, v);
-            stat = readHReg(0, addr, chan, v, _liRegVal); break;
-    case ixLoWRegVal:    getIntegerParam(0, _loRChan, &chan);
+            stat = readHReg(0, addr, chan, v, _liRegVal);
+            break;
+    case ixLoWRegVal:
+            getIntegerParam(0, _loRChan, &chan);
             getIntegerParam(0, _loRegNum, &rnum);
-            stat = writeHReg(0, chan, rnum, v, _liWRegVal); break;
+            stat = writeHReg(0, chan, rnum, v, _liWRegVal);
+            break;
     case ixLoCReg:
-            printf("writeInt32: _port=%s, addr=%d, v=%d\n", _port, addr, v);
             stat = writeOne(addr, v);
             readOne(addr, _liCReg);
             break;
-    case ixLoCByte:    maddr = _saddr+WOFFST;
+    case ixLoCByte:
+            maddr = _saddr + WOFFST;
             wfunc = MODBUS_WRITE_SINGLE_REGISTER;
             stat = doWrite(maddr, addr, 2, 0, wfunc, v, _loCByte);
             setIntegerParam(addr, _liCByte, v);
             break;
-    case ixLoDataOut:    maddr = _saddr+WOFFST;
+    case ixLoDataOut:
+            maddr = _saddr+WOFFST;
             wfunc = MODBUS_WRITE_SINGLE_REGISTER;
             stat = doWrite(maddr, addr, 2, 1, wfunc, v);
             stat = doReadH(maddr, addr, 2, 0, _liSByte);
             stat = doReadH(maddr, addr, 2, 1, _liDataOut);
             break;
-    case ixLoCWord:    stat = writeCWord(addr, v);
+    case ixLoCWord:
+            stat = writeCWord(addr, v);
             break;
-    case ixBoBitVal:    stat = writeChan(addr, v); break;
+    case ixBoBitVal:
+            stat = writeChan(addr, v);
+            break;
     case ixBoRefresh:
             _refresh(RRegs, SIZE(RRegs)); 
             break;
     case ixRefreshRW:
             _refresh(RWRegs, SIZE(RWRegs)); 
             break;
-    case ixBoWDRst:    stat = watchdogReset(); break;
-    case ixLoMAddr:    setIntegerParam(0, _loMAddr, v);
+    case ixBoWDRst:
+            stat = watchdogReset();
             break;
-    case ixLoMVal:    setIntegerParam(0, _loMVal, v);
+    case ixLoMAddr:
+            setIntegerParam(0, _loMAddr, v);
             break;
-    case ixLoMFunc:    setIntegerParam(0, _loMFunc, v);
+    case ixLoMVal:
+            setIntegerParam(0, _loMVal, v);
             break;
-    case ixBoMGet:    if(!v) break;
+    case ixLoMFunc:
+            setIntegerParam(0, _loMFunc, v);
+            break;
+    case ixBoMGet:
+            if (!v) break;
             getIntegerParam(0, _loMAddr, &aa);
             getIntegerParam(0, _loMFunc, &ff);
             stat = doIO(prioH_e, normal_e, aa, 0, ff, _liMVal, 0);
             break;
-    case ixBoMPut:    getIntegerParam(0, _loMAddr, &aa);
+    case ixBoMPut:
+            getIntegerParam(0, _loMAddr, &aa);
             getIntegerParam(0, _loMFunc, &ff);
             getIntegerParam(0, _loMVal, &vv);
-            stat = doIO(prioH_e, normal_e, aa, 0, ff, 0, vv); break;
-    case ixBoTHist:    _pmbus->doHist(v); break;
-    case ixBoClrHist:    if(!v) break;
+            stat = doIO(prioH_e, normal_e, aa, 0, ff, 0, vv);
+            break;
+    case ixBoTHist:
+            _pmbus->doHist(v);
+            break;
+    case ixBoClrHist:
+            if (!v) break;
             _pmbus->clearHist();
-    case ixBoGetHist:    if(!v) break;
+            break;
+    case ixBoGetHist:
+            if (!v) break;
             n = HISTOGRAM_LENGTH;
             pwf = _pmbus->getHist();
             doCallbacksInt32Array(pwf, n, _wfTHist, 0);
             break;
-    case ixLoAllowInLQ:    _pmbus->putAllowInLQ(v);
+    case ixLoAllowInLQ:
+            _pmbus->putAllowInLQ(v);
             setIntegerParam(0, _liAllowInLQ, _pmbus->getAllowInLQ());
             break;
-    case ixBoTest:    getIntegerParam(0, _biError, &vv);
+    case ixBoTest:
+            getIntegerParam(0, _biError, &vv);
             vv = 1-(vv&1);
             setIntegerParam(_biError, vv);
             _setError("Error Handler Test", vv);
             break;
-    default:        return(asynError);
+    default:
+            return(asynError);
   }
 
   if (stat != asynSuccess) {
     sprintf(_msg, "ERROR: writeInt32: ix=%d, addr=%d", ix, addr);
     _setError(_msg, 1); 
     _errInWrite = 1;
+  } else if (_errInWrite) {
+    _setError("No error", 0);
   }
-  else if (_errInWrite) {
-    _setError("No error", 0);}
     _errInWrite = 0; 
 
   stat = callParamCallbacks(addr);
@@ -817,122 +959,7 @@ void drvBkhAsyn::_setError(const char* msg, int flag){
   callParamCallbacks();
 }
 
-drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func, int len,
-    int nchan, int msec, int nparm, int mflag):
-    //asynPortDriver(port, nchan, nparm,
-    asynPortDriver(port, nchan,
-        asynInt32Mask|asynInt32ArrayMask|asynOctetMask|asynDrvUserMask,
-        asynInt32Mask|asynInt32ArrayMask|asynOctetMask,
-        ASYN_CANBLOCK|ASYN_MULTIDEVICE, 1, 0, 0){
-/*-----------------------------------------------------------------------------
- * Constructor for the drvBkhAsyn class. Calls constructor for the
- * asynPortDriver base class. Where
- *  port is the asyn port number.
- *  addr is the modbus memory segment start address,
- *  func is modbus default function for this object,
- *  len is modbus memory segment length,
- *  nchan is the actual number of channels that will be added.
- *  msec  is IO thread timeout in mili seconds.
- * Parameters passed to the asynPortDriver constructor:
- *  port name
- *  max address
- *  parameter table size
- *  interface mask
- *  interrupt mask,
- *  asyn flags,
- *  auto connect
- *  priority
- *  stack size
- *---------------------------------------------------------------------------*/
-  _port = (char*)callocMustSucceed(strlen(port)+1, sizeof(char), dname);
-  strcpy((char*)_port, port);
-  _name = epicsStrDup(name);
-  _nchan = MIN(nchan, NCHAN); 
-  _tout = msec/1000.0;
-  _saddr = addr; _mfunc = func; _mlen = len; _motor = mflag; _id = id;
-  _errInResult = _errInWrite = 0;
-
-  createParam(wfMessageStr,    asynParamOctet,         &_wfMessage);
-  createParam(siNameStr,     asynParamOctet,         &_siName);
-  createParam(liRRegStr,     asynParamInt32,         &_liRReg);
-  createParam(liSByteStr,     asynParamInt32,         &_liSByte);
-  createParam(liDataInStr,     asynParamInt32,         &_liDataIn);
-
-  createParam(liSWordStr,     asynParamInt32,         &_liSWord);
-  createParam(loCByteStr,     asynParamInt32,         &_loCByte);
-  createParam(liCByteStr,     asynParamInt32,         &_liCByte);
-  createParam(loDataOutStr,     asynParamInt32,         &_loDataOut);
-  createParam(liDataOutStr,     asynParamInt32,         &_liDataOut);
-
-  createParam(loCWordStr,     asynParamInt32,         &_loCWord);
-  createParam(liCWordStr,     asynParamInt32,         &_liCWord);
-  createParam(loRChanStr,     asynParamInt32,         &_loRChan);
-  createParam(loRegNumStr,     asynParamInt32,         &_loRegNum);
-  createParam(liSBValStr,     asynParamInt32,         &_liSBVal);
-
-  createParam(liRegValStr,     asynParamInt32,         &_liRegVal);
-  createParam(loWRegValStr,     asynParamInt32,         &_loWRegVal);
-  createParam(liWRegValStr,     asynParamInt32,         &_liWRegVal);
-  createParam(siMIDStr,     asynParamOctet,         &_siMID);
-  createParam(loCRegStr,     asynParamInt32,         &_loCReg);
-
-  createParam(liCRegStr,     asynParamInt32,         &_liCReg);
-  createParam(boBitValStr,     asynParamInt32,         &_boBitVal);
-  createParam(biBitValStr,     asynParamInt32,         &_biBitVal);
-  createParam(boInitStr,     asynParamInt32,         &_boInit);
-  createParam(boRefreshStr,     asynParamInt32,         &_boRefresh);
-
-  createParam(loMAddrStr,     asynParamInt32,         &_loMAddr);
-  createParam(loMValStr,     asynParamInt32,         &_loMVal);
-  createParam(liMValStr,     asynParamInt32,         &_liMVal);
-  createParam(loMFuncStr,     asynParamInt32,         &_loMFunc);
-  createParam(boMGetStr,     asynParamInt32,         &_boMGet);
-
-  createParam(boMPutStr,     asynParamInt32,         &_boMPut);
-  createParam(boWDRstStr,     asynParamInt32,         &_boWDRst);
-  createParam(wfTHistStr,     asynParamInt32Array,     &_wfTHist);
-  createParam(boTHistStr,     asynParamInt32,         &_boTHist);
-  createParam(boGetHistStr,     asynParamInt32,         &_boGetHist);
-
-  createParam(boClrHistStr,     asynParamInt32,         &_boClrHist);
-  createParam(biErrorStr,     asynParamInt32,         &_biError);
-  createParam(boTestStr,     asynParamInt32,         &_boTest);
-  createParam(boCInitStr,     asynParamInt32,         &_boCInit);
-
-  createParam(liAllowInLQStr,     asynParamInt32,         &_liAllowInLQ);
-  createParam(loAllowInLQStr,     asynParamInt32,         &_loAllowInLQ);
-  createParam(liPollTmoStr,     asynParamInt32,         &_liPollTmo);
-  createParam(loPollTmoStr,     asynParamInt32,         &_loPollTmo);
-  createParam(refreshRWStr,     asynParamInt32,         &_refreshRW);
-
-  _firstix = _wfMessage;
-  callParamCallbacks();
-
-  _pmbus = findMBus(_name);
-
-  if(pbkherr) _myErrId = pbkherr->registerClient(port);
-
-  if (!_pmbus) {
-    _setError("ERROR: Modbus pointer is null", 1);
-  }
-  else {
-    _pmbus->registerCB(IODoneCB);
-    _setError("No error", 0);
-  }
-
-  if ((func <= MODBUS_READ_INPUT_REGISTERS) && msec) {
-    epicsThreadCreate(dname, epicsThreadPriorityLow,
-        epicsThreadGetStackSize(epicsThreadStackMedium),
-        (EPICSTHREADFUNC)updateThreadC, this);
-  }
-
-  epicsAtExit(exitHndlC, this);
-  printf("%s::%s: Port %s configured\n", dname, dname, port);
-
-}
-
 // Configuration routine.  Called directly, or from the iocsh function below
-
 extern "C" {
 
 int drvBkhAsynConfig(char *name, int id, const char* port, int func, int addr, int len,
