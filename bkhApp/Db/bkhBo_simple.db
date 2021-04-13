@@ -7,29 +7,30 @@ record(bo, "$(P)$(R="")$(ATTR)"){
   field(ONAM, "$(ONAM="On")")
 }
 record(bo, "$(P)$(R="")$(ATTR)_write"){
+  field(DTYP, "asynInt32")
   field(ASG,  "Internal")
   field(SDIS, "$(P)$(R="")$(ATTR)_sync.PACT")
   field(DISV, "1")
-  field(DTYP, "asynInt32")
-  field(OUT,  "@asyn($(PORT),$(ADDR),1)BO_BVAL")
+  field(OUT,  "@asyn($(PORT),$(ADDR),1) BO_BVAL")
   field(ZNAM, "$(ZNAM="Off")")
   field(ONAM, "$(ONAM="On")")
 }
 record(bi, "$(P)$(R="")$(ATTR)_rbv"){
-  field(ASG,  "Internal")
+  field(DESC, "$(DESC="Output") RBV")
   field(DTYP, "asynInt32")
-  field(INP,  "@asyn($(PORT),$(ADDR),1)BI_BVAL")
-  field(SCAN, "I/O Intr")
+  field(ASG,  "Internal")
+  field(INP,  "@asyn($(PORT),$(ADDR),1) BI_BVAL")
   field(ZNAM, "$(ZNAM="Off")")
   field(ONAM, "$(ONAM="On")")
+  field(SCAN, "I/O Intr")
+  field(PINI, "1")
   field(FLNK, "$(P)$(R="")$(ATTR)_sync")
-  field(PINI, "YES")
 }
 record(bo, "$(P)$(R="")$(ATTR)_sync"){
   field(ASG,  "Internal")
+  field(ZNAM, "$(ZNAM="Off")")
+  field(ONAM, "$(ONAM="On")")
   field(DOL,  "$(P)$(R="")$(ATTR)_rbv NPP")
   field(OMSL, "closed_loop")
   field(OUT,  "$(P)$(R="")$(ATTR) PP")
-  field(ZNAM, "$(ZNAM="Off")")
-  field(ONAM, "$(ONAM="On")")
 }
