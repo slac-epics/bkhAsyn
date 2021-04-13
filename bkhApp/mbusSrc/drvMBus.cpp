@@ -51,8 +51,9 @@ static void IOThreadC(void* p){
 }
 }
 
-static void init_pmbus_list(void)
-{
+static void init_pmbus_list(void) {
+/*-----------------------------------------------------------------------------
+ *---------------------------------------------------------------------------*/
   if(!pmbus_list) {
     pmbus_list = (ELLLIST*) malloc(sizeof(ELLLIST));
     ellInit(pmbus_list);
@@ -60,6 +61,8 @@ static void init_pmbus_list(void)
 }
 
 drvMBus* findMBus(char *name) {
+/*-----------------------------------------------------------------------------
+ *---------------------------------------------------------------------------*/
     mbusList_t *p = NULL;
 
     if (!pmbus_list || !ellCount(pmbus_list)) {
@@ -84,7 +87,7 @@ void drvMBus::IOThread(){
 /*-----------------------------------------------------------------------------
  * Process tasks, one at a time.
  *---------------------------------------------------------------------------*/
-    //static const char* iam = "IOThread"; 
+    //const char* iam = "IOThread"; 
     int stat; 
     asynStatus status;
     msgq_t msgq;
@@ -195,7 +198,7 @@ asynStatus drvMBus::mbusDoIO(prio_t prio, int six, int saddr, int addr, int chan
  * pdrv requesting driver object address.
  *---------------------------------------------------------------------------*/
   epicsMessageQueue* pmq; 
-  static msgq_t msgq; 
+  msgq_t msgq; 
   int j, k, stat;
 
   if (prio == prioH_e) {
@@ -247,7 +250,7 @@ asynStatus drvMBus::mbusMemIO(msgq_t msgq){
  * Called from IOThread.  Does IO on a process image memory block.
  * msgq is the message received from a requester.
  *---------------------------------------------------------------------------*/
-  static iodone_t iodone;
+  iodone_t iodone;
   int st = 0; 
   epicsUInt16* pw = (epicsUInt16*)iodone.data;
 
@@ -307,7 +310,7 @@ void drvMBus::_doSpecial2(msgq_t msgq){
 /*-----------------------------------------------------------------------------
  * Read Beckhoff hidden register.
  *---------------------------------------------------------------------------*/
-  static iodone_t iodone; 
+  iodone_t iodone; 
   epicsUInt16 w; 
   int st;
 
@@ -326,7 +329,7 @@ void drvMBus::_doSpecial3(msgq_t msgq){
 /*-----------------------------------------------------------------------------
  * Write to Beckhoff RAM hidden register.
  *---------------------------------------------------------------------------*/
-  static iodone_t iodone; 
+  iodone_t iodone; 
   int st;
 
   st = _writeSpecialOne(msgq, msgq.rn, msgq.d);
@@ -343,7 +346,7 @@ void drvMBus::_doSpecial4(msgq_t msgq){
 /*-----------------------------------------------------------------------------
  * Write to Beckhof hidden EEPROM register.
  *---------------------------------------------------------------------------*/
-  static iodone_t iodone;
+  iodone_t iodone;
   epicsUInt16 cbe, w; 
   int st, woff = 0x800, maddr;
   int wfunc = MODBUS_WRITE_SINGLE_REGISTER;
@@ -397,7 +400,7 @@ void drvMBus::_doSpecial5(msgq_t msgq){
 /*-----------------------------------------------------------------------------
  * Write 32 bit value to Beckhof hidden set point registers (RAM).
  *---------------------------------------------------------------------------*/
-  static iodone_t iodone; 
+  iodone_t iodone; 
   int st; 
   epicsUInt16* pw = (epicsUInt16*)&msgq.d;
   int wfunc = MODBUS_WRITE_SINGLE_REGISTER;
@@ -453,7 +456,7 @@ void drvMBus::_readSpecial(msgq_t msgq, int r1, int r2){
  * Predefined special sequence of modbus IOs.  This is for reading a 32 bit
  * value from two Beckhoff 16 bit hidden registers, register number r1 and r2.
  *---------------------------------------------------------------------------*/
-  static iodone_t iodone;
+  iodone_t iodone;
   int st; epicsUInt16 w;
 
   iodone.data[0] = iodone.data[1] = 0;
