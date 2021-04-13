@@ -228,7 +228,7 @@ void drvBkhAMot::resultCB( iodone_t* p){
  * asyn address, that is the address index in the parameter library for
  * a given parameter.
  *---------------------------------------------------------------------------*/
-  int ix=p->pix-_firstix; asynStatus stat;
+  int ix=p->pix-_firstix;
   if(p->stat){
     errlogPrintf( "%s::%s:resultCB: failed status\n",dname,_port);
     fflush(0);
@@ -242,7 +242,7 @@ void drvBkhAMot::resultCB( iodone_t* p){
     _initdone=1;
     initDone(1);
     if(_keepEn) _cb=1;
-    stat=_autoStopOnOff( 1);
+    _autoStopOnOff( 1);
     // jump start reading absolute position
     _gotAPos=1;
     errlogPrintf( "%s::%s:resultCB:INITEND\n",dname,_port);
