@@ -55,19 +55,20 @@ void drvBkhAsyn::updateThread(){
 /*-----------------------------------------------------------------------------
  * request periodic updates.
  *---------------------------------------------------------------------------*/
-  static const char* iam = "updateThread";
+  const char* iam = "updateThread";
   int updt = CHNUPDT;
 
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
             "%s::%s: updateThread started for port %s (motor=%d)\n", 
             dname, iam, _port, _motor);
 
-  if(_motor) updt = MOTUPDT;
+  if (_motor) updt = MOTUPDT;
+
   epicsThreadSleep(1.0);
 
-  while(1){
+  while(1) {
     epicsThreadSleep(_tout);
-    if(_initdone){
+    if (_initdone) {
       readChanls(updt);
       updateUser(_tout);
     }
@@ -96,15 +97,14 @@ void drvBkhAsyn::initDone(int flg){
 
 void drvBkhAsyn::resultCB(iodone_t* p){
 /*-----------------------------------------------------------------------------
- * This is a callback routine that drvMBus driver call for each completed
- * IO request.
+ * Callback routine that the drvMBus driver calls for each completed IO request.
  * To be able to pick up the thread we need:
  * asyn address, that is the address index in the parameter library for
  * a given parameter,
  * parameter index in the parameter library,
  *---------------------------------------------------------------------------*/
-  if(p->stat){
-    _setError("Bad Status in resultCB", 1);
+  if (p->stat) {
+    _setError("ERROR: I/O callback", 1);
     _errInResult = 1;
     return;
   }
@@ -114,11 +114,13 @@ void drvBkhAsyn::resultCB(iodone_t* p){
      _setError("No error", 0);
   }
 
-  if(p->func<=MODBUS_READ_INPUT_REGISTERS) switch(p->pix){
-    case ixSiMID:    _gotMID(p->data, p->len); break;
-    case MOTUPDT:    // no break here!
-    case CHNUPDT:    _gotChannels(p->func, p->data, p->len, p->pix); break;
-    default:        _gotData(p->addr, p->pix, p->data, p->len); break;
+  if (p->func <= MODBUS_READ_INPUT_REGISTERS) {
+    switch(p->pix){
+      case ixSiMID:    _gotMID(p->data, p->len); break;
+      case MOTUPDT:    // no break here!
+      case CHNUPDT:    _gotChannels(p->func, p->data, p->len, p->pix); break;
+      default:         _gotData(p->addr, p->pix, p->data, p->len); break;
+    }
   }
 }
 
@@ -129,7 +131,8 @@ asynStatus drvBkhAsyn::doIO(prio_t pri, int six, int maddr,
  *---------------------------------------------------------------------------*/
   asynStatus stat;
 
-  if(!_pmbus) return(asynError);
+  if (!_pmbus) return(asynError);
+
   _pmbus->mbusLock();
   stat = _pmbus->mbusDoIO(pri, six, maddr, 0, 0, 0, 0, rn, pix, func, 1, d, this);
   _pmbus->mbusUnlock();
@@ -144,10 +147,10 @@ asynStatus drvBkhAsyn::doReadH(int saddr, int addr, int n, int a, int pix){
  *---------------------------------------------------------------------------*/
   asynStatus stat;
 
-  if(!_pmbus) return(asynError);
+  if (!_pmbus) return(asynError);
+
   _pmbus->mbusLock();
-  stat = _pmbus->mbusDoIO(prioH_e, normal_e, saddr, addr, addr, n, a, 0, pix,
-            _mfunc, 1, 0, this);
+  stat = _pmbus->mbusDoIO(prioH_e, normal_e, saddr, addr, addr, n, a, 0, pix, _mfunc, 1, 0, this);
   _pmbus->mbusUnlock();
 
   return(stat);
@@ -160,10 +163,10 @@ asynStatus drvBkhAsyn::doReadL(int saddr, int addr, int n, int a, int pix){
  *---------------------------------------------------------------------------*/
   asynStatus stat;
 
-  if(!_pmbus) return(asynError);
+  if (!_pmbus) return(asynError);
+
   _pmbus->mbusLock();
-  stat = _pmbus->mbusDoIO(prioL_e, normal_e, saddr, addr, addr, n, a, 0, pix,
-                        _mfunc, 1, 0, this);
+  stat = _pmbus->mbusDoIO(prioL_e, normal_e, saddr, addr, addr, n, a, 0, pix, _mfunc, 1, 0, this);
   _pmbus->mbusUnlock();
 
   return(stat);
@@ -176,11 +179,13 @@ asynStatus drvBkhAsyn::doWrite(int saddr, int addr, int n, int a,
  * maddr = saddr+n*addr+a.  Request to write one word of data in d.
  *---------------------------------------------------------------------------*/
   asynStatus stat;
-  if(!_pmbus) return(asynError);
+
+  if (!_pmbus) return(asynError);
+
   _pmbus->mbusLock();
-  stat = _pmbus->mbusDoIO(prioH_e, normal_e, saddr, addr, addr, n, a, 0,
-                        pix, func, 1, d, this);
+  stat = _pmbus->mbusDoIO(prioH_e, normal_e, saddr, addr, addr, n, a, 0, pix, func, 1, d, this);
   _pmbus->mbusUnlock();
+
   return(stat);
 }
 
@@ -191,22 +196,20 @@ asynStatus drvBkhAsyn::readChannel(int addr, int pix1, int pix2){
  *---------------------------------------------------------------------------*/
   asynStatus stat;
 
-  if(!_pmbus) return(asynError);
+  if (!_pmbus) return(asynError);
   
   _pmbus->mbusLock();
 
-  stat = _pmbus->mbusDoIO(prioL_e, normal_e, _saddr, addr, addr, 2, 0, 0, pix1,
-      _mfunc, 1, 0, this);
+  stat = _pmbus->mbusDoIO(prioL_e, normal_e, _saddr, addr, addr, 2, 0, 0, pix1, _mfunc, 1, 0, this);
 
-  if (stat!=asynSuccess) {
+  if (stat != asynSuccess) {
     _pmbus->mbusUnlock();
     return(stat);
   }
 
-  stat = _pmbus->mbusDoIO(prioL_e, normal_e, _saddr, addr, addr, 2, 1, 0, pix2,
-      _mfunc, 1, 0, this);
+  stat = _pmbus->mbusDoIO(prioL_e, normal_e, _saddr, addr, addr, 2, 1, 0, pix2, _mfunc, 1, 0, this);
 
-  if (stat!=asynSuccess) {
+  if (stat != asynSuccess) {
     _pmbus->mbusUnlock();
     return(stat);
   }
@@ -218,13 +221,14 @@ asynStatus drvBkhAsyn::readChannel(int addr, int pix1, int pix2){
 
 asynStatus drvBkhAsyn::watchdogReset(){
 /*-----------------------------------------------------------------------------
- * writes 0xbecf and 0xaffe to register at address 0x1121 in BK9000.
+ * writes 0xbecf and 0xaffe to register offset 23 (dec) in BK9000.  For this to work
+ * properly the starting address must be 0x110a.  Then 0x110a + 23(dec) = 0x1121.
  *---------------------------------------------------------------------------*/
   asynStatus stat; 
   int regn = 23, v1 = 0xbecf, v2 = 0xaffe;
 
   stat = writeOne(regn, v1);
-  if(stat!=asynSuccess) return(stat);
+  if(stat != asynSuccess) return(stat);
   stat = writeOne(regn, v2);
 
   return(asynSuccess);
@@ -237,12 +241,16 @@ asynStatus drvBkhAsyn::readOne(int addr, int pix){
   asynStatus stat;
   int func;
 
-  if(!_pmbus) return(asynError);
-  if (_id==digiOutE) func = RDCOIL; else func = _mfunc;
+  if (!_pmbus) return(asynError);
+  
+  if (_id == digiOutE) {
+    func = RDCOIL; 
+  } else {
+    func = _mfunc;
+  }
 
   _pmbus->mbusLock();
-  stat = _pmbus->mbusDoIO(prioL_e, normal_e, _saddr, addr, addr, 1, 0, 0, pix,
-      func, 1, 0, this);
+  stat = _pmbus->mbusDoIO(prioL_e, normal_e, _saddr, addr, addr, 1, 0, 0, pix, func, 1, 0, this);
   _pmbus->mbusUnlock();
 
   return(stat);
@@ -255,11 +263,10 @@ asynStatus drvBkhAsyn::writeChan(int addr, int v){
  *---------------------------------------------------------------------------*/
   asynStatus stat;
 
-  if(!_pmbus) return(asynError);
+  if (!_pmbus) return(asynError);
 
   _pmbus->mbusLock();
-  stat = _pmbus->mbusDoIO(prioH_e, normal_e, _saddr, addr, addr, 1, 0, 0, 0,
-      _mfunc, 1, v, this);
+  stat = _pmbus->mbusDoIO(prioH_e, normal_e, _saddr, addr, addr, 1, 0, 0, 0, _mfunc, 1, v, this);
   _pmbus->mbusUnlock();
 
   return(stat);
@@ -272,11 +279,10 @@ asynStatus drvBkhAsyn::writeOne(int addr, int v){
  *---------------------------------------------------------------------------*/
   asynStatus stat;
 
-  if(!_pmbus) return(asynError);
+  if (!_pmbus) return(asynError);
 
   _pmbus->mbusLock();
-  stat = _pmbus->mbusDoIO(prioH_e, normal_e, _saddr, addr, addr, 1, 0, 0, 0,
-      WRFUNC, 1, v, this);
+  stat = _pmbus->mbusDoIO(prioH_e, normal_e, _saddr, addr, addr, 1, 0, 0, 0, WRFUNC, 1, v, this);
   _pmbus->mbusUnlock();
 
   return(stat);
@@ -291,15 +297,14 @@ asynStatus drvBkhAsyn::readHReg(int cbe, int addr, int chan, int rnum, int pix){
   int maddr;
   asynStatus stat;
 
-  if(!_pmbus) return(asynError);
+  if (!_pmbus) return(asynError);
 
   _pmbus->mbusLock();
 
   maddr = _saddr;
-  stat = _pmbus->mbusDoIO(prioL_e, spix2_e, maddr, addr, chan, 2, 0, rnum,
-      pix, _mfunc, 1, 0, this);
+  stat = _pmbus->mbusDoIO(prioL_e, spix2_e, maddr, addr, chan, 2, 0, rnum, pix, _mfunc, 1, 0, this);
 
-  if(stat!=asynSuccess){
+  if(stat != asynSuccess){
     errlogPrintf("%s::%s:readHReg:mbusDoIO failed\n", dname, _port);
   }
 
@@ -315,13 +320,13 @@ asynStatus drvBkhAsyn::readMID(int pix){
  *---------------------------------------------------------------------------*/
   asynStatus stat;
 
-  if(!_pmbus) return(asynError);
+  if (!_pmbus) return(asynError);
 
   _pmbus->mbusLock();
   stat = _pmbus->mbusDoIO(prioL_e, normal_e, _saddr, 0, 0, 0, 0, 0, pix, _mfunc, 7, 0, this);
   _pmbus->mbusUnlock();
 
-  if(stat!=asynSuccess){
+  if(stat != asynSuccess){
     errlogPrintf("%s::readMID:mbusReadMem failed\n", dname);
     return(stat);
   }
@@ -336,14 +341,13 @@ asynStatus drvBkhAsyn::readChanls(int pix){
  *---------------------------------------------------------------------------*/
   asynStatus stat;
 
-  if(!_pmbus) return(asynError);
+  if (!_pmbus) return(asynError);
 
   _pmbus->mbusLock();
-  stat = _pmbus->mbusDoIO(prioL_e, normal_e, _saddr, 0, 0, 0, 0, 0, pix,
-      _mfunc, _mlen, 0, this);
+  stat = _pmbus->mbusDoIO(prioL_e, normal_e, _saddr, 0, 0, 0, 0, 0, pix, _mfunc, _mlen, 0, this);
   _pmbus->mbusUnlock();
 
-  if(stat!=asynSuccess){
+  if(stat != asynSuccess){
     errlogPrintf("%s::readChanls:mbusReadMem failed\n", dname);
     return(stat);
   }
@@ -361,20 +365,19 @@ asynStatus drvBkhAsyn::writeHReg(int addr, int chan, int rnum, int v, int pix){
   asynStatus stat;
 
   maddr = _saddr;
-  if(!_pmbus) return(asynError);
+  if (!_pmbus) return(asynError);
 
   _pmbus->mbusLock();
 
-  stat = _pmbus->mbusDoIO(prioH_e, spix4_e, maddr, addr, chan, 2, 0, rnum, 0,
-                        WRFUNC, 1, v, this);
+  stat = _pmbus->mbusDoIO(prioH_e, spix4_e, maddr, addr, chan, 2, 0, rnum, 0, WRFUNC, 1, v, this);
 
-  if(stat!=asynSuccess){
+  if(stat != asynSuccess){
     errlogPrintf("%s::writeHReg:mbusWriteOne:cb failed\n", dname);
-
   }
+
   _pmbus->mbusUnlock();
 
-  if(stat==asynSuccess) stat = readHReg(0, addr, chan, rnum, pix);
+  if(stat == asynSuccess) stat = readHReg(0, addr, chan, rnum, pix);
 
   return(stat);
 }
@@ -392,18 +395,19 @@ asynStatus drvBkhAsyn::writeHRAM(int addr, int chan, int rnum, int v, int pix){
 
   maddr = _saddr;
 
-  if(!_pmbus) return(asynError);
+  if (!_pmbus) return(asynError);
 
   _pmbus->mbusLock();
-  stat = _pmbus->mbusDoIO(prioH_e, spix3_e, maddr, addr, chan, 2, 0, rnum, 0,
-                        WRFUNC, 1, v, this);
 
-  if(stat!=asynSuccess){
+  stat = _pmbus->mbusDoIO(prioH_e, spix3_e, maddr, addr, chan, 2, 0, rnum, 0, WRFUNC, 1, v, this);
+
+  if(stat != asynSuccess){
     errlogPrintf("%s::writeHReg:mbusDoIO failed\n", dname);
   }
+
   _pmbus->mbusUnlock();
 
-  if(stat==asynSuccess) stat = readHReg(0, addr, chan, rnum, pix);
+  if(stat == asynSuccess) stat = readHReg(0, addr, chan, rnum, pix);
 
   return(stat);
 }
@@ -434,9 +438,20 @@ void drvBkhAsyn::_gotData(int addr, int pix, word* pd, int len){
 /*-----------------------------------------------------------------------------
  * Received data in pd of length len words to be posted to addr and pix.
  *---------------------------------------------------------------------------*/
-  int v = (*pd);
+  int v;
 
-  if((_id==analogSE)&&(v&0x8000)) v = (v|0xffff0000);
+  if (!pd) {
+    printf("uh-oh\n");
+    return;
+  }
+
+  v = (*pd);
+
+  if ((_id == analogSE) && (v & 0x8000)) {
+    v = (v | 0xffff0000);
+  }
+  
+  printf("%s::_gotData: _port=%s, addr=%d, pix=%d, v=%d, _nchan=%d\n", dname, _port, addr, pix, v, _nchan);
   setIntegerParam(addr, pix, v);
   callParamCallbacks(addr);
 }
@@ -455,11 +470,10 @@ void drvBkhAsyn::_gotChannels(int func, word* pd, int len, int pix){
  * Unpack received data and post.
  *---------------------------------------------------------------------------*/
   switch(func){
-    case MODBUS_READ_COILS:        break;
-    case MODBUS_READ_DISCRETE_INPUTS:    _getBits((char*)pd, _nchan); break;
-    case MODBUS_READ_HOLDING_REGISTERS:    _getChans((char*)pd, _nchan, len, pix);
-                    break;
-    case MODBUS_READ_INPUT_REGISTERS:    break;
+    case MODBUS_READ_COILS: break;
+    case MODBUS_READ_DISCRETE_INPUTS: _getBits((char*)pd, _nchan); break;
+    case MODBUS_READ_HOLDING_REGISTERS: _getChans((char*)pd, _nchan, len, pix); break;
+    case MODBUS_READ_INPUT_REGISTERS: break;
   }
 }
 
@@ -472,7 +486,7 @@ asynStatus drvBkhAsyn::_getChans(char* pd, int nch, int len, int pix){
   int i, iv, n = len/nch; 
   epicsUInt16* pw = (epicsUInt16*)pd; 
 
-  if(len!=n*nch){
+  if (len != n*nch) {
     errlogPrintf("%s::_getChans: nch=%d, len=%d are inconsistent\n",
         dname, nch, len);
     return(asynError);
@@ -483,12 +497,12 @@ asynStatus drvBkhAsyn::_getChans(char* pd, int nch, int len, int pix){
     setIntegerParam(i, _liSByte, iv);
     pw++;
     iv = (*pw);
-    if(pix==CHNUPDT){
-      if((_id==analogSE)&&((iv)&0x8000)) iv = (iv)|0xffff0000;
+    if(pix == CHNUPDT){
+      if((_id == analogSE) && ((iv)&0x8000)) iv = (iv)|0xffff0000;
     }
     setIntegerParam(i, _liDataIn, iv);
     pw++;
-    if(pix==MOTUPDT){
+    if(pix == MOTUPDT){
       iv = (*pw);
       setIntegerParam(i, _liSWord, iv);
       pw++;
@@ -518,18 +532,16 @@ asynStatus drvBkhAsyn::_getBits(char* pd, int nch){
   return(asynSuccess);
 }
 
-void drvBkhAsyn::_refresh(){
+void drvBkhAsyn::_refresh(const int arr[], int size){
 /*-----------------------------------------------------------------------------
- * Request reding BK9000 Coupler readonly registers.
+ * Request reading an array of registers.
  *---------------------------------------------------------------------------*/
-  static int rlist[] = {10, 11, 12, 16, 17, 18, 19, 32};
-  int i, n = SIZE(rlist); 
-  asynStatus stat;
-
-  for(i=0; i<n; i++){
-    stat = readOne(rlist[i], _liCReg);
+  static int rlist[]={10,11,12,16,17,18,19,32};
+  int i,n=SIZE(rlist); asynStatus stat;
+  for( i=0; i<n; i++){
+    stat=readOne( rlist[i],_liCReg);
     if(stat!=asynSuccess){
-      errlogPrintf("%s::_refresh: i=%d, failed in _readOne\n", dname, i);
+      errlogPrintf( "%s::_refresh: i=%d, failed in _readOne\n",dname,i);
       break;
     }
   }
@@ -552,7 +564,7 @@ void drvBkhAsyn::_getRegisters(){
 /*-----------------------------------------------------------------------------
  * Initiate reading contents of various registers.
  *---------------------------------------------------------------------------*/
-  static const char* iam = "_getRegisters";
+  const char* iam = "_getRegisters";
   asynStatus stat;
 
   stat = doReadH(_saddr+WOFFST, 0, 2, 0, _loCByte);
@@ -573,28 +585,59 @@ asynStatus drvBkhAsyn::readInt32(asynUser* pau, epicsInt32* v){
   asynStatus stat = asynSuccess; 
   int ix, addr;
   
-  stat = getAddress(pau, &addr); if(stat!=asynSuccess) return(stat);
+  stat = getAddress(pau, &addr); 
+  if(stat != asynSuccess) return(stat);
+
   ix = pau->reason-_firstix;
 
-  if(addr<0||addr>=NCHAN) return(asynError);
+  if ((addr < 0) || (addr >= NCHAN)) return(asynError);
+    
+  printf("readInt32: _port=%s, addr=%d, *v=%d, ix=%d, _firstix=%d\n", _port, addr, *v, ix, _firstix);
+
   switch(ix){
-    case ixLiPollTmo:    *v = _tout*1000.0; break;
-    case ixLiCReg:    stat = readOne(addr, _liCReg); *v = 0; break;
-    case ixLiRReg:    *v = 0; break;
-    case ixLiDataIn:    *v = 0; break;
-    case ixBiBitVal:    stat = readOne(addr, _biBitVal); *v = 0; break;
-    case ixLiCByte:    stat = doReadH(_saddr+WOFFST, addr, 2, 0, _loCByte);
-            *v = 0; break;
-    case ixLiDataOut:    stat = doReadH(_saddr+WOFFST, addr, 2, 1, _loDataOut);
-            *v = 0; break;
-    case ixLiCWord:    stat = doReadH(_saddr+WOFFST, addr, 2, 2, _loCWord);
-            *v = 0; break;
-    case ixLiAllowInLQ:    *v = _pmbus->getAllowInLQ(); break;
-    case ixBiError:    *v = 0; break;
+    case ixLiPollTmo:
+        *v = _tout*1000.0;
+        break;
+    case ixLiCReg:
+        stat = readOne(addr, _liCReg);
+        *v = 0;
+        break;
+    case ixLiRReg:
+        *v = 0;
+        break;
+    case ixLiDataIn:
+        *v = 0;
+        break;
+    case ixBiBitVal:
+        stat = readOne(addr, _biBitVal);
+        //*v = 0;
+        break;
+    case ixLiCByte:
+        stat = doReadH(_saddr + WOFFST, addr, 2, 0, _loCByte);
+        *v = 0;
+        break;
+    case ixLiDataOut:
+        stat = doReadH(_saddr + WOFFST, addr, 2, 1, _loDataOut);
+        *v = 0;
+        break;
+    case ixLiCWord:
+        stat = doReadH(_saddr + WOFFST, addr, 2, 2, _loCWord);
+        *v = 0;
+        break;
+    case ixLiAllowInLQ:
+        *v = _pmbus->getAllowInLQ();
+        break;
+    case ixBiError:
+        *v = 0;
+        break;
     case ixLoCByte:
     case ixLoDataOut:
-    case ixLoCWord:    *v = 0; break;
-    default:    stat = asynPortDriver::readInt32(pau, v); break;
+    case ixLoCWord:
+        *v = 0;
+        break;
+    default:
+        stat = asynPortDriver::readInt32(pau, v);
+        break;
   }
 
   callParamCallbacks(0);
@@ -616,16 +659,20 @@ asynStatus drvBkhAsyn::writeInt32(asynUser* pau, epicsInt32 v){
   int addr, chan, wfunc, aa, ff, vv, rnum;
   int ix = pau->reason-_firstix;
 
-  stat = getAddress(pau, &addr); if(stat!=asynSuccess) return(stat);
+  stat = getAddress(pau, &addr); 
+  if(stat != asynSuccess) return stat;
 
   switch(ix){
-    case ixBoInit:    stat = doReadH(_saddr+WOFFST, addr, 2, 0, _loCByte);
-            if(stat!=asynSuccess) break;
-            stat = doReadH(_saddr+WOFFST, addr, 2, 1, _loDataOut);
-            if(stat!=asynSuccess) break;
-            stat = doReadH(_saddr+WOFFST, addr, 2, 2, _loCWord);
+    case ixBoInit:    
+            stat = doReadH(_saddr + WOFFST, addr, 2, 0, _loCByte);
+            if (stat != asynSuccess) break;
+            stat = doReadH(_saddr + WOFFST, addr, 2, 1, _loDataOut);
+            if (stat != asynSuccess) break;
+            stat = doReadH(_saddr + WOFFST, addr, 2, 2, _loCWord);
             break;
-    case ixBoCInit:    readMID(_siMID); break;
+    case ixBoCInit:
+            readMID(_siMID);
+            break;
     case ixLoPollTmo:    _tout = (float)v/1000.0;
             setIntegerParam(_liPollTmo, v); break;
     case ixLoRChan:    setIntegerParam(0, _loRChan, v); break;
@@ -635,7 +682,11 @@ asynStatus drvBkhAsyn::writeInt32(asynUser* pau, epicsInt32 v){
     case ixLoWRegVal:    getIntegerParam(0, _loRChan, &chan);
             getIntegerParam(0, _loRegNum, &rnum);
             stat = writeHReg(0, chan, rnum, v, _liWRegVal); break;
-    case ixLoCReg:    stat = writeOne(addr, v); break;
+    case ixLoCReg:
+            printf("writeInt32: _port=%s, addr=%d, v=%d\n", _port, addr, v);
+            stat = writeOne(addr, v);
+            readOne(addr, _liCReg);
+            break;
     case ixLoCByte:    maddr = _saddr+WOFFST;
             wfunc = MODBUS_WRITE_SINGLE_REGISTER;
             stat = doWrite(maddr, addr, 2, 0, wfunc, v, _loCByte);
@@ -650,7 +701,9 @@ asynStatus drvBkhAsyn::writeInt32(asynUser* pau, epicsInt32 v){
     case ixLoCWord:    stat = writeCWord(addr, v);
             break;
     case ixBoBitVal:    stat = writeChan(addr, v); break;
-    case ixBoRefresh:    _refresh(); break;
+    case ixBoRefresh:
+            _refresh()
+            break;
     case ixBoWDRst:    stat = watchdogReset(); break;
     case ixLoMAddr:    setIntegerParam(0, _loMAddr, v);
             break;
@@ -686,11 +739,14 @@ asynStatus drvBkhAsyn::writeInt32(asynUser* pau, epicsInt32 v){
     default:        return(asynError);
   }
 
-  if(stat!=asynSuccess){
-    sprintf(_msg, "Error in writeInt32: ix=%d, addr=%d", ix, addr);
-    _setError(_msg, 1); _errInWrite = 1;
+  if (stat != asynSuccess) {
+    sprintf(_msg, "ERROR: writeInt32: ix=%d, addr=%d", ix, addr);
+    _setError(_msg, 1); 
+    _errInWrite = 1;
   }
-  else if(_errInWrite){ _errInWrite = 0; _setError("No error", 0);}
+  else if (_errInWrite) {
+    _setError("No error", 0);}
+    _errInWrite = 0; 
 
   stat = callParamCallbacks(addr);
   return(stat);
@@ -715,16 +771,17 @@ void drvBkhAsyn::_setError(const char* msg, int flag){
 /*-----------------------------------------------------------------------------
  * An error status changed, report it.
  *---------------------------------------------------------------------------*/
-  setIntegerParam(_biError, flag+1);
-  setIntegerParam(_biError, flag);
-  _message(msg);
-  if(pbkherr) pbkherr->setErrorFlag(_myErrId, flag);
+ setIntegerParam( _biError,flag+1);
+  setIntegerParam( _biError,flag);
+  _message( msg);
+  if(pbkherr) pbkherr->setErrorFlag( _myErrId,flag);
   callParamCallbacks();
 }
 
 drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func, int len,
     int nchan, int msec, int nparm, int mflag):
-    asynPortDriver(port, nchan, nparm,
+    //asynPortDriver(port, nchan, nparm,
+    asynPortDriver(port, nchan,
         asynInt32Mask|asynInt32ArrayMask|asynOctetMask|asynDrvUserMask,
         asynInt32Mask|asynInt32ArrayMask|asynOctetMask,
         ASYN_CANBLOCK|ASYN_MULTIDEVICE, 1, 0, 0){
@@ -751,7 +808,8 @@ drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func,
   _port = (char*)callocMustSucceed(strlen(port)+1, sizeof(char), dname);
   strcpy((char*)_port, port);
   _name = epicsStrDup(name);
-  _nchan = MIN(nchan, NCHAN); _tout = msec/1000.0;
+  _nchan = MIN(nchan, NCHAN); 
+  _tout = msec/1000.0;
   _saddr = addr; _mfunc = func; _mlen = len; _motor = mflag; _id = id;
   _errInResult = _errInWrite = 0;
 
@@ -809,17 +867,20 @@ drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func,
 
   _firstix = _wfMessage;
   callParamCallbacks();
+
   _pmbus = findMBus(_name);
 
   if(pbkherr) _myErrId = pbkherr->registerClient(port);
 
-  if(!_pmbus) _setError("Modbus Pointer is null", 1);
-  else{
+  if (!_pmbus) {
+    _setError("ERROR: Modbus pointer is null", 1);
+  }
+  else {
     _pmbus->registerCB(IODoneCB);
     _setError("No error", 0);
   }
 
-  if((func<=MODBUS_READ_INPUT_REGISTERS)&&msec){
+  if ((func <= MODBUS_READ_INPUT_REGISTERS) && msec) {
     epicsThreadCreate(dname, epicsThreadPriorityLow,
         epicsThreadGetStackSize(epicsThreadStackMedium),
         (EPICSTHREADFUNC)updateThreadC, this);
@@ -827,6 +888,7 @@ drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func,
 
   epicsAtExit(exitHndlC, this);
   printf("%s::%s: Port %s configured\n", dname, dname, port);
+
 }
 
 // Configuration routine.  Called directly, or from the iocsh function below
