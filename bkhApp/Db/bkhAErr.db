@@ -26,6 +26,6 @@ record(bo, "$(P):$(MOD)_ERROR_PUSH"){
   field(ASG,  "Internal")
   field(DOL,  "$(P):$(MOD)_ERROR")
   field(OMSL, "closed_loop")
-  field(OUT,  "$(P):9000_ERROR PP")
+  field(OUT,  "$(P):Error PP")
 }
 
