@@ -27,7 +27,6 @@
 typedef enum {couplerE, analogSE, analogUE, digiInE, digiOutE, motorE} type_e;
 
 #define NCHAN  33
-#define PLEN   16
 #define NWFBYT 100
 
 #define wfMessageStr    "WF_MESSAGE"
