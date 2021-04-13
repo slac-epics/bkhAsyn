@@ -16,7 +16,7 @@ record(longin, "$(P)$(R="")$(ATTR="TEMP")_RAW"){
 record(ai, "$(P)$(R="")$(ATTR="TEMP")"){
   field(DESC, "$(DESC)")
   field(DTYP, "Raw Soft Channel")
-  field(INP,  "$(P)$(R="")$(ATTR="TEMP")_RAW")
+  field(INP,  "$(P)$(R="")$(ATTR="TEMP")_RAW NPP MS")
   field(LINR, "SLOPE")
   field(EGU,  "$(EGU=C)")
   field(ESLO, "$(ESLO)")

@@ -16,7 +16,7 @@ record(longin, "$(P)$(R="")$(ATTR)_RAW"){
 record(ai, "$(P)$(R="")$(ATTR)"){
   field(DESC, "$(DESC="Analog value")")
   field(DTYP, "Raw Soft Channel")
-  field(INP,  "$(P)$(R="")$(ATTR)_RAW")
+  field(INP,  "$(P)$(R="")$(ATTR)_RAW NPP MS")
   field(LINR, "SLOPE")
   field(EGU,  "$(EGU=V)")
   field(ESLO, "$(ESLO=1)")
