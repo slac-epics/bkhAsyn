@@ -59,54 +59,66 @@ static void init_pmbus_list(void)
   }
 }
 
-drvMBus* findMBus(char *name)
-{
+drvMBus* findMBus(char *name) {
     mbusList_t *p = NULL;
 
-    if(!pmbus_list || !ellCount(pmbus_list)) {
+    if (!pmbus_list || !ellCount(pmbus_list)) {
       return (drvMBus*) NULL;
     }
 
     p = (mbusList_t *) ellFirst(pmbus_list);
+    
     while(p) {
       if(!strcmp(name, p->name)) break;
       p = (mbusList_t *)ellNext(&p->node);
     }
 
-    if (p && p->pmbus) return p->pmbus;
-    else              return (drvMBus*) NULL;
+    if (p && p->pmbus) {
+      return p->pmbus;
+    } else {
+      return (drvMBus*) NULL;
+    }
 }
 
 void drvMBus::IOThread(){
 /*-----------------------------------------------------------------------------
  * Process tasks, one at a time.
  *---------------------------------------------------------------------------*/
-  //static const char* iam = "IOThread"; 
-  int inq, stat; 
-  asynStatus st;
-  msgq_t msgq;
-
-  while(1){
-    stat = _pmqH->tryReceive(&msgq, sizeof(msgq));
-    if (stat == -1) {
-      inq = _pmqL->pending();
-      stat = _pmqL->tryReceive(&msgq, sizeof(msgq));
+    //static const char* iam = "IOThread"; 
+    int stat; 
+    asynStatus status;
+    msgq_t msgq;
+  
+    while(1){
+        mbusLock();
+        stat = _pmqH->tryReceive(&msgq, sizeof(msgq));
+        mbusUnlock();
+        
+        if (stat == -1) {
+            mbusLock();
+            stat = _pmqL->tryReceive(&msgq, sizeof(msgq));
+            mbusUnlock();
+        }
+        
+        if (stat == -1) {
+            epicsThreadSleep(_tout);
+        } else {
+            mbusLock();
+            status = mbusMemIO(msgq);
+            mbusUnlock();
+            if (status) {
+                fflush(0);
+            }
+        }
+  
     }
-    if (stat == -1) {epicsThreadSleep(_tout);}
-    else {
-      st = mbusMemIO(msgq);
-      if (st) {
-        fflush(0);
-      }
-    }
-  }
 }
 
 void drvMBus::exitHndl(){
 /*-----------------------------------------------------------------------------
  *---------------------------------------------------------------------------*/
   _halt = 1;
-  asynPrint(pasynUser, ASYN_TRACE_FLOW, "%s::%s: Exiting...\n", dname, _pmb->name);
+  epicsPrintf("%s::%s: Exiting...\n", dname, _pmb->name);
 }
 
 void drvMBus::mbusLock(){
@@ -128,7 +140,13 @@ void drvMBus::mbusPurgeQueue(prio_t ix){
  * empties the specified queue of all entries.
  *---------------------------------------------------------------------------*/
   epicsMessageQueue* pmq;
-  if(ix == prioH_e) pmq = _pmqH; else pmq = _pmqL;
+
+  if (ix == prioH_e) {
+    pmq = _pmqH;
+  } else {
+    pmq = _pmqL;
+  }
+
   mbusLock();
   _emptyQueue(pmq);
   mbusUnlock();
@@ -138,10 +156,10 @@ void drvMBus::_emptyQueue(epicsMessageQueue* pmq){
 /*-----------------------------------------------------------------------------
  * empty pmq queue.
  *---------------------------------------------------------------------------*/
-  int i, j, stat; 
+  int i, stat; 
   msgq_t msgq;
 
-  i = j=pmq->pending();
+  i = pmq->pending();
   while(i){
     stat = pmq->tryReceive(&msgq, sizeof(msgq));
     if(stat == -1) break;
@@ -180,30 +198,45 @@ asynStatus drvMBus::mbusDoIO(prio_t prio, int six, int saddr, int addr, int chan
   static msgq_t msgq; 
   int j, k, stat;
 
-  if(prio == prioH_e) pmq = _pmqH; else pmq = _pmqL;
+  if (prio == prioH_e) {
+    pmq = _pmqH;
+  } else {
+    pmq = _pmqL;
+  }
 
-  msgq.maddr = saddr+n*chan+a; msgq.six = six;
-  msgq.addr = addr; msgq.a = a; msgq.rn = rn; msgq.pix = pix;
-  msgq.func = func; msgq.d = d;
-  msgq.len = len; msgq.pdrv = pdrv;
-  _inLQ = j=_pmqL->pending();
-  _inHQ = k=_pmqH->pending();
+  msgq.maddr = saddr+n*chan+a;
+  msgq.six = six;
+  msgq.addr = addr;
+  msgq.a = a;
+  msgq.rn = rn;
+  msgq.pix = pix;
+  msgq.func = func;
+  msgq.d = d;
+  msgq.len = len;
+  msgq.pdrv = pdrv;
+  _inLQ = j = _pmqL->pending();
+  _inHQ = k = _pmqH->pending();
 
-  if(j>_maxInLQ) _maxInLQ = j;
-  if(k>_maxInHQ) _maxInHQ = k;
-  if((prio == prioL_e) && (j >= _allowInLQ)){
+  if (j > _maxInLQ) _maxInLQ = j;
+  if (k > _maxInHQ) _maxInHQ = k;
+
+  if ((prio == prioL_e) && (j >= _allowInLQ)){
     _emptyQueue(pmq);
     _npurgLQ++;
   }
 
   stat = pmq->trySend(&msgq, sizeof(msgq));
+
   if (stat == -1) {
     _emptyQueue(pmq);
-    if (prio == prioH_e) _npurgHQ++; else _npurgLQ++;
+    if (prio == prioH_e) {
+      _npurgHQ++;
+    } else {
+      _npurgLQ++;
+    }
     stat = pmq->trySend(&msgq, sizeof(msgq));
-      asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "%s::mbusDoIO: prio=%d, inqL=%d, allow=%d, inqH=%d, purg=%d, %d\n",
-          dname, prio, j, _allowInLQ, k, _npurgLQ, _npurgHQ);
+    printf("%s::mbusDoIO: prio=%d, inqL=%d, allow=%d, inqH=%d, purg=%d, %d\n",
+        dname, prio, j, _allowInLQ, k, _npurgLQ, _npurgHQ);
   }
 
   return(asynSuccess);
@@ -220,8 +253,7 @@ asynStatus drvMBus::mbusMemIO(msgq_t msgq){
 
   if(_halt) return(asynSuccess);
   if(!_pmb){
-    asynPrint(pasynUser, ASYN_TRACE_ERROR, 
-      "%s::mbusMemIO, _pmb = %p, bad address\n", dname, _pmb);
+    errlogPrintf("%s::mbusMemIO, _pmb = %p, bad address\n", dname, _pmb);
     return(asynError);
   }
 
@@ -242,8 +274,7 @@ asynStatus drvMBus::mbusMemIO(msgq_t msgq){
       iodone.stat = st;
 
       if(!_cb){
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-          "%s::mbusMemIO: bad callback address\n", dname);
+        errlogPrintf("%s::mbusMemIO: bad callback address\n", dname);
         return(asynError);
       }
       if (st) {
@@ -286,8 +317,7 @@ void drvMBus::_doSpecial2(msgq_t msgq){
   iodone.func = msgq.func; iodone.len = msgq.len; iodone.pdrv = msgq.pdrv;
   iodone.stat = st;
   if (!_cb) {
-    asynPrint(pasynUser, ASYN_TRACE_ERROR, 
-      "%s::_doSpecial2: bad callback address\n", dname);
+    errlogPrintf("%s::_doSpecial2: bad callback address\n", dname);
   }
   (*_cb)(iodone);
 }
@@ -304,8 +334,7 @@ void drvMBus::_doSpecial3(msgq_t msgq){
   iodone.func = msgq.func; iodone.len = msgq.len; iodone.pdrv = msgq.pdrv;
   iodone.stat = st;
   if (!_cb) {
-    asynPrint(pasynUser, ASYN_TRACE_ERROR, 
-      "%s::_doSpecial3: bad callback address\n", dname);
+    errlogPrintf("%s::_doSpecial3: bad callback address\n", dname);
   }
   (*_cb)(iodone);
 }
@@ -359,8 +388,7 @@ void drvMBus::_doSpecial4(msgq_t msgq){
   iodone.stat = st;
 
   if(!_cb){
-    asynPrint(pasynUser, ASYN_TRACE_ERROR, 
-      "%s::_doSpecial4: bad callback address\n", dname);
+    errlogPrintf("%s::_doSpecial4: bad callback address\n", dname);
   }
   (*_cb)(iodone);
 }
@@ -372,21 +400,29 @@ void drvMBus::_doSpecial5(msgq_t msgq){
   static iodone_t iodone; 
   int st; 
   epicsUInt16* pw = (epicsUInt16*)&msgq.d;
-  int wfunc = MODBUS_WRITE_SINGLE_REGISTER, woff = 0x800, maddr;
+  int wfunc = MODBUS_WRITE_SINGLE_REGISTER;
+  int woff = 0x800, maddr;
   epicsUInt16 w = 0;
 
   st = _writeSpecialOne(msgq, msgq.rn, pw[0]);
-  if(!st) st = _writeSpecialOne(msgq, msgq.rn + 1, pw[1]);
+  if (!st) {
+    st = _writeSpecialOne(msgq, msgq.rn + 1, pw[1]);
+  }
+
   // next write 0 to data out register, needed for next move
   maddr = msgq.maddr + woff + 1;
-  if(!st) st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr, &w, 1);
+  if (!st) {
+    st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr, &w, 1);
+  }
+
   iodone.addr = msgq.addr; iodone.a = msgq.a; iodone.pix = msgq.pix;
   iodone.func = msgq.func; iodone.len = msgq.len; iodone.pdrv = msgq.pdrv;
   iodone.stat = st;
-  if(!_cb){
-    asynPrint(pasynUser, ASYN_TRACE_ERROR, 
-      "%s::_doSpecial5: bad callback address\n", dname);
+
+  if (!_cb) {
+    errlogPrintf("%s::_doSpecial5: bad callback address\n", dname);
   }
+
   (*_cb)(iodone);
 }
 
@@ -431,8 +467,7 @@ void drvMBus::_readSpecial(msgq_t msgq, int r1, int r2){
   iodone.func = msgq.func; iodone.len = msgq.len; iodone.pdrv = msgq.pdrv;
   iodone.stat = st;
   if(!_cb){
-    asynPrint(pasynUser, ASYN_TRACE_ERROR, 
-      "%s::_readSpecial: bad callback address\n", dname);
+    errlogPrintf("%s::_readSpecial: bad callback address\n", dname);
   }
   (*_cb)(iodone);
 }
@@ -501,7 +536,7 @@ drvMBus::drvMBus(drvd_t dd, int msec){
   _pmqH= new epicsMessageQueue(NMSGQH, sizeof(msgq_t));
   _pmqL= new epicsMessageQueue(NMSGQL, sizeof(msgq_t));
 
-  if(msec){
+  if (msec) {
     epicsThreadCreate(dname, epicsThreadPriorityHigh,
                 epicsThreadGetStackSize(epicsThreadStackMedium),
                 (EPICSTHREADFUNC)IOThreadC, this);
