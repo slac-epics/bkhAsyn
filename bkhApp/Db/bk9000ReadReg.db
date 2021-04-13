@@ -1,0 +1,11 @@
+
+#----- Bus coupler read only register -------------
+record(longin, "$(P):$(ATTR)"){
+  field(DESC, "$(DESC="")")
+  field(DTYP, "asynInt32")
+  field(EGU,  "$(EGU="")")
+  field(INP,  "@asyn($(PORT),$(N),1) LI_CREG")
+  field(SCAN, "I/O Intr")
+  field(PINI, "1")
+}
+

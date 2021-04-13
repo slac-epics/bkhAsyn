@@ -1,0 +1,182 @@
+
+#----- Bus coupler records -------------------------------------------
+record(stringin, "$(P):Name"){
+  field(DESC, "$(IOC="")")
+  field(VAL,  "$(LOC="")")
+}
+
+record(stringin, "$(P):ID"){
+  field(DESC, "Bus Coupler ID")
+  field(DTYP, "asynOctetRead")
+  field(INP,  "@asyn($(RPORT),0,1) SI_MID")
+  field(SCAN, "I/O Intr")
+}
+
+record(bo, "$(P):WDReset"){
+  field(DESC, "Watchdog Reset")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(WPORT),0,1) BO_WDRST")
+  field(HIGH, "0.1")
+  field(ZNAM, "off")
+  field(ONAM, "on")
+  field(VAL,  "0")
+}
+
+record(bo, "$(P):ReadData"){
+  field(DESC, "Read coupler data")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(RPORT),0,1) BO_REFRESH")
+  field(HIGH, "0.1")
+  field(ZNAM, "off")
+  field(ONAM, "on")
+  field(VAL,  "0")
+  field(PINI, "1")
+  field(FLNK, "$(P):ReadID")
+}
+
+record(bo, "$(P):ReadID"){
+  field(DESC, "Read coupler ID")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(RPORT),0,1) BO_CINIT")
+  field(HIGH, "0.1")
+  field(ZNAM, "off")
+  field(ONAM, "on")
+  field(VAL,  "0")
+#  field(PINI, "1")
+  field(FLNK, "$(P):ReadRWData")
+}
+
+record(bo, "$(P):ReadRWData"){
+  field(DESC, "Read coupler r/w data")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(WPORT),0,1) REFRESH_RW")
+  field(HIGH, "0.1")
+  field(ZNAM, "off")
+  field(ONAM, "on")
+  field(VAL,  "0")
+}
+
+#----- Read/write memory address
+record(longout, "$(P):MemAddr"){
+  field(DESC, "Memory address")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(DPORT),0,1) LO_MADDR")
+  field(VAL,  "0")
+  field(PINI, "YES")
+}
+
+record(longout, "$(P):MBFunc"){
+  field(DESC, "Modbus function")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(DPORT),0,1) LO_MFUNC")
+  field(VAL,  "3")
+  field(PINI, "YES")
+}
+
+record(longout, "$(P):MemVal"){
+  field(DESC, "Memory val to write")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(DPORT),0,1) LO_MVAL")
+}
+
+record(longout, "$(P):MemVal_RBV"){
+  field(DESC, "Memory value RBV")
+  field(DTYP, "asynInt32")
+  field(SCAN, "I/O Intr")
+  field(OUT,  "@asyn($(DPORT),0,1) LI_MVAL")
+}
+
+record(bo, "$(P):GetMem"){
+  field(DESC, "Get memory value")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(DPORT),0,1) BO_MGET")
+  field(ZNAM, "off")
+  field(ONAM, "on")
+  field(VAL,  "0")
+}
+
+record(bo, "$(P):PutMem"){
+  field(DESC, "Put memory value")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(DPORT),0,1) BO_MPUT")
+  field(HIGH, "0.1")
+  field(ZNAM, "off")
+  field(ONAM, "on")
+  field(VAL,  "0")
+}
+#-------------------------------------
+
+#----- I/O Histogram
+record(bo, "$(P):HistEnable"){
+  field(DESC, "Enable I/O histogram")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(DPORT),0,1) BO_THIST")
+  field(ZNAM, "off")
+  field(ONAM, "on")
+  field(VAL,  "0")
+}
+record(bo, "$(P):HistGet"){
+  field(DESC, "Get I/O histogram")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(DPORT),0,1) BO_GETHIST")
+  field(HIGH, "0.1")
+  field(ZNAM, "off")
+  field(ONAM, "on")
+  field(VAL,  "0")
+}
+record(bo, "$(P):HistClr"){
+  field(DESC, "Clear I/O histogram")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(DPORT),0,1) BO_CLRHIST")
+  field(HIGH, "0.1")
+  field(ZNAM, "off")
+  field(ONAM, "on")
+  field(VAL,  "0")
+}
+record(waveform, "$(P):Hist"){
+  field(DESC, "I/O histogram")
+  field(DTYP, "asynInt32ArrayIn")
+  field(SCAN, "I/O Intr")
+  field(INP,  "@asyn($(DPORT),0,1) WF_THIST")
+  field(FTVL, "LONG")
+  field(NELM, "200")
+}
+#-------------------------------------
+
+#--- The next 4 records are used to control how many messages
+#--- are allowed in the low priority message queue (in drvMBus) ----
+record(longout, "$(P):NumLPQMax"){
+  field(DESC, "Low prio queue length")
+  field(OUT,  "$(P):NumLPQMax_Write PP")
+}
+record(longout, "$(P):NumLPQMax_Write"){
+  field(SDIS, "$(P):NumLPQMax_Sync.PACT")
+  field(DISV, "1")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(DPORT),0,1) LO_ALLOWINLQ")
+}
+record(longin, "$(P):NumLPQMax_RBV"){
+  field(DESC, "Low prio queue length")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(DPORT),0,1) LI_ALLOWINLQ")
+  field(SCAN, "I/O Intr")
+  field(FLNK, "$(P):NumLPQMax_Sync")
+  field(PINI, "YES")
+}
+record(longout, "$(P):NumLPQMax_Sync"){
+  field(DOL,  "$(P):NumLPQMax_RBV NPP")
+  field(OMSL, "closed_loop")
+  field(OUT,  "$(P):NumLPQMax PP")
+}
+#-------------------------------------
+
+#-- Global error flag  -----------------
+record(bi, "$(P):Error"){
+  field(DESC, "Error summary")
+  field(ZNAM, "OK")
+  field(ONAM, "Error")
+  field(ZSV,  "NO_ALARM")
+  field(OSV,  "MAJOR")
+}
+#-------------------------------------
+

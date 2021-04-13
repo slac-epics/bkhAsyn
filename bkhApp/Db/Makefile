@@ -4,6 +4,7 @@ include $(TOP)/configure/CONFIG
 DB += drvbkh.db
 DB += readwrite.db
 DB += b9000.db
+DB += bk9000.db
 DB += b9000RRegs.db
 DB += b9000WRegs.db
 DB += bkhADrv.db
