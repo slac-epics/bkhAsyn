@@ -26,6 +26,7 @@
 #include <envDefs.h>
 #include <iocsh.h>
 #include <alarm.h>
+#include <db_access_routines.h>
 
 #include "drvBkhErr.h"
 #include "drvBkhAsyn.h"
@@ -68,8 +69,11 @@ void drvBkhAsyn::updateThread(){
 
   if (_motor) updt = MOTUPDT;
 
-  epicsThreadSleep(1.0);
-
+  // Wait until iocInit is finished
+  while (!interruptAccept) {
+      epicsThreadSleep(0.1);
+  }
+  
   while(1) {
     epicsThreadSleep(_tout);
     if (_initdone) {
