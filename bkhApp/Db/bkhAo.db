@@ -13,7 +13,7 @@ record(ao, "$(P):$(R)_$(ATTR)SETPT"){
   field(LINR, "SLOPE")
   field(ESLO, "$(ESLO)")
   field(EOFF, "$(EOFF)")
-  field(PINI, "YES")
+#  field(PINI, "YES")
   field(PREC, "$(PREC)")
   field(DRVL, "$(DRVL="")")
   field(DRVH, "$(DRVH="")")

@@ -18,7 +18,7 @@ record(ao, "$(P)$(R="")$(ATTR)"){
   field(DRVH, "$(DRVH="")")
   field(LOPR, "$(LOPR="")")
   field(HOPR, "$(HOPR="")")
-  field(PINI, "YES")
+#  field(PINI, "YES")
   field(FLNK, "$(P)$(R="")$(ATTR)_write")
 }
 record(longout, "$(P)$(R="")$(ATTR)_write"){
