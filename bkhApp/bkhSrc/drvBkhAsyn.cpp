@@ -25,6 +25,7 @@
 #include <epicsExport.h>
 #include <envDefs.h>
 #include <iocsh.h>
+#include <alarm.h>
 
 #include "drvBkhErr.h"
 #include "drvBkhAsyn.h"
@@ -781,10 +782,34 @@ void drvBkhAsyn::_setError(const char* msg, int flag){
 /*-----------------------------------------------------------------------------
  * An error status changed, report it.
  *---------------------------------------------------------------------------*/
- setIntegerParam( _biError,flag+1);
-  setIntegerParam( _biError,flag);
-  _message( msg);
-  if(pbkherr) pbkherr->setErrorFlag( _myErrId,flag);
+  int stat, sevr;  
+
+  // Determine alarm STAT/SEVR
+  if (flag) {
+    stat = COMM_ALARM;
+    sevr = INVALID_ALARM;
+  } else {
+    stat = NO_ALARM;
+    sevr = NO_ALARM;
+  }
+
+  // Set alarms for all parameters and channels
+  for (int param = 0; param < BKH_PARAMS; param++) {
+    for (int chan = 0; chan < _nchan; chan++) {
+      if (param != _biError) {
+        setParamAlarmStatus(chan, param, stat);
+        setParamAlarmSeverity(chan, param, sevr);
+      }
+      callParamCallbacks(chan);
+    }
+  }
+
+  // Set error flag for the module and write to the error message record
+  setIntegerParam(_biError, flag + 1);
+  setIntegerParam(_biError, flag);
+  _message(msg);
+  if(pbkherr) pbkherr->setErrorFlag(_myErrId, flag);
+
   callParamCallbacks();
 }
 
