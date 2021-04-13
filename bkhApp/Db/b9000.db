@@ -1,15 +1,19 @@
+
+#----- Bus coupler records -------------------------------------------
 record(stringin, "$(P):900R_NAME"){
   field(DESC, "$(IOC="")")
   field(VAL,  "$(LOC="")")
 }
+
 record(stringin, "$(P):900R_MID"){
-  field(DESC, "Bus Coupler ID:")
+  field(DESC, "Bus Coupler ID")
   field(DTYP, "asynOctetRead")
   field(INP,  "@asyn($(RPORT),0,1)SI_MID")
   field(SCAN, "I/O Intr")
 }
+
 record(bo, "$(P):900W_WD_RESET"){
-  field(DESC, "Reset:")
+  field(DESC, "Watchdog Reset")
   field(DTYP, "asynInt32")
   field(OUT,  "@asyn($(WPORT),0,1)BO_WDRST")
   field(HIGH, "0.1")
@@ -17,8 +21,9 @@ record(bo, "$(P):900W_WD_RESET"){
   field(ONAM, "on")
   field(VAL,  "0")
 }
+
 record(bo, "$(P):900R_CINIT"){
-  field(DESC, "Init:")
+  field(DESC, "Read coupler ID")
   field(DTYP, "asynInt32")
   field(OUT,  "@asyn($(RPORT),0,1)BO_CINIT")
   field(HIGH, "0.1")
@@ -27,8 +32,9 @@ record(bo, "$(P):900R_CINIT"){
   field(VAL,  "0")
   field(PINI, "YES")
 }
+
 record(bo, "$(P):900R_REF"){
-  field(DESC, "Refresh:")
+  field(DESC, "Read coupler data")
   field(DTYP, "asynInt32")
   field(OUT,  "@asyn($(RPORT),0,1)BO_REFRESH")
   field(HIGH, "0.1")
@@ -37,6 +43,7 @@ record(bo, "$(P):900R_REF"){
   field(VAL,  "0")
 }
 
+#----- Read/write memory address
 record(longout, "$(P):DBG_MADDR"){
   field(DESC, "Mem Addr:")
   field(DTYP, "asynInt32")
@@ -44,6 +51,7 @@ record(longout, "$(P):DBG_MADDR"){
   field(VAL,  "0")
   field(PINI, "YES")
 }
+
 record(longout, "$(P):DBG_MFUNC"){
   field(DESC, "Modbus Func:")
   field(DTYP, "asynInt32")
@@ -51,17 +59,20 @@ record(longout, "$(P):DBG_MFUNC"){
   field(VAL,  "3")
   field(PINI, "YES")
 }
+
 record(longout, "$(P):DBG_MVAL"){
   field(DESC, "Mem Value:")
   field(DTYP, "asynInt32")
   field(OUT,  "@asyn($(DPORT),0,1)LO_MVAL")
 }
-record(longout, "$(P):DBG_MVAL"){
+
+record(longout, "$(P):DBG_MVAL_RBV"){
   field(DESC, "RBV:")
   field(DTYP, "asynInt32")
   field(SCAN, "I/O Intr")
   field(OUT,  "@asyn($(DPORT),0,1)LI_MVAL")
 }
+
 record(bo, "$(P):DBG_GETMEM"){
   field(DESC, "Get:")
   field(DTYP, "asynInt32")
@@ -70,6 +81,7 @@ record(bo, "$(P):DBG_GETMEM"){
   field(ONAM, "on")
   field(VAL,  "0")
 }
+
 record(bo, "$(P):DBG_PUTMEM"){
   field(DESC, "Put:")
   field(DTYP, "asynInt32")
@@ -79,6 +91,9 @@ record(bo, "$(P):DBG_PUTMEM"){
   field(ONAM, "on")
   field(VAL,  "0")
 }
+#-------------------------------------
+
+#----- I/O Histogram
 record(bo, "$(P):DBG_EN_HIST"){
   field(DESC, "Enable:")
   field(DTYP, "asynInt32")
@@ -113,8 +128,9 @@ record(waveform, "$(P):DBG_TIME_HIST"){
   field(FTVL, "LONG")
   field(NELM, "200")
 }
+#-------------------------------------
 
-#--- Next 4 records are used to control how many messages
+#--- The next 4 records are used to control how many messages
 #--- are allowed in the low priority message queue (in drvMBus) ----
 record(longout, "$(P):DBG_ALW_INLQ"){
   field(DESC, "Allow In Low Prio Q")
@@ -138,12 +154,15 @@ record(longout, "$(P):DBG:ALW_INLQ_Sync"){
   field(OMSL, "closed_loop")
   field(OUT,  "$(P):DBG_ALW_INLQ PP")
 }
+#-------------------------------------
 
-#-- an error flag for "Resource unavailable..." -----------------
+#-- Error flag for "Resource unavailable..." -----------------
 record(bi, "$(P):9000_ERROR"){
-  field(DESC, "Error flag:")
+  field(DESC, "Error flag")
   field(ZNAM, "OK")
   field(ONAM, "Error")
   field(ZSV,  "NO_ALARM")
   field(OSV,  "MAJOR")
 }
+#-------------------------------------
+
