@@ -181,11 +181,6 @@ protected:
   int _loPollTmo;
   int _refreshRW;
 
-#define FIRST_COMMAND _wfMessage
-#define LAST_COMMAND _refreshRW
-#define N_PARAMS ((int)(&LAST_COMMAND - &FIRST_COMMAND + 1))
-
-
 enum {ixWfMessage,  ixSiName,     ixLiRReg,   ixLiSByte,  ixLiDataIn,
       ixLiSWord,    ixLoCByte,    ixLiCByte,  ixLoDataOut,ixLiDataOut,
       ixLoCWord,    ixLiCWord,    ixLoRChan,  ixLoRegNum, ixLiSBVal,

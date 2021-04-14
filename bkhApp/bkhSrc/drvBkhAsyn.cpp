@@ -573,7 +573,7 @@ void drvBkhAsyn::_gotData(int addr, int pix, word* pd, int len){
     v = (v | 0xffff0000);
   }
   
-  printf("%s::_gotData: _port=%s, addr=%d, pix=%d, v=%d, _nchan=%d\n", dname, _port, addr, pix, v, _nchan);
+  //printf("%s::_gotData: _port=%s, addr=%d, pix=%d, v=%d, _nchan=%d\n", dname, _port, addr, pix, v, _nchan);
   setIntegerParam(addr, pix, v);
   callParamCallbacks(addr);
 }
@@ -660,7 +660,7 @@ void drvBkhAsyn::_refresh(const int arr[], int size){
  *---------------------------------------------------------------------------*/
   asynStatus stat;
 
-  printf("_refresh: dname=%s, _port=%s, _saddr=%d\n", dname, _port, _saddr);
+  //printf("_refresh: dname=%s, _port=%s, _saddr=%d\n", dname, _port, _saddr);
 
   for(int i=0; i<size; i++){
     stat = readOne(arr[i], _liCReg);
@@ -716,7 +716,7 @@ asynStatus drvBkhAsyn::readInt32(asynUser* pau, epicsInt32* v){
 
   if ((addr < 0) || (addr > _nchan)) return(asynError);
     
-  printf("readInt32: _port=%s, addr=%d, *v=%d, ix=%d, _firstix=%d\n", _port, addr, *v, ix, _firstix);
+  //printf("readInt32: _port=%s, addr=%d, *v=%d, ix=%d, _firstix=%d\n", _port, addr, *v, ix, _firstix);
 
   switch(ix){
     case ixLiPollTmo:
@@ -786,7 +786,7 @@ asynStatus drvBkhAsyn::writeInt32(asynUser* pau, epicsInt32 v){
   stat = getAddress(pau, &addr); 
   if (stat != asynSuccess) return stat;
 
-  printf("writeInt32: _port=%s, addr=%d, v=%d\n", _port, addr, v);
+  //printf("writeInt32: _port=%s, addr=%d, v=%d\n", _port, addr, v);
 
   switch(ix){
     case ixBoInit:    
@@ -928,35 +928,43 @@ void drvBkhAsyn::_setError(const char* msg, int flag){
 /*-----------------------------------------------------------------------------
  * An error status changed, report it.
  *---------------------------------------------------------------------------*/
-  int stat, sevr;  
-
-  // Determine alarm STAT/SEVR
-  if (flag) {
-    stat = COMM_ALARM;
-    sevr = INVALID_ALARM;
-  } else {
-    stat = NO_ALARM;
-    sevr = NO_ALARM;
-  }
-
-  // Set alarms for all parameters and channels
-  for (int param = 0; param < N_PARAMS; param++) {
-    for (int chan = 0; chan < _nchan; chan++) {
-      if (param != _biError) {
-        setParamAlarmStatus(chan, param, stat);
-        setParamAlarmSeverity(chan, param, sevr);
-      }
-      callParamCallbacks(chan);
+    const char *iam = "_setError";
+    int stat, sevr, nParams;
+    asynStatus status;
+  
+    // Determine alarm STAT/SEVR
+    if (flag) {
+        stat = COMM_ALARM;
+        sevr = INVALID_ALARM;
+    } else {
+        stat = NO_ALARM;
+        sevr = NO_ALARM;
     }
-  }
-
-  // Set error flag for the module and write to the error message record
-  setIntegerParam(_biError, flag + 1);
-  setIntegerParam(_biError, flag);
-  _message(msg);
-  if(pbkherr) pbkherr->setErrorFlag(_myErrId, flag);
-
-  callParamCallbacks();
+  
+    // Set alarms for all parameters and channels
+    status = getNumParams(&nParams);
+    if (status != asynSuccess) {
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                  "%s::%s: getNumParams failed for port %s\n", 
+                  dname, iam, _port);
+    }
+    for (int param = 0; param < nParams; param++) {
+        for (int addr = 0; addr < _nchan; addr++) {
+            if (param != _biError) {
+                setParamAlarmStatus(addr, param, stat);
+                setParamAlarmSeverity(addr, param, sevr);
+            }
+            callParamCallbacks(addr);
+        }
+    }
+  
+    // Set error flag for the module and write to the error message record
+    setIntegerParam(_biError, flag + 1);
+    setIntegerParam(_biError, flag);
+    _message(msg);
+    if(pbkherr) pbkherr->setErrorFlag(_myErrId, flag);
+  
+    callParamCallbacks();
 }
 
 // Configuration routine.  Called directly, or from the iocsh function below
