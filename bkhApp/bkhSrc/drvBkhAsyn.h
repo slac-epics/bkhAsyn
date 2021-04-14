@@ -3,8 +3,9 @@
  * asynPortDriver        +--- drvBkhAsyn
  *
  * This driver is used to implement a driver class object to do IO with
- * a Beckhoff IO terminals using modbus TCP protocol.
+ * Beckhoff I/O terminals using the modbusTCP protocol.
  * Started on 6/26/2013, zms
+ * Updated 2019-2021 mdunning
  *---------------------------------------------------------------------------*/
 
 #ifndef _drvBkhAsyn_h
@@ -89,7 +90,7 @@ typedef enum {couplerE, analogSE, analogUE, digiInE, digiOutE, motorE} type_e;
 class drvBkhAsyn: public asynPortDriver{
 public:
   drvBkhAsyn(char* name, int id, const char* port, int addr, int func, int len,
-        int nchan, int msec, int nparm=0, int mflag=0);
+        int nchan, int msec, int mflag=0);
 
   virtual void resultCB(iodone_t* p);
   virtual void updateUser(double tmo);

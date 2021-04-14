@@ -1,13 +1,16 @@
-/* drvBkhAsyn.cc
- * This device driver is derived from drvBkhBase and asynPortDriver class.
- * Started on 6/26/2013, zms.
- * This device driver is for all DIO and analog bus terminals.  It serves as
- * a base class for the KL2531 and KL2541 stepper motor controller bus
- * terminals, where functionality needed for this is added.
- * This device driver uses the drvMBus class object, which does the modbus IO.
- * This driver calls mbusDoIO method in drvMBus class object requesting an
- * IO operation.  Results of the IO are returned via a callback routine
- * previously registerd.
+/* drvBkhAsyn.cpp
+ * This device driver is derived from the asynPortDriver class.
+ * Started on 6/26/2013, zms
+ * Updated 2019-2021 mdunning
+ *
+ * This device driver is for all DIO and analog bus terminals.  
+ * It also serves as a base class for the KL2531 and KL2541 stepper motor bus
+ * terminals, where the functionality needed for this is added.
+ *
+ * This driver uses the drvMBus class to do the modbus IO.
+ * It calls the mbusDoIO() method from the drvMBus class, which requests an
+ * IO operation via a message queue.  Results of the IO are returned via a 
+ * registered callback routine.
  *---------------------------------------------------------------------------*/
 
 #include <stdlib.h>
@@ -54,7 +57,7 @@ static void updateThreadC(void* p){
 }
 
 drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func, int len,
-    int nchan, int msec, int nparm, int mflag):
+    int nchan, int msec, int mflag):
     asynPortDriver(port, nchan,
         asynInt32Mask|asynInt32ArrayMask|asynOctetMask|asynDrvUserMask,
         asynInt32Mask|asynInt32ArrayMask|asynOctetMask,
@@ -70,7 +73,6 @@ drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func,
  *  len is modbus memory segment length
  *  nchan is the number of channels
  *  msec is IO thread timeout in miliseconds
- *  nparm is currently not used
  *  mflag is a motor flag 
  * Parameters passed to the asynPortDriver constructor:
  *  port name
@@ -143,11 +145,9 @@ drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func,
   createParam(loPollTmoStr,     asynParamInt32,         &_loPollTmo);
   createParam(refreshRWStr,     asynParamInt32,         &_refreshRW);
 
-  callParamCallbacks();
-
   _pmbus = findMBus(_name);
 
-  if(pbkherr) _myErrId = pbkherr->registerClient(port);
+  if (pbkherr) _myErrId = pbkherr->registerClient(port);
 
   if (!_pmbus) {
     _setError("ERROR: Modbus pointer is null", 1);
@@ -655,11 +655,9 @@ asynStatus drvBkhAsyn::_getBits(char* pd, int nch){
 
 void drvBkhAsyn::_refresh(const int arr[], int size){
 /*-----------------------------------------------------------------------------
- * Request reading an array of registers.
+ * Request to read an array of registers.
  *---------------------------------------------------------------------------*/
   asynStatus stat;
-
-  //printf("_refresh: dname=%s, _port=%s, _saddr=%d\n", dname, _port, _saddr);
 
   for(int i=0; i<size; i++){
     stat = readOne(arr[i], _liCReg);
@@ -690,14 +688,16 @@ void drvBkhAsyn::_getRegisters(){
   const char* iam = "_getRegisters";
   asynStatus stat;
 
-  stat = doReadH(_saddr+WOFFST, 0, 2, 0, _loCByte);
-  if(stat!=asynSuccess)
+  stat = doReadH(_saddr + WOFFST, 0, 2, 0, _loCByte);
+  if (stat != asynSuccess)
     errlogPrintf("%s::%s:_loCByte: failed stat=%d\n", dname, iam, stat);
-  stat = doReadH(_saddr+WOFFST, 0, 2, 1, _loDataOut);
-  if(stat!=asynSuccess)
+
+  stat = doReadH(_saddr + WOFFST, 0, 2, 1, _loDataOut);
+  if (stat != asynSuccess)
     errlogPrintf("%s::%s:_loDataOut: failed stat=%d\n", dname, iam, stat);
-  stat = doReadH(_saddr+WOFFST, 0, 2, 2, _loCWord);
-  if(stat!=asynSuccess)
+
+  stat = doReadH(_saddr + WOFFST, 0, 2, 2, _loCWord);
+  if (stat != asynSuccess)
     errlogPrintf("%s::%s:_loCWord: failed stat=%d\n", dname, iam, stat);
 }
 
@@ -783,8 +783,6 @@ asynStatus drvBkhAsyn::writeInt32(asynUser* pau, epicsInt32 v){
 
   stat = getAddress(pau, &addr); 
   if (stat != asynSuccess) return stat;
-
-  //printf("writeInt32: _port=%s, addr=%d, v=%d\n", _port, addr, v);
 
   switch(ix){
     case ixBoInit:    
@@ -914,7 +912,7 @@ asynStatus drvBkhAsyn::writeCWord(int addr, int v){
   asynStatus stat = asynSuccess; 
   int maddr, wfunc;
 
-  maddr = _saddr+WOFFST;
+  maddr = _saddr + WOFFST;
   wfunc = MODBUS_WRITE_SINGLE_REGISTER;
   stat = doWrite(maddr, addr, 2, 2, wfunc, v);
 
