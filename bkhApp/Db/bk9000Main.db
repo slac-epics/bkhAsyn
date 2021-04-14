@@ -30,7 +30,8 @@ record(bo, "$(P):ReadData"){
   field(ZNAM, "off")
   field(ONAM, "on")
   field(VAL,  "0")
-  field(PINI, "1")
+  field(PINI, "$(PINI=1)")
+  field(SCAN, "$(SCAN="10 second")")
   field(FLNK, "$(P):ReadID")
 }
 
@@ -42,7 +43,6 @@ record(bo, "$(P):ReadID"){
   field(ZNAM, "off")
   field(ONAM, "on")
   field(VAL,  "0")
-#  field(PINI, "1")
   field(FLNK, "$(P):ReadRWData")
 }
 
