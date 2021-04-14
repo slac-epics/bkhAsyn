@@ -1,7 +1,9 @@
 /* drvMBus.cpp
- * This device driver is a self contained class that does modbus protocol.
- * Started on 6/26/2013, zms.
+ * This device driver is a self contained class that does the modbus IO.
+ * Started on 6/26/2013, zms
+ * Updated 2019-2021 mdunning
  *---------------------------------------------------------------------------*/
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>

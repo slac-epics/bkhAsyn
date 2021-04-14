@@ -1,15 +1,16 @@
 /* drvMBus.h
- * Asyn driver class that implements modbus protocol.  It uses the essence
- * from modbus support module written by Mark Rivers.
- * This driver was developed to be used in Beckhoff control IOC.  It does the
- * modbus protocol IO via the doModbusIO routine in modbusAsyn.c.  The IOs are
- * dispatched from an IOThread.  Requests are received from Beckhoff device
- * driver layer via the mbusDoIO method, which are scheduled for execution by
- * placing them in an EPICS message queue.  Entries are removed from the
- * message queue in IOThread and processed in the order received.
+ * An asyn driver class that implements the modbus protocol.  It is based on
+ * the epics modbus support module by Rivers and others.
  *
- * This device driver does not know anything about Beckhoff, so the requests
- * must be properly phrased.  This is no longer true.  I have implemented
+ * This driver was developed to control Beckhoff bus terminals in an epics IOC.
+ * It does the modbus IO via the doModbusIO() routine in modbusAsyn.c.  
+ * The IOs are dispatched from an IOThread.  Requests are received from the Beckhoff 
+ * driver layer via the mbusDoIO() method, which are scheduled for execution by
+ * placing them in an epics message queue.  Entries are removed from the
+ * message queue in the IOThread() function and processed in the order received.
+ *
+ * This device driver does not know anything about Beckhoffs per se, so the requests
+ * must be properly phrased.  Update: this is no longer true.  I have implemented
  * a handful of "special" methods which implement a sequence of IO operations
  * needed to achieve complex tasks which need to be done for a single end, like
  * read from or write to a Beckhoff hidden register.  Some of these "special"
@@ -17,6 +18,7 @@
  * controller bus terminals.  Thus with these functions, complex operations
  * are performed with a single request.
  * Started on 6/26/2013, zms
+ * Updated 2019-20121 mdunning
  *---------------------------------------------------------------------------*/
 
 #ifndef _drvMBus_h
