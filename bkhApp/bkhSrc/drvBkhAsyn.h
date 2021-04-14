@@ -26,7 +26,6 @@
 // data and analogUE is for unsigned analog data.
 typedef enum {couplerE, analogSE, analogUE, digiInE, digiOutE, motorE} type_e;
 
-#define NCHAN  33
 #define NWFBYT 100
 
 #define wfMessageStr    "WF_MESSAGE"
@@ -85,7 +84,7 @@ typedef enum {couplerE, analogSE, analogUE, digiInE, digiOutE, motorE} type_e;
 class drvBkhAsyn: public asynPortDriver{
 public:
   drvBkhAsyn(char* name, int id, const char* port, int addr, int func, int len,
-        int nchan, int msec, int nparm, int mflag = 0);
+        int nchan, int msec, int nparm=0, int mflag=0);
 
   virtual void resultCB(iodone_t* p);
   virtual void updateUser(double tmo);
@@ -102,7 +101,7 @@ protected:
   asynStatus   doReadH(int saddr, int addr, int n, int a, int pix);
   asynStatus   doReadL(int saddr, int addr, int n, int a, int pix);
   asynStatus   doWrite(int saddr, int addr, int n, int a,
-                       int func, int d, int pix = 0);
+                       int func, int d, int pix=0);
   asynStatus   readChannel(int addr, int pix1, int pix2);
   asynStatus   readOne(int addr, int pix);
   asynStatus   writeChan(int addr, int v);

@@ -85,7 +85,7 @@ drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func,
   _port = (char*)callocMustSucceed(strlen(port)+1, sizeof(char), dname);
   strcpy((char*)_port, port);
   _name = epicsStrDup(name);
-  _nchan = MIN(nchan, NCHAN); 
+  _nchan = nchan; 
   _tout = msec/1000.0;
   _saddr = addr; _mfunc = func; _mlen = len; _motor = mflag; _id = id;
   _errInResult = _errInWrite = 0;
@@ -714,7 +714,7 @@ asynStatus drvBkhAsyn::readInt32(asynUser* pau, epicsInt32* v){
 
   ix = pau->reason-_firstix;
 
-  if ((addr < 0) || (addr >= NCHAN)) return(asynError);
+  if ((addr < 0) || (addr > _nchan)) return(asynError);
     
   printf("readInt32: _port=%s, addr=%d, *v=%d, ix=%d, _firstix=%d\n", _port, addr, *v, ix, _firstix);
 
