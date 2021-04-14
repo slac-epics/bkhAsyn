@@ -5,7 +5,7 @@ file bk9000Main.db {
 
 file bk9000ReadReg.db {
 pattern
-    {  ATTR,  N,                   DESC,     PORT,  EGU}
+    {  ATTR,  N,                   DESC,     PORT,  EGU, HIGH,   HSV}
     {PLCInt, 10,        "PLC Interface", $(RPORT),   ""}
     {  Diag, 11,        "Bus Term Diag", $(RPORT),   ""}
     {Status, 12,   "Bus Coupler Status", $(RPORT),   ""}
@@ -13,15 +13,15 @@ pattern
     { AILen, 17,    "Anlg Input Length", $(RPORT),   ""}
     { BOLen, 18,   "Digi Output Length", $(RPORT),   ""}
     { BILen, 19,    "Digi Input Length", $(RPORT),   ""}
-    {WDTime, 32,  "Watchdog Curr. Time", $(RPORT), "ms"}
+    {WDTime, 32,  "Watchdog Curr. Time", $(RPORT), "ms",    1, MINOR}
 }
 
 file bk9000WriteReg.db {
 pattern
-    {    ATTR,  N,                    DESC,     PORT,  EGU}
+    {    ATTR,  N,                    DESC,     PORT,  EGU, HIGH,   HSV}
     { PLCIntW,  0,         "PLC Interface", $(WPORT),   ""}
     {   DiagW,  1, "Bus Term Diag. Inter.", $(WPORT),   ""}
-    {  WDTout, 22,      "Watchdog Timeout", $(WPORT), "ms"}
+    {  WDTout, 22,      "Watchdog Timeout", $(WPORT), "ms",    1, MINOR}
     {WDRstReg, 23,    "Watchdog Reset Reg", $(WPORT),   ""}
     {  WDType, 24,         "Watchdog Type", $(WPORT),   ""}
     {MTCPMode, 25,       "Modbus TCP Mode", $(WPORT),   ""}
