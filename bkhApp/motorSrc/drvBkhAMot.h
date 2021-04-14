@@ -153,8 +153,8 @@ enum{ unknownH,moveToLimH,atLimMoveH,homedH};
 
 class drvBkhAMot: public drvBkhAsyn{
 public:
-  drvBkhAMot(const char* name, int id,const char* port,int addr,int func,int len,
-		int nchan,int msec,int nparm,int ro);
+  drvBkhAMot(const char* name, int id, const char* port, int addr, int func, int len,
+		int nchan, int msec, int ro);
 
   void		motorSetup( const char* port,int home,int nlim,int plim);
   virtual void resultCB( iodone_t* p);
@@ -200,11 +200,6 @@ protected:
 	_boHome,    _biHomed,  _biAtHome,  _liStrPos,  _liEndPos,
 	_boMInit,   _boMReady, _boMTest,   _mbbiHStat, _loMRange,
 	_loSPosAbs;
-
-//#define FIRST_ITEM _liAbsPos
-//#define LAST_ITEM  _loEepReg
-//#define MOT_PARAMS (&LAST_ITEM - &FIRST_ITEM + 1)
-#define MOT_PARAMS 76
 
 enum{	ixLiAbsPos,  ixLoSetPos, ixLiSPos,    ixLiSetPos,  ixState,
 	ixLoIncr,    ixLoJogVal, ixBoJogFor,  ixBoJogRev,  ixBoGoPos,

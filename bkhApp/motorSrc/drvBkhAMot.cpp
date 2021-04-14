@@ -642,7 +642,7 @@ asynStatus drvBkhAMot::readInt32( asynUser* pau,epicsInt32* v){
   asynStatus stat=asynSuccess; int ix,addr;
   stat=getAddress(pau,&addr); if(stat!=asynSuccess) return(stat);
   ix=pau->reason-_firstix;
-  if(addr<0||addr>=NCHAN) return(asynError);
+  if(addr<0||addr>=_nchan) return(asynError);
   switch( ix){
     case ixLiAbsPos:	_readPosition(); *v=0; break;
     case ixLiSPos:	*v=0; break;
@@ -783,9 +783,9 @@ printf( "%s::writeInt32: ix=%d,kx=%d,addr=%d,v=%d,spos=%d\n",dname,ix,kx,addr,v,
   stat=callParamCallbacks();
   return(stat);
 }
-drvBkhAMot::drvBkhAMot(const char* name, int id,const char* port,int addr,int func,
-	int len,int nchan,int tmof,int nparm,int tmos):
-	drvBkhAsyn((char*)name,id,port,addr,func,len,nchan,tmos,nparm,1){
+drvBkhAMot::drvBkhAMot(const char* name, int id, const char* port, int addr, int func,
+	int len, int nchan, int tmof, int tmos):
+	drvBkhAsyn((char*)name, id, port, addr, func, len, nchan, tmos, 1){
 /*-----------------------------------------------------------------------------
  * Constructor for the drvBkhAMot class. Calls constructor for the drvBkhAsyn
  * base class. Where
@@ -807,7 +807,7 @@ drvBkhAMot::drvBkhAMot(const char* name, int id,const char* port,int addr,int fu
   _saddr=addr; _mfunc=func; _mlen=len;
   _toutf=(float)tmof/1000.0;;
   _touts=(float)tmos/1000.0;;
-  _nchan=MIN(nchan,NCHAN);
+  _nchan=nchan;
   _softlimlo=_softlimhi=_softlimon=_joginc=_cb=_gotAPos=0;
   _cnt=_initdone=_movingOffLim=0; _id=id;
   _mstate=motNotReady; _keepEn=1; _debug=0;
@@ -951,8 +951,7 @@ int drvBkhAMotConfig(const char* name, const char* port,int func,int addr,int le
  *---------------------------------------------------------------------------*/
   drvBkhAMot *pthis;
   motorList_t *p;
-  int nparms=MOT_PARAMS+BKH_PARAMS;
-  pthis=new drvBkhAMot(name,motorE,port,addr,func,len,nchan,tmof,nparms,tmos);
+  pthis = new drvBkhAMot(name, motorE, port, addr, func, len, nchan, tmof, tmos);
 
   init_pmotor_list();
   p = (motorList_t *) malloc(sizeof(motorList_t));
