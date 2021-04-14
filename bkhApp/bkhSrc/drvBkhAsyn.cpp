@@ -940,7 +940,7 @@ void drvBkhAsyn::_setError(const char* msg, int flag){
   }
 
   // Set alarms for all parameters and channels
-  for (int param = 0; param < BKH_PARAMS; param++) {
+  for (int param = 0; param < N_PARAMS; param++) {
     for (int chan = 0; chan < _nchan; chan++) {
       if (param != _biError) {
         setParamAlarmStatus(chan, param, stat);
@@ -970,7 +970,7 @@ int drvBkhAsynConfig(char *name, int id, const char* port, int func, int addr, i
  *  nchan is the actual number of channels that will be added.
  *---------------------------------------------------------------------------*/
   drvBkhAsyn* p;
-  p = new drvBkhAsyn(name, id, port, addr, func, len, nchan, msec, BKH_PARAMS);
+  p = new drvBkhAsyn(name, id, port, addr, func, len, nchan, msec);
   p->initDone(1);
   return(asynSuccess);
 }

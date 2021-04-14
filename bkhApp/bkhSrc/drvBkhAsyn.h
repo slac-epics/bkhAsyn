@@ -123,20 +123,63 @@ protected:
   void         _refresh(const int arr[], int size);
   void         _getRegisters();
 
-  int _wfMessage,  _siName,     _liRReg,    _liSByte,   _liDataIn,
-      _liSWord,    _loCByte,    _liCByte,   _loDataOut, _liDataOut,
-      _loCWord,    _liCWord,    _loRChan,   _loRegNum,  _liSBVal,
-      _liRegVal,   _loWRegVal,  _liWRegVal, _siMID,     _loCReg,
-      _liCReg,     _boBitVal,   _biBitVal,  _boInit,    _boRefresh,
-      _loMAddr,    _loMVal,     _liMVal,    _loMFunc,   _boMGet,
-      _boMPut,     _boWDRst,    _wfTHist,   _boTHist,   _boGetHist,
-      _boClrHist,  _biError,    _boTest,    _boCInit,   _liAllowInLQ,
-      _loAllowInLQ,_liPollTmo,  _loPollTmo, _refreshRW;
+  int _wfMessage;
+  int _siName;
+  int _liRReg;
+  int _liSByte;
+  int _liDataIn;
+  
+  int _liSWord;
+  int _loCByte;
+  int _liCByte;
+  int _loDataOut;
+  int _liDataOut;
+  
+  int _loCWord;
+  int _liCWord;
+  int _loRChan;
+  int _loRegNum;
+  int _liSBVal;
+  
+  int _liRegVal;
+  int _loWRegVal;
+  int _liWRegVal;
+  int _siMID;
+  int _loCReg;
+  
+  int _liCReg;
+  int _boBitVal;
+  int _biBitVal;
+  int _boInit;
+  int _boRefresh;
+  
+  int _loMAddr;
+  int _loMVal;
+  int _liMVal;
+  int _loMFunc;
+  int _boMGet;
+  
+  int _boMPut;
+  int _boWDRst;
+  int _wfTHist;
+  int _boTHist;
+  int _boGetHist;
+  
+  int _boClrHist;
+  int _biError;
+  int _boTest;
+  int _boCInit;
+  int _liAllowInLQ;
+  
+  int _loAllowInLQ;
+  int _liPollTmo;
+  int _loPollTmo;
+  int _refreshRW;
 
-//#define FIRST_ITEM _wfMessage
-//#define LAST_ITEM  _loPollTmo
-//#define BKH_PARAMS (&LAST_ITEM - &FIRST_ITEM + 1)
-#define BKH_PARAMS 44
+#define FIRST_COMMAND _wfMessage
+#define LAST_COMMAND _refreshRW
+#define N_PARAMS ((int)(&LAST_COMMAND - &FIRST_COMMAND + 1))
+
 
 enum {ixWfMessage,  ixSiName,     ixLiRReg,   ixLiSByte,  ixLiDataIn,
       ixLiSWord,    ixLoCByte,    ixLiCByte,  ixLoDataOut,ixLiDataOut,
