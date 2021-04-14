@@ -20,6 +20,11 @@
 #define CHNUPDT         998     // pix value to label non motor update
 #define MOTUPDT         999     // pix value to label motor update request.
 
+// Coupler read-only register offsets, starting at address 0x1000.
+static const int RRegs[] = {10, 11, 12, 16, 17, 18, 19, 32};
+// Coupler read/write register offsets, starting at address 0x110a.
+static const int RWRegs[] = {0, 1, 22, 23, 24, 25};
+
 // this is the type that is in _id variable. _id is initialized from a st.cmd
 // configuration file. It is used mainly to determine how data read in is to be
 // represented.  analogSE is for signed analog

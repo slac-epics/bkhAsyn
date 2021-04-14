@@ -33,9 +33,6 @@
 
 #define STRLEN 128
 
-static const int RRegs[] = {10, 11, 12, 16, 17, 18, 19, 32};
-static const int RWRegs[] = {0, 1, 22, 23, 24, 25};
-
 static const char *dname = "drvBkhAsyn";
 
 static void IODoneCB(iodone_t data){
