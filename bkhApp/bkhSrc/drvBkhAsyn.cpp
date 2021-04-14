@@ -143,7 +143,6 @@ drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func,
   createParam(loPollTmoStr,     asynParamInt32,         &_loPollTmo);
   createParam(refreshRWStr,     asynParamInt32,         &_refreshRW);
 
-  _firstix = _wfMessage;
   callParamCallbacks();
 
   _pmbus = findMBus(_name);
@@ -709,15 +708,13 @@ asynStatus drvBkhAsyn::readInt32(asynUser* pau, epicsInt32* v){
   asynStatus stat = asynSuccess; 
   int ix, addr;
   
+  ix = pau->reason;
+
   stat = getAddress(pau, &addr); 
   if(stat != asynSuccess) return(stat);
 
-  ix = pau->reason-_firstix;
-
   if ((addr < 0) || (addr > _nchan)) return(asynError);
     
-  //printf("readInt32: _port=%s, addr=%d, *v=%d, ix=%d, _firstix=%d\n", _port, addr, *v, ix, _firstix);
-
   switch(ix){
     case ixLiPollTmo:
         *v = _tout*1000.0;
@@ -780,8 +777,9 @@ asynStatus drvBkhAsyn::writeInt32(asynUser* pau, epicsInt32 v){
   asynStatus stat = asynSuccess; 
   int maddr, n; 
   epicsInt32* pwf;
-  int addr, chan, wfunc, aa, ff, vv, rnum;
-  int ix = pau->reason-_firstix;
+  int ix, addr, chan, wfunc, aa, ff, vv, rnum;
+  
+  ix = pau->reason;
 
   stat = getAddress(pau, &addr); 
   if (stat != asynSuccess) return stat;

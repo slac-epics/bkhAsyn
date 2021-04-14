@@ -200,7 +200,6 @@ private:
   int      _mfunc;        // modbus function for this driver
   int      _mlen;        //modbus memory segment length
   double   _tout;        // sleep period in sec for IOThread
-  int      _firstix;
   int      _initdone;
   int      _nchan;
   char     _msg[NWFBYT];    // for _wfMessage record
