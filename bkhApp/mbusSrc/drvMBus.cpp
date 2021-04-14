@@ -86,7 +86,9 @@ drvMBus* findMBus(char *name) {
 drvMBus::drvMBus(drvd_t dd, int msec){
 /*-----------------------------------------------------------------------------
  * Constructor for the drvMBus class. Configures modbus IO routine using data
- * in structure dd.  msec is the IOThread delay in miliseconds.
+ * in structure dd. Parameters:
+ * dd is the data structure
+ * msec is the IOThread delay in miliseconds
  *---------------------------------------------------------------------------*/
   mBus_t* pmb = 0;
 

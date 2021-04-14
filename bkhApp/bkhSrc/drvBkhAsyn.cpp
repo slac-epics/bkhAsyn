@@ -61,20 +61,23 @@ drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func,
         ASYN_CANBLOCK|ASYN_MULTIDEVICE, 1, 0, 0){
 /*-----------------------------------------------------------------------------
  * Constructor for the drvBkhAsyn class. Calls constructor for the
- * asynPortDriver base class. Where
- *  port is the asyn port number.
- *  addr is the modbus memory segment start address,
- *  func is modbus default function for this object,
- *  len is modbus memory segment length,
- *  nchan is the actual number of channels that will be added.
- *  msec  is IO thread timeout in mili seconds.
+ * asynPortDriver base class. Parameters:
+ *  name is the modbus name used in drvMBusConfig()
+ *  id is the module type from drvBkhAsynConfig()
+ *  port is the asyn port
+ *  addr is the modbus memory segment start address
+ *  func is modbus function for this object
+ *  len is modbus memory segment length
+ *  nchan is the number of channels
+ *  msec is IO thread timeout in miliseconds
+ *  nparm is currently not used
+ *  mflag is a motor flag 
  * Parameters passed to the asynPortDriver constructor:
  *  port name
- *  max address
- *  parameter table size
+ *  max address (nchan)
  *  interface mask
- *  interrupt mask,
- *  asyn flags,
+ *  interrupt mask
+ *  asyn flags
  *  auto connect
  *  priority
  *  stack size
@@ -963,8 +966,15 @@ int drvBkhAsynConfig(char *name, int id, const char* port, int func, int addr, i
         int nchan, int msec){
 /*-----------------------------------------------------------------------------
  * EPICS iocsh callable function to call constructor for the drvBkhAsyn class.
- *  port is the asyn port,
- *  nchan is the actual number of channels that will be added.
+ *  name is the modbus name used in drvMBusConfig()
+ *  id is a unique module type identifier: 0 - coupler, 1 - analogSigned,
+ *      2 - analogUnsigned, 3 - digitalIn, 4 - digitalOut, 5 - motor.
+ *  port is the asyn port name for the driver (pick a unique short name for each module as below)
+ *  func is the modbus function (e.g. 5 - digitalOut, 2 - digitalIn, 3 - analog In/Out)
+ *  addr is the modbus starting address of the memory image (group all modules of the same modbus function together)
+ *  len is the length of the memory image, in bits (digital modules) or 16 bit words (analog modules)
+ *  nchan is the number of channels
+ *  msec is poll routine timeout in milliseconds
  *---------------------------------------------------------------------------*/
   drvBkhAsyn* p;
   p = new drvBkhAsyn(name, id, port, addr, func, len, nchan, msec);
