@@ -5,15 +5,15 @@ file bk9000Main.db {
 
 file bk9000ReadReg.db {
 pattern
-    {  ATTR,  N,                   DESC,     PORT,  EGU, HIGH,   HSV}
-    {PLCInt, 10,        "PLC Interface", $(RPORT),   ""}
-    {  Diag, 11,        "Bus Term Diag", $(RPORT),   ""}
-    {Status, 12,   "Bus Coupler Status", $(RPORT),   ""}
-    { AOLen, 16,   "Anlg Output Length", $(RPORT),   ""}
-    { AILen, 17,    "Anlg Input Length", $(RPORT),   ""}
-    { BOLen, 18,   "Digi Output Length", $(RPORT),   ""}
-    { BILen, 19,    "Digi Input Length", $(RPORT),   ""}
-    {WDTime, 32,  "Watchdog Curr. Time", $(RPORT), "ms",    1, MINOR}
+    {  ATTR,  N,                   DESC,     PORT,    EGU, HIGH,   HSV}
+    {PLCInt, 10,        "PLC Interface", $(RPORT),     ""}
+    {  Diag, 11,        "Bus Term Diag", $(RPORT),     ""}
+    {Status, 12,   "Bus Coupler Status", $(RPORT),     ""}
+    { AOLen, 16,   "Anlg Output Length", $(RPORT), "bits"}
+    { AILen, 17,    "Anlg Input Length", $(RPORT), "bits"}
+    { BOLen, 18,   "Digi Output Length", $(RPORT), "bits"}
+    { BILen, 19,    "Digi Input Length", $(RPORT), "bits"}
+    {WDTime, 32,  "Watchdog Curr. Time", $(RPORT),   "ms",    1, MINOR}
 }
 
 file bk9000WriteReg.db {
