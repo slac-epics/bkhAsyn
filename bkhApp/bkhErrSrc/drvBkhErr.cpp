@@ -152,7 +152,7 @@ asynStatus drvBkhErr::readInt32(asynUser* pau, epicsInt32* v){
 /*-----------------------------------------------------------------------------
  * Reimplementation of asynPortDriver virtual function.
  *---------------------------------------------------------------------------*/
-  asynStatus stat = asynSuccess; int ix, addr; word val;
+  asynStatus stat = asynSuccess; int ix, addr;
   stat = getAddress(pau, &addr); if(stat!=asynSuccess) return(stat);
   ix = pau->reason-_firstix;
 
@@ -194,7 +194,7 @@ asynStatus drvBkhErr::writeInt32(asynUser* pau, epicsInt32 v){
   return(stat);
 }
 
-drvBkhErr::drvBkhErr(const char* port): asynPortDriver(port, NSLOTS, PARMS,
+drvBkhErr::drvBkhErr(const char* port): asynPortDriver(port, NSLOTS,
 		asynInt32Mask|asynOctetMask|asynDrvUserMask,
 		asynInt32Mask|asynOctetMask, ASYN_CANBLOCK, 1, 0, 0){
 /*-----------------------------------------------------------------------------
@@ -204,7 +204,6 @@ drvBkhErr::drvBkhErr(const char* port): asynPortDriver(port, NSLOTS, PARMS,
  * Parameters passed to the asynPortDriver constructor:
  *  port name
  *  max address
- *  parameter table size
  *  interface mask
  *  interrupt mask,
  *  asyn flags,
