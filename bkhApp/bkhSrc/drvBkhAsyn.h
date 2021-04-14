@@ -11,6 +11,7 @@
 #ifndef _drvBkhAsyn_h
 #define _drvBkhAsyn_h
 
+#include <string>
 #include "asynPortDriver.h"
 #include "drvMBus.h"
 
@@ -193,21 +194,21 @@ enum {ixWfMessage,  ixSiName,     ixLiRReg,   ixLiSByte,  ixLiDataIn,
       ixLoAllowInLQ,ixLiPollTmo,  ixLoPollTmo,ixRefreshRW};
 
 private:
-  int      _id;        // unique type identifier for this driver,
-  char*    _port;
-  char*    _name;
-  drvMBus  *_pmbus;
-  int      _saddr;        // modbus start memory address for this
-  int      _mfunc;        // modbus function for this driver
-  int      _mlen;        //modbus memory segment length
-  double   _tout;        // sleep period in sec for IOThread
-  int      _initdone;
-  int      _nchan;
-  char     _msg[NWFBYT];    // for _wfMessage record
-  int      _myErrId;    // returned by registerClient in drvBkhErr
-  int      _errInResult;
-  int      _errInWrite;
-  int      _motor;        // when true this driver does motor control
+  int         _id;        // unique type identifier for this driver,
+  std::string _port;
+  char*       _name;
+  drvMBus     *_pmbus;
+  int         _saddr;        // modbus start memory address for this
+  int         _mfunc;        // modbus function for this driver
+  int         _mlen;        //modbus memory segment length
+  double      _tout;        // sleep period in sec for IOThread
+  int         _initdone;
+  int         _nchan;
+  char        _msg[NWFBYT];    // for _wfMessage record
+  int         _myErrId;    // returned by registerClient in drvBkhErr
+  int         _errInResult;
+  int         _errInWrite;
+  int         _motor;        // when true this driver does motor control
 };
 
 #endif // _drvBkhAsyn_h

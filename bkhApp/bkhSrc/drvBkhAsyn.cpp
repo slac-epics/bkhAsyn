@@ -84,8 +84,7 @@ drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func,
  *  priority
  *  stack size
  *---------------------------------------------------------------------------*/
-  _port = (char*)callocMustSucceed(strlen(port)+1, sizeof(char), dname);
-  strcpy((char*)_port, port);
+  _port = port;
   _name = epicsStrDup(name);
   _nchan = nchan; 
   _tout = msec/1000.0;
@@ -177,7 +176,7 @@ void drvBkhAsyn::updateThread(){
 
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
             "%s::%s: updateThread started for port %s (motor=%d)\n", 
-            dname, iam, _port, _motor);
+            dname, iam, _port.c_str(), _motor);
 
   if (_motor) updt = MOTUPDT;
 
@@ -201,7 +200,7 @@ void drvBkhAsyn::exitHndl(){
 /*-----------------------------------------------------------------------------
  *---------------------------------------------------------------------------*/
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-    "%s::%s: Exiting...\n", dname, _port);
+    "%s::%s: Exiting...\n", dname, _port.c_str());
 }
 
 void drvBkhAsyn::updateUser(double tmo){}
@@ -427,7 +426,7 @@ asynStatus drvBkhAsyn::readHReg(int cbe, int addr, int chan, int rnum, int pix){
   stat = _pmbus->mbusDoIO(prioL_e, spix2_e, maddr, addr, chan, 2, 0, rnum, pix, _mfunc, 1, 0, this);
 
   if(stat != asynSuccess){
-    errlogPrintf("%s::%s:readHReg:mbusDoIO failed\n", dname, _port);
+    errlogPrintf("%s::%s:readHReg:mbusDoIO failed\n", dname, _port.c_str());
   }
 
   _pmbus->mbusUnlock();
@@ -572,7 +571,6 @@ void drvBkhAsyn::_gotData(int addr, int pix, word* pd, int len){
     v = (v | 0xffff0000);
   }
   
-  //printf("%s::_gotData: _port=%s, addr=%d, pix=%d, v=%d, _nchan=%d\n", dname, _port, addr, pix, v, _nchan);
   setIntegerParam(addr, pix, v);
   callParamCallbacks(addr);
 }
@@ -673,7 +671,7 @@ void drvBkhAsyn::report(FILE* fp, int level){
  * Print some parameters and statistics.
  *---------------------------------------------------------------------------*/
   _pmbus->report();
-  printf("Report for %s::%s -- id=%d -------------\n", dname, _port, _id);
+  printf("Report for %s::%s -- id=%d -------------\n", dname, _port.c_str(), _id);
   printf("  Start modbus address = %d (0x%x), ", _saddr, _saddr);
   printf("  Modbus function = %d, Length = %d\n", _mfunc, _mlen);
   printf("  Number of channels = %d\n", _nchan);
@@ -942,7 +940,7 @@ void drvBkhAsyn::_setError(const char* msg, int flag){
     if (status != asynSuccess) {
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
                   "%s::%s: getNumParams failed for port %s\n", 
-                  dname, iam, _port);
+                  dname, iam, _port.c_str());
     }
     for (int param = 0; param < nParams; param++) {
         for (int addr = 0; addr < _nchan; addr++) {
