@@ -1,7 +1,13 @@
 
-R0.2.2  M. Dunning - 2021-xx-xx
-    - Add OSV for module error record
-    - Minor code cleanup
+R0.3.0  M. Dunning - 2021-04-14
+    - Fix issue with data leakage between ports when running multiple 
+            couplers in a single ioc
+    - Fix readbacks of coupler read/write registers, including watchdog timeout
+    - Set all channels/params to invalid severity when there is a communication error
+    - Clean up source code formatting; remove unused parameters
+    - Use new asynPortDriver constructor
+    - New coupler db files.  Old versions are retained for compatibility, but new versions
+            are cleaner and have more intuitive PV names.
 
 R0.2.1  M. Dunning - 2020-10-06
     - Use asyn R4.39-0.0.1
