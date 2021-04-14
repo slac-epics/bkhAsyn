@@ -10,15 +10,15 @@ cd ${TOP}
 dbLoadDatabase "dbd/bkh.dbd"
 bkh_registerRecordDeviceDriver pdbbase
 
-epicsEnvSet("P",   "BKHF:TEST:1")
-epicsEnvSet("LOC", "B34")
-epicsEnvSet("MBUS", "MBUS1")
+epicsEnvSet("P",    "BKHF:TEST:1")
+epicsEnvSet("LOC",  "B34")
+epicsEnvSet("PORT", "BKH1")
 
 # Initialize IP port
-drvAsynIPPortConfigure("$(P)", "134.79.218.123:502", 0,0,1)
+drvAsynIPPortConfigure("$(PORT)", "134.79.218.123:502", 0,0,1)
 
-#asynSetTraceIOMask("$(P)", 0, 4)
-#asynSetTraceMask("$(P)", 0, 0x9)
+#asynSetTraceIOMask("$(PORT)", 0, 4)
+#asynSetTraceMask("$(PORT)", 0, 0x9)
 
 # modbusInterposeConfig(portName, linkType, timeoutMsec, writeDelayMsec)
 # portName    Name of the asynIPPort previously created with drvAsynIPPortConfigure()
@@ -26,21 +26,21 @@ drvAsynIPPortConfigure("$(P)", "134.79.218.123:502", 0,0,1)
 # timeoutMsec The timeout in milliseconds for write and read operations (0 = default = 2000 milliseconds).
 # writeDelayMsec  The delay in milliseconds before each write from EPICS to the device (default = 0).
 #------------------------------------------------------------------------------
-modbusInterposeConfig("$(P)", 0, 1000)
+modbusInterposeConfig("$(PORT)", 0, 1000)
 
 # drvMBusConfig(port, slave, addr, len, dtype, mbus_name, msec)
-# port is the name of the asynIPPort previously created with drvAsynIPPortConfigure()
+# port is the name of the asynIPPort created with drvAsynIPPortConfigure()
 # slave is a modbus slave (0 for Beckhoff)
 # addr is modbus starting address (0 for Beckhoff)
 # len is memory length in units of bits or 16 bit words (125 for Beckhoff)
 # dtype is data type (0 if two's complement) (0 for Beckhoff)
-# mbus_name is a unique identifier for bus couplers
+# mbus_name is a unique identifier for the bus coupler instance
 # msec is the poll routine timeout in milliseconds (10 is fine)
 #------------------------------------------------------------------------------
-drvMBusConfig("$(P)", 0, 0, 125, 0, "$(MBUS)", 10)
+drvMBusConfig("$(PORT)", 0, 0, 125, 0, "$(PORT)", 10)
 
 # drvBkhAsynConfig(mbus_name, id, port, func, addr, len, nch, msec)
-# mbus_name is a unique identifier for bus couplers
+# mbus_name is the modbus name used in drvMBusConfig()
 # id is a unique module type identifier: 0 - coupler, 1 - analogSigned,
 #     2 - analogUnsigned, 3 - digitalIn, 4 - digitalOut, 5 - motor.
 # port is the asyn port name for the driver (pick a unique short name for each module as below)
@@ -55,23 +55,23 @@ drvMBusConfig("$(P)", 0, 0, 125, 0, "$(MBUS)", 10)
 # drvBkhAsynConfig(mbus, 3, "update", 2,      0,   0,  0, 1000)
 #------------------------------------------------------------------------------
 # These are standard bus coupler commands
-drvBkhAsynConfig("$(MBUS)", 0, "$(MBUS)_DEBUG",   3,      0, 125,  2,    0)
-drvBkhAsynConfig("$(MBUS)", 0, "$(MBUS)_B900R",   3, 0x1000,  33, 33,    0)
-drvBkhAsynConfig("$(MBUS)", 0, "$(MBUS)_B900W",   3, 0x110a,  26, 26,    0)
+drvBkhAsynConfig("$(PORT)", 0, "$(PORT)_DEBUG",   3,      0, 125,  2,    0)
+drvBkhAsynConfig("$(PORT)", 0, "$(PORT)_BK9000R", 3, 0x1000,  33, 33,    0)
+drvBkhAsynConfig("$(PORT)", 0, "$(PORT)_BK9000W", 3, 0x110a,  26, 26,    0)
 
 # These are for the bus terminals
-drvBkhAsynConfig("$(MBUS)", 4, "$(MBUS)_2114_01", 5,      0,   4,  4, 1000)
-drvBkhAsynConfig("$(MBUS)", 3, "$(MBUS)_1104_01", 2,      0,   4,  4,  200)
-drvBkhAsynConfig("$(MBUS)", 2, "$(MBUS)_3172_01", 3,      0,   4,  2,  200)
-drvBkhAsynConfig("$(MBUS)", 1, "$(MBUS)_3102_01", 3,      4,   4,  2,  200)
-drvBkhAsynConfig("$(MBUS)", 1, "$(MBUS)_3314_01", 3,      8,   8,  4,  500)
-drvBkhAsynConfig("$(MBUS)", 1, "$(MBUS)_4132_01", 3,     16,   4,  2,    0)
+drvBkhAsynConfig("$(PORT)", 4, "$(PORT)_2114_01", 5,      0,   4,  4, 1000)
+drvBkhAsynConfig("$(PORT)", 3, "$(PORT)_1104_01", 2,      0,   4,  4,  200)
+drvBkhAsynConfig("$(PORT)", 2, "$(PORT)_3172_01", 3,      0,   4,  2,  200)
+drvBkhAsynConfig("$(PORT)", 1, "$(PORT)_3102_01", 3,      4,   4,  2,  200)
+drvBkhAsynConfig("$(PORT)", 1, "$(PORT)_3314_01", 3,      8,   8,  4,  500)
+drvBkhAsynConfig("$(PORT)", 1, "$(PORT)_4132_01", 3,     16,   4,  2,    0)
 
 #asynSetTraceIOMask("3172_01", 0, 4)
 #asynSetTraceMask("3172_01", 0, 0x9)
 
 # Load record instances
-dbLoadRecords("db/testIOC.db", "P=$(P), M=$(MBUS), LOC=$(LOC), IOC=$(IOC)")
+dbLoadRecords("db/testIOC.db", "P=$(P), M=$(PORT), LOC=$(LOC), IOC=$(IOC)")
 
 cd ${TOP}/iocBoot/${IOC}
 iocInit
