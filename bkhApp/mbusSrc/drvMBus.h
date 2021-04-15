@@ -28,37 +28,35 @@
 #include <epicsMutex.h>
 #include <shareLib.h>
 #include <ellLib.h>
-#include "asynDriver.h"
-#include "modbus.h"
-#include "modbusAsyn.h"
+#include <drvModbusAsyn.h>
 
 #ifndef SIZE
-#define SIZE(x)         (sizeof(x)/sizeof(x[0]))
+#define SIZE(x) (sizeof(x)/sizeof(x[0]))
 #endif
 
 #ifndef MIN
-#define MIN(a, b)        (((a)<(b))?(a):(b))
+#define MIN(a, b) (((a)<(b))?(a):(b))
 #endif
 
 #ifndef MAX
-#define MAX(a, b)        (((a)>(b))?(a):(b))
+#define MAX(a, b) (((a)>(b))?(a):(b))
 #endif
 
-typedef unsigned char   byte;
-typedef epicsUInt16	word;
-typedef unsigned int    uint;
+typedef unsigned char byte;
+typedef epicsUInt16  word;
+typedef unsigned int uint;
 
-#define PLEN	16
-#define NMSGQL	400
-#define NMSGQH	50
-#define NDATA	128
+#define PLEN    16
+#define NMSGQL    400
+#define NMSGQH    50
+#define NDATA    128
 
 typedef struct{
-  void*	pdrv;
-  int	addr, chan, a, rn, pix, func;
-  word	data[NDATA];
-  int	len;
-  int	stat;
+  void*    pdrv;
+  int    addr, chan, a, rn, pix, func;
+  word    data[NDATA];
+  int    len;
+  int    stat;
 } iodone_t;
 
 typedef void (*iocb_t)(iodone_t);
@@ -70,67 +68,65 @@ typedef struct{
 } drvd_t;
 
 typedef struct{
-  int	maddr;
-  int	func;
-  int	addr, chan, a, rn, pix;
-  int	d, len;
-  int	six;		// special index of type spix_t
-  void*	pdrv;
+  int    maddr;
+  int    func;
+  int    addr, chan, a, rn, pix;
+  int    d, len;
+  int    six;        // special index of type spix_t
+  void*    pdrv;
 } msgq_t;
 
 typedef enum {prioH_e, prioL_e} prio_t;
 typedef enum {normal_e, spix0_e, spix1_e, spix2_e, spix3_e, spix4_e, spix5_e} spix_t;
 
-class drvMBus{
+class drvMBus: public drvModbusAsyn {
 public:
   drvMBus(drvd_t dd, int msec);
-  void		IOThread();
-  asynStatus	mbusDoIO(prio_t prio, int six, int saddr, int addr, int chan, 
-			int n, int a, int rn, int pix, int func, int len, 
-			int d, void* pdrv);
-  void          exitHndl();
-  void          mbusLock();
-  void          mbusUnlock();
-  void		mbusPurgeQueue(prio_t ix);
-  void		registerCB(iocb_t cb);
-  void		report();
-  void		doHist(int en);
-  void		clearHist();
-  epicsInt32*	getHist();
-  int		getAllowInLQ() {return(_allowInLQ);}
-  void		putAllowInLQ(int n) {_allowInLQ=n;}
+  void IOThread();
+  asynStatus mbusDoIO(prio_t prio, int six, int saddr, int addr, int chan, 
+            int n, int a, int rn, int pix, int func, int len, 
+            int d, void* pdrv);
+  void        exitHndl();
+  void        mbusLock();
+  void        mbusUnlock();
+  void        mbusPurgeQueue(prio_t ix);
+  void        registerCB(iocb_t cb);
+  void        report();
+  void        doHist(int en);
+  void        clearHist();
+  epicsInt32* getHist();
+  int         getAllowInLQ() {return(_allowInLQ);}
+  void        putAllowInLQ(int n) {_allowInLQ=n;}
 
 protected:
-  void		_emptyQueue(epicsMessageQueue* pmq);
-  asynStatus	mbusMemIO(msgq_t msgq);
-  void		_doSpecial0(msgq_t msgq);
-  void		_doSpecial1(msgq_t msgq);
-  void		_doSpecial2(msgq_t msgq);
-  void		_doSpecial3(msgq_t msgq);
-  void		_doSpecial4(msgq_t msgq);
-  void		_doSpecial5(msgq_t msgq);
-  int		_readSpecialOne(msgq_t msgq, int r, epicsUInt16* v);
-  int		_writeSpecialOne(msgq_t msgq, int r, epicsUInt16 v);
-  void		_readSpecial(msgq_t msgq, int r1, int r2);
+  void        _emptyQueue(epicsMessageQueue* pmq);
+  asynStatus   mbusMemIO(msgq_t msgq);
+  void        _doSpecial0(msgq_t msgq);
+  void        _doSpecial1(msgq_t msgq);
+  void        _doSpecial2(msgq_t msgq);
+  void        _doSpecial3(msgq_t msgq);
+  void        _doSpecial4(msgq_t msgq);
+  void        _doSpecial5(msgq_t msgq);
+  int         _readSpecialOne(msgq_t msgq, int r, epicsUInt16* v);
+  int         _writeSpecialOne(msgq_t msgq, int r, epicsUInt16 v);
+  void        _readSpecial(msgq_t msgq, int r1, int r2);
   epicsMessageQueue* _pmqL;     // low priority message queue
   epicsMessageQueue* _pmqH;     // high priority message queue
-  mBus_t*	_pmb;		// pointer to the modbus data structure.
 
 private:
   epicsMutexId  _mutexId;       // mutex for interlocking access to IO
-  int		_halt;		// if true disallow IO
-  iocb_t	_cb;		// IO done callback
-  double	_tout;
-  int		_inLQ;		// number of items in low priority queue
-  int		_inHQ;		// number of items in high priority queue
-  int		_maxInLQ;	// max number in low prio queue
-  int		_maxInHQ;	// max number in high prio queue
-  int		_allowInLQ;	// max number allowed in low prio queue
-  int		_npurgLQ;	// number of times low prio queue was purged
-  int		_npurgHQ;	// number of times hi prio queue was purged.
+  int        _halt;        // if true disallow IO
+  iocb_t     _cb;        // IO done callback
+  double     _tout;
+  int        _inLQ;        // number of items in low priority queue
+  int        _inHQ;        // number of items in high priority queue
+  int        _maxInLQ;    // max number in low prio queue
+  int        _maxInHQ;    // max number in high prio queue
+  int        _allowInLQ;    // max number allowed in low prio queue
+  int        _npurgLQ;    // number of times low prio queue was purged
+  int        _npurgHQ;    // number of times hi prio queue was purged.
 };
 
-// epicsShareExtern drvMBus* pmbus;
 typedef struct {
     ELLNODE  node;
     char     *name;

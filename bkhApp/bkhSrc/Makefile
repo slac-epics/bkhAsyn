@@ -5,6 +5,7 @@ include $(TOP)/configure/CONFIG
 LIBRARY_IOC += bkhAsyn
 
 DBD += drvBkhAsyn.dbd
+
 INC += drvBkhAsyn.h
 
 LIB_SRCS += drvBkhAsyn.cpp

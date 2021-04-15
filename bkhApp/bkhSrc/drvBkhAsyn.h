@@ -12,7 +12,7 @@
 #define _drvBkhAsyn_h
 
 #include <string>
-#include "asynPortDriver.h"
+#include <asynPortDriver.h>
 #include "drvMBus.h"
 
 #define WOFFST          0x800           // base address of out process image

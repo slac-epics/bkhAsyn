@@ -27,7 +27,6 @@
 
 static const char *dname = "drvMBus";
 
-// drvMBus* pmbus = 0;
 static ELLLIST *pmbus_list = NULL;
 
 static char* __getTime(){
@@ -85,18 +84,15 @@ drvMBus* findMBus(char *name) {
     }
 }
 
-drvMBus::drvMBus(drvd_t dd, int msec){
+drvMBus::drvMBus(drvd_t dd, int msec):
+    drvModbusAsyn(dd.name, dd.port, dd.slave, 3, dd.addr, dd.len, dataTypeUInt16, dd.dt, "bkh") {
 /*-----------------------------------------------------------------------------
  * Constructor for the drvMBus class. Configures modbus IO routine using data
  * in structure dd. Parameters:
  * dd is the data structure
  * msec is the IOThread delay in miliseconds
  *---------------------------------------------------------------------------*/
-  mBus_t* pmb = 0;
-
-  pmb = modbusAsynConfig(dd.port, dd.slave, 3, dd.addr, dd.len, dd.dt, dd.name);
-
-  _pmb = pmb; _halt = 0; _cb = 0; _tout = msec/1000.0;
+   _halt = 0; _cb = 0; _tout = msec/1000.0;
   _maxInLQ = _maxInHQ = _npurgLQ = _npurgHQ = 0; _allowInLQ = NMSGQL;
   
   _mutexId = epicsMutexMustCreate();
@@ -286,10 +282,6 @@ asynStatus drvMBus::mbusMemIO(msgq_t msgq){
   epicsUInt16* pw = (epicsUInt16*)iodone.data;
 
   if(_halt) return(asynSuccess);
-  if(!_pmb){
-    errlogPrintf("%s::mbusMemIO, _pmb = %p, bad address\n", dname, _pmb);
-    return(asynError);
-  }
 
   switch(msgq.six){
     case spix0_e:    _doSpecial0(msgq); break;
@@ -301,7 +293,7 @@ asynStatus drvMBus::mbusMemIO(msgq_t msgq){
     case normal_e:
       if (msgq.func > MODBUS_READ_INPUT_REGISTERS) *pw = msgq.d;
 
-      st = doModbusIO(_pmb, _pmb->slave, msgq.func, msgq.maddr, pw, msgq.len);
+      st = doModbusIO(0, msgq.func, msgq.maddr, pw, msgq.len);
 
       iodone.addr = msgq.addr; iodone.a = msgq.a; iodone.pix = msgq.pix;
       iodone.func = msgq.func; iodone.len = msgq.len; iodone.pdrv = msgq.pdrv;
@@ -398,30 +390,30 @@ void drvMBus::_doSpecial4(msgq_t msgq){
   int rfunc = MODBUS_READ_HOLDING_REGISTERS;
 
   maddr = msgq.maddr + woff;
-  st = doModbusIO(_pmb, _pmb->slave, rfunc, maddr, &cbe, 1);
+  st = doModbusIO(0, rfunc, maddr, &cbe, 1);
   if(!st){
     w = 0xc0 + 31;
-    st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr, &w, 1);
+    st = doModbusIO(0, wfunc, maddr, &w, 1);
     if(!st){
       w = 0x1235;
-      st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr +1, &w, 1);
+      st = doModbusIO(0, wfunc, maddr +1, &w, 1);
       if(!st){
         w = 0xc0 + msgq.rn;
-        st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr, &w, 1);
+        st = doModbusIO(0, wfunc, maddr, &w, 1);
         if(!st){
           w = msgq.d;
-          st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr+1, &w, 1);
+          st = doModbusIO(0, wfunc, maddr+1, &w, 1);
           if(!st){
             w = 0xc0 + 31;
-            st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr, &w, 1);
+            st = doModbusIO(0, wfunc, maddr, &w, 1);
             if(!st){
               w = 0;
-              st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr+1, &w, 1);
+              st = doModbusIO(0, wfunc, maddr+1, &w, 1);
               if(!st){
                 w = 0;
-                st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr, &w, 1);
+                st = doModbusIO(0, wfunc, maddr, &w, 1);
                 if(!st){
-                  st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr, &cbe, 1);
+                  st = doModbusIO(0, wfunc, maddr, &cbe, 1);
                 }
               }
             }
@@ -460,7 +452,7 @@ void drvMBus::_doSpecial5(msgq_t msgq){
   // next write 0 to data out register, needed for next move
   maddr = msgq.maddr + woff + 1;
   if (!st) {
-    st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr, &w, 1);
+    st = doModbusIO(0, wfunc, maddr, &w, 1);
   }
 
   iodone.addr = msgq.addr; iodone.a = msgq.a; iodone.pix = msgq.pix;
@@ -485,18 +477,18 @@ int drvMBus::_writeSpecialOne(msgq_t msgq, int rn, epicsUInt16 v){
 
   maddr = msgq.maddr + woff;
 
-  st = doModbusIO(_pmb, _pmb->slave, rfunc, maddr, &cbe, 1);
+  st = doModbusIO(0, rfunc, maddr, &cbe, 1);
   if(st) return(st);
 
   w = 0xc0 + rn;        // register number to control byte
-  st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr, &w, 1);
+  st = doModbusIO(0, wfunc, maddr, &w, 1);
   if(st) return(st);
 
   w = v;
-  st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr+1, &w, 1);
+  st = doModbusIO(0, wfunc, maddr+1, &w, 1);
   if(st) return(st);
 
-  st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr, &cbe, 1);
+  st = doModbusIO(0, wfunc, maddr, &cbe, 1);
   return(st);
 }
 
@@ -542,16 +534,16 @@ int drvMBus::_readSpecialOne(msgq_t msgq, int r, epicsUInt16* v){
   cb = 0x80 + r; 
   *v = 0;
 
-  st = doModbusIO(_pmb, _pmb->slave, rfunc, maddr, &cbe, 1);
+  st = doModbusIO(0, rfunc, maddr, &cbe, 1);
   if(st) return(st);
 
-  st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr, &cb, 1);
+  st = doModbusIO(0, wfunc, maddr, &cb, 1);
   if(st) return(st);
 
-  st = doModbusIO(_pmb, _pmb->slave, rfunc, msgq.maddr + 1, v, 1);
+  st = doModbusIO(0, rfunc, msgq.maddr + 1, v, 1);
   if(st) return(st);
 
-  st = doModbusIO(_pmb, _pmb->slave, wfunc, maddr, &cbe, 1);
+  st = doModbusIO(0, wfunc, maddr, &cbe, 1);
   return(st);
 }
 
@@ -564,21 +556,24 @@ void drvMBus::doHist(int en){
 /*-----------------------------------------------------------------------------
  * Enable/disable time histogram (en 1/0).
  *---------------------------------------------------------------------------*/
-  _pmb->enableHistogram = en;
+  //_pmb->enableHistogram = en;
+    ;
 }
 
 epicsInt32* drvMBus::getHist(){
 /*-----------------------------------------------------------------------------
  * Returns a pointer to the time histogram array.
  *---------------------------------------------------------------------------*/
-  return(_pmb->timeHistogram);
+  //return(_pmb->timeHistogram);
+    ;
 }
 
 void drvMBus::clearHist(){
 /*-----------------------------------------------------------------------------
  * Zeroes the time histogram array.
  *---------------------------------------------------------------------------*/
-  memset(_pmb->timeHistogram, 0, sizeof(_pmb->timeHistogram));
+  //memset(_pmb->timeHistogram, 0, sizeof(_pmb->timeHistogram));
+ ;
 }
 
 
