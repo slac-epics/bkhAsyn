@@ -92,9 +92,6 @@ public:
   void        mbusPurgeQueue(prio_t ix);
   void        registerCB(iocb_t cb);
   void        report();
-  void        doHist(int en);
-  void        clearHist();
-  epicsInt32* getHist();
   int         getAllowInLQ() {return(_allowInLQ);}
   void        putAllowInLQ(int n) {_allowInLQ=n;}
 

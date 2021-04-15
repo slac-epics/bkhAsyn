@@ -106,43 +106,6 @@ record(bo, "$(P):PutMem"){
 }
 #-------------------------------------
 
-#----- I/O Histogram
-record(bo, "$(P):HistEnable"){
-  field(DESC, "Enable I/O histogram")
-  field(DTYP, "asynInt32")
-  field(OUT,  "@asyn($(DPORT),0,1) BO_THIST")
-  field(ZNAM, "off")
-  field(ONAM, "on")
-  field(VAL,  "0")
-}
-record(bo, "$(P):HistGet"){
-  field(DESC, "Get I/O histogram")
-  field(DTYP, "asynInt32")
-  field(OUT,  "@asyn($(DPORT),0,1) BO_GETHIST")
-  field(HIGH, "0.1")
-  field(ZNAM, "off")
-  field(ONAM, "on")
-  field(VAL,  "0")
-}
-record(bo, "$(P):HistClr"){
-  field(DESC, "Clear I/O histogram")
-  field(DTYP, "asynInt32")
-  field(OUT,  "@asyn($(DPORT),0,1) BO_CLRHIST")
-  field(HIGH, "0.1")
-  field(ZNAM, "off")
-  field(ONAM, "on")
-  field(VAL,  "0")
-}
-record(waveform, "$(P):Hist"){
-  field(DESC, "I/O histogram")
-  field(DTYP, "asynInt32ArrayIn")
-  field(SCAN, "I/O Intr")
-  field(INP,  "@asyn($(DPORT),0,1) WF_THIST")
-  field(FTVL, "LONG")
-  field(NELM, "200")
-}
-#-------------------------------------
-
 #--- The next 4 records are used to control how many messages
 #--- are allowed in the low priority message queue (in drvMBus) ----
 record(longout, "$(P):NumLPQMax"){

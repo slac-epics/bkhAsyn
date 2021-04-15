@@ -552,30 +552,6 @@ void drvMBus::registerCB(iocb_t cb){
   _cb = cb;
 }
 
-void drvMBus::doHist(int en){
-/*-----------------------------------------------------------------------------
- * Enable/disable time histogram (en 1/0).
- *---------------------------------------------------------------------------*/
-  //_pmb->enableHistogram = en;
-    ;
-}
-
-epicsInt32* drvMBus::getHist(){
-/*-----------------------------------------------------------------------------
- * Returns a pointer to the time histogram array.
- *---------------------------------------------------------------------------*/
-  //return(_pmb->timeHistogram);
-    ;
-}
-
-void drvMBus::clearHist(){
-/*-----------------------------------------------------------------------------
- * Zeroes the time histogram array.
- *---------------------------------------------------------------------------*/
-  //memset(_pmb->timeHistogram, 0, sizeof(_pmb->timeHistogram));
- ;
-}
-
 
 extern "C" {
 

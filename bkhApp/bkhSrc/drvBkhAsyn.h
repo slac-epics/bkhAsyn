@@ -73,11 +73,6 @@ typedef enum {couplerE, analogSE, analogUE, digiInE, digiOutE, motorE} type_e;
 
 #define boMPutStr    "BO_MPUT"
 #define boWDRstStr    "BO_WDRST"
-#define wfTHistStr    "WF_THIST"
-#define boTHistStr    "BO_THIST"
-#define boGetHistStr    "BO_GETHIST"
-
-#define boClrHistStr    "BO_CLRHIST"
 #define biErrorStr    "BI_ERROR"
 #define boTestStr    "BO_TEST"
 #define boCInitStr    "BO_CINIT"
@@ -168,30 +163,24 @@ protected:
   
   int _boMPut;
   int _boWDRst;
-  int _wfTHist;
-  int _boTHist;
-  int _boGetHist;
-  
-  int _boClrHist;
   int _biError;
   int _boTest;
   int _boCInit;
-  int _liAllowInLQ;
   
+  int _liAllowInLQ;
   int _loAllowInLQ;
   int _liPollTmo;
   int _loPollTmo;
   int _refreshRW;
 
-enum {ixWfMessage,  ixSiName,     ixLiRReg,   ixLiSByte,  ixLiDataIn,
-      ixLiSWord,    ixLoCByte,    ixLiCByte,  ixLoDataOut,ixLiDataOut,
-      ixLoCWord,    ixLiCWord,    ixLoRChan,  ixLoRegNum, ixLiSBVal,
-      ixLiRegVal,   ixLoWRegVal,  ixLiWRegVal,ixSiMID,    ixLoCReg,
-      ixLiCReg,     ixBoBitVal,   ixBiBitVal, ixBoInit,   ixBoRefresh,
-      ixLoMAddr,    ixLoMVal,     ixLiMVal,   ixLoMFunc,  ixBoMGet,
-      ixBoMPut,     ixBoWDRst,    ixWfTHist,  ixBoTHist,  ixBoGetHist,
-      ixBoClrHist,  ixBiError,    ixBoTest,   ixBoCInit,  ixLiAllowInLQ,
-      ixLoAllowInLQ,ixLiPollTmo,  ixLoPollTmo,ixRefreshRW};
+enum {ixWfMessage,   ixSiName,      ixLiRReg,    ixLiSByte,   ixLiDataIn,
+      ixLiSWord,     ixLoCByte,     ixLiCByte,   ixLoDataOut, ixLiDataOut,
+      ixLoCWord,     ixLiCWord,     ixLoRChan,   ixLoRegNum,  ixLiSBVal,
+      ixLiRegVal,    ixLoWRegVal,   ixLiWRegVal, ixSiMID,     ixLoCReg,
+      ixLiCReg,      ixBoBitVal,    ixBiBitVal,  ixBoInit,    ixBoRefresh,
+      ixLoMAddr,     ixLoMVal,      ixLiMVal,    ixLoMFunc,   ixBoMGet,
+      ixBoMPut,      ixBoWDRst,     ixBiError,   ixBoTest,    ixBoCInit,  
+      ixLiAllowInLQ, ixLoAllowInLQ, ixLiPollTmo, ixLoPollTmo, ixRefreshRW};
 
 private:
   int         _id;        // unique type identifier for this driver,

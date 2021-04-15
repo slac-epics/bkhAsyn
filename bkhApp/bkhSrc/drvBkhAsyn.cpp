@@ -129,11 +129,6 @@ drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func,
 
   createParam(boMPutStr,     asynParamInt32,         &_boMPut);
   createParam(boWDRstStr,     asynParamInt32,         &_boWDRst);
-  createParam(wfTHistStr,     asynParamInt32Array,     &_wfTHist);
-  createParam(boTHistStr,     asynParamInt32,         &_boTHist);
-  createParam(boGetHistStr,     asynParamInt32,         &_boGetHist);
-
-  createParam(boClrHistStr,     asynParamInt32,         &_boClrHist);
   createParam(biErrorStr,     asynParamInt32,         &_biError);
   createParam(boTestStr,     asynParamInt32,         &_boTest);
   createParam(boCInitStr,     asynParamInt32,         &_boCInit);
@@ -773,9 +768,7 @@ asynStatus drvBkhAsyn::writeInt32(asynUser* pau, epicsInt32 v){
  *        paUser->reason define the command to be sent.
  *---------------------------------------------------------------------------*/
   asynStatus stat = asynSuccess; 
-  int maddr, n; 
-  epicsInt32* pwf;
-  int ix, addr, chan, wfunc, aa, ff, vv, rnum;
+  int maddr, ix, addr, chan, wfunc, aa, ff, vv, rnum;
   
   ix = pau->reason;
 
@@ -862,19 +855,6 @@ asynStatus drvBkhAsyn::writeInt32(asynUser* pau, epicsInt32 v){
             getIntegerParam(0, _loMFunc, &ff);
             getIntegerParam(0, _loMVal, &vv);
             stat = doIO(prioH_e, normal_e, aa, 0, ff, 0, vv);
-            break;
-    case ixBoTHist:
-            _pmbus->doHist(v);
-            break;
-    case ixBoClrHist:
-            if (!v) break;
-            _pmbus->clearHist();
-            break;
-    case ixBoGetHist:
-            if (!v) break;
-            n = HISTOGRAM_LENGTH;
-            pwf = _pmbus->getHist();
-            doCallbacksInt32Array(pwf, n, _wfTHist, 0);
             break;
     case ixLoAllowInLQ:
             _pmbus->putAllowInLQ(v);
