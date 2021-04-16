@@ -87,8 +87,6 @@ public:
   asynStatus mbusDoIO(prio_t prio, int six, int saddr, int addr, int chan, int n, 
         int a, int rn, int pix, int func, int len, int d, void* pdrv);
   void        exitHndl();
-  void        mbusLock();
-  void        mbusUnlock();
   void        mbusPurgeQueue(prio_t ix);
   void        registerCB(iocb_t cb);
   void        report();
@@ -111,7 +109,6 @@ protected:
   epicsMessageQueue* _pmqH;     // high priority message queue
 
 private:
-  epicsMutexId  _mutexId;       // mutex for interlocking access to IO
   int        _halt;        // if true disallow IO
   iocb_t     _cb;        // IO done callback
   double     _tout;

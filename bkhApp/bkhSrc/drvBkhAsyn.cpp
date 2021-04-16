@@ -152,7 +152,7 @@ drvBkhAsyn::drvBkhAsyn(const char* port, const char* modbusPort, int id, int add
   }
 
   epicsAtExit(exitHndlC, this);
-  printf("%s::%s: Port %s configured\n", dname, dname, port);
+  printf("%s::%s: Port %s configured, modbusPort=%s\n", dname, dname, port, modbusPort);
 
 }
 
@@ -243,9 +243,9 @@ asynStatus drvBkhAsyn::doIO(prio_t pri, int six, int maddr,
 
   if (!_pmbus) return(asynError);
 
-  _pmbus->mbusLock();
+  _pmbus->lock();
   stat = _pmbus->mbusDoIO(pri, six, maddr, 0, 0, 0, 0, rn, pix, func, 1, d, this);
-  _pmbus->mbusUnlock();
+  _pmbus->unlock();
 
   return(stat);
 }
@@ -259,9 +259,9 @@ asynStatus drvBkhAsyn::doReadH(int saddr, int addr, int n, int a, int pix){
 
   if (!_pmbus) return(asynError);
 
-  _pmbus->mbusLock();
+  _pmbus->lock();
   stat = _pmbus->mbusDoIO(prioH_e, normal_e, saddr, addr, addr, n, a, 0, pix, _mfunc, 1, 0, this);
-  _pmbus->mbusUnlock();
+  _pmbus->unlock();
 
   return(stat);
 }
@@ -275,9 +275,9 @@ asynStatus drvBkhAsyn::doReadL(int saddr, int addr, int n, int a, int pix){
 
   if (!_pmbus) return(asynError);
 
-  _pmbus->mbusLock();
+  _pmbus->lock();
   stat = _pmbus->mbusDoIO(prioL_e, normal_e, saddr, addr, addr, n, a, 0, pix, _mfunc, 1, 0, this);
-  _pmbus->mbusUnlock();
+  _pmbus->unlock();
 
   return(stat);
 }
@@ -292,9 +292,9 @@ asynStatus drvBkhAsyn::doWrite(int saddr, int addr, int n, int a,
 
   if (!_pmbus) return(asynError);
 
-  _pmbus->mbusLock();
+  _pmbus->lock();
   stat = _pmbus->mbusDoIO(prioH_e, normal_e, saddr, addr, addr, n, a, 0, pix, func, 1, d, this);
-  _pmbus->mbusUnlock();
+  _pmbus->unlock();
 
   return(stat);
 }
@@ -308,23 +308,23 @@ asynStatus drvBkhAsyn::readChannel(int addr, int pix1, int pix2){
 
   if (!_pmbus) return(asynError);
   
-  _pmbus->mbusLock();
+  _pmbus->lock();
 
   stat = _pmbus->mbusDoIO(prioL_e, normal_e, _saddr, addr, addr, 2, 0, 0, pix1, _mfunc, 1, 0, this);
 
   if (stat != asynSuccess) {
-    _pmbus->mbusUnlock();
+    _pmbus->unlock();
     return(stat);
   }
 
   stat = _pmbus->mbusDoIO(prioL_e, normal_e, _saddr, addr, addr, 2, 1, 0, pix2, _mfunc, 1, 0, this);
 
   if (stat != asynSuccess) {
-    _pmbus->mbusUnlock();
+    _pmbus->unlock();
     return(stat);
   }
 
-  _pmbus->mbusUnlock();
+  _pmbus->unlock();
 
   return(stat);
 }
@@ -359,9 +359,9 @@ asynStatus drvBkhAsyn::readOne(int addr, int pix){
     func = _mfunc;
   }
 
-  _pmbus->mbusLock();
+  _pmbus->lock();
   stat = _pmbus->mbusDoIO(prioL_e, normal_e, _saddr, addr, addr, 1, 0, 0, pix, func, 1, 0, this);
-  _pmbus->mbusUnlock();
+  _pmbus->unlock();
 
   return(stat);
 }
@@ -375,9 +375,9 @@ asynStatus drvBkhAsyn::writeChan(int addr, int v){
 
   if (!_pmbus) return(asynError);
 
-  _pmbus->mbusLock();
+  _pmbus->lock();
   stat = _pmbus->mbusDoIO(prioH_e, normal_e, _saddr, addr, addr, 1, 0, 0, 0, _mfunc, 1, v, this);
-  _pmbus->mbusUnlock();
+  _pmbus->unlock();
 
   return(stat);
 }
@@ -391,9 +391,9 @@ asynStatus drvBkhAsyn::writeOne(int addr, int v){
 
   if (!_pmbus) return(asynError);
 
-  _pmbus->mbusLock();
+  _pmbus->lock();
   stat = _pmbus->mbusDoIO(prioH_e, normal_e, _saddr, addr, addr, 1, 0, 0, 0, WRFUNC, 1, v, this);
-  _pmbus->mbusUnlock();
+  _pmbus->unlock();
 
   return(stat);
 }
@@ -409,7 +409,7 @@ asynStatus drvBkhAsyn::readHReg(int cbe, int addr, int chan, int rnum, int pix){
 
   if (!_pmbus) return(asynError);
 
-  _pmbus->mbusLock();
+  _pmbus->lock();
 
   maddr = _saddr;
   stat = _pmbus->mbusDoIO(prioL_e, spix2_e, maddr, addr, chan, 2, 0, rnum, pix, _mfunc, 1, 0, this);
@@ -418,7 +418,7 @@ asynStatus drvBkhAsyn::readHReg(int cbe, int addr, int chan, int rnum, int pix){
     errlogPrintf("%s::%s:readHReg:mbusDoIO failed\n", dname, _port.c_str());
   }
 
-  _pmbus->mbusUnlock();
+  _pmbus->unlock();
 
   return(stat);
 }
@@ -432,9 +432,9 @@ asynStatus drvBkhAsyn::readMID(int pix){
 
   if (!_pmbus) return(asynError);
 
-  _pmbus->mbusLock();
+  _pmbus->lock();
   stat = _pmbus->mbusDoIO(prioL_e, normal_e, _saddr, 0, 0, 0, 0, 0, pix, _mfunc, 7, 0, this);
-  _pmbus->mbusUnlock();
+  _pmbus->unlock();
 
   if(stat != asynSuccess){
     errlogPrintf("%s::readMID:mbusReadMem failed\n", dname);
@@ -453,9 +453,9 @@ asynStatus drvBkhAsyn::readChanls(int pix){
 
   if (!_pmbus) return(asynError);
 
-  _pmbus->mbusLock();
+  _pmbus->lock();
   stat = _pmbus->mbusDoIO(prioL_e, normal_e, _saddr, 0, 0, 0, 0, 0, pix, _mfunc, _mlen, 0, this);
-  _pmbus->mbusUnlock();
+  _pmbus->unlock();
 
   if(stat != asynSuccess){
     errlogPrintf("%s::readChanls:mbusReadMem failed\n", dname);
@@ -477,7 +477,7 @@ asynStatus drvBkhAsyn::writeHReg(int addr, int chan, int rnum, int v, int pix){
   maddr = _saddr;
   if (!_pmbus) return(asynError);
 
-  _pmbus->mbusLock();
+  _pmbus->lock();
 
   stat = _pmbus->mbusDoIO(prioH_e, spix4_e, maddr, addr, chan, 2, 0, rnum, 0, WRFUNC, 1, v, this);
 
@@ -485,7 +485,7 @@ asynStatus drvBkhAsyn::writeHReg(int addr, int chan, int rnum, int v, int pix){
     errlogPrintf("%s::writeHReg:mbusWriteOne:cb failed\n", dname);
   }
 
-  _pmbus->mbusUnlock();
+  _pmbus->unlock();
 
   if(stat == asynSuccess) stat = readHReg(0, addr, chan, rnum, pix);
 
@@ -507,7 +507,7 @@ asynStatus drvBkhAsyn::writeHRAM(int addr, int chan, int rnum, int v, int pix){
 
   if (!_pmbus) return(asynError);
 
-  _pmbus->mbusLock();
+  _pmbus->lock();
 
   stat = _pmbus->mbusDoIO(prioH_e, spix3_e, maddr, addr, chan, 2, 0, rnum, 0, WRFUNC, 1, v, this);
 
@@ -515,7 +515,7 @@ asynStatus drvBkhAsyn::writeHRAM(int addr, int chan, int rnum, int v, int pix){
     errlogPrintf("%s::writeHReg:mbusDoIO failed\n", dname);
   }
 
-  _pmbus->mbusUnlock();
+  _pmbus->unlock();
 
   if(stat == asynSuccess) stat = readHReg(0, addr, chan, rnum, pix);
 

@@ -3,11 +3,14 @@ R0.3.0  M. Dunning - 2021-04-14
     - drvMBus: inherit from drvModbusAsyn and remove custom modbus code.  
             Now drvMBus is an asynPortDriver and can call modbus and 
             asynPortDriver methods directly.
-    - Use findAsynPortDriver() instead of linked list to return pointer to drvMBus driver
     - Fix issue with data leakage between ports when running multiple 
             couplers in a single ioc
+    - Use findAsynPortDriver() instead of linked list to return pointer to drvMBus driver
+    - Reorganize ioc shell config files and constructors to be more intuitive and match other drivers.
+            This requires changes to st.cmd files, so THIS CHANGE IS NOT BACKWARD COMPATIBLE.
     - Remove histogram code.  This can be done with the modbus module by loading
             the statistics template.
+    - Remove custom locking code, use asynPortDriver lock() and unlock() instead.
     - Fix readbacks of coupler read/write registers, including watchdog timeout
     - Set all channels/params to invalid severity when there is a communication error
     - Clean up source code formatting; remove unused parameters

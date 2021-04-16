@@ -12,7 +12,6 @@
 #include <epicsTypes.h>
 #include <epicsString.h>
 #include <epicsThread.h>
-#include <epicsMutex.h>
 #include <epicsTime.h>
 #include <errlog.h>
 #include <epicsExit.h>
@@ -60,8 +59,6 @@ drvMBus::drvMBus(drvd_t dd, int msec):
    _halt = 0; _cb = 0; _tout = msec/1000.0;
   _maxInLQ = _maxInHQ = _npurgLQ = _npurgHQ = 0; _allowInLQ = NMSGQL;
   
-  _mutexId = epicsMutexMustCreate();
-
   _pmqH= new epicsMessageQueue(NMSGQH, sizeof(msgq_t));
   _pmqL= new epicsMessageQueue(NMSGQL, sizeof(msgq_t));
 
@@ -73,7 +70,7 @@ drvMBus::drvMBus(drvd_t dd, int msec):
   
   epicsAtExit(exitHndlC, this);
   
-  printf("%s::%s: Port %s configured\n", dname, dname, dd.port);
+  printf("%s::%s: Port %s configured, octet port=%s\n", dname, dname, dd.port, dd.octetPort);
 }
 
 void drvMBus::IOThread(){
@@ -86,22 +83,22 @@ void drvMBus::IOThread(){
     msgq_t msgq;
   
     while(1){
-        mbusLock();
+        lock();
         stat = _pmqH->tryReceive(&msgq, sizeof(msgq));
-        mbusUnlock();
+        unlock();
         
         if (stat == -1) {
-            mbusLock();
+            lock();
             stat = _pmqL->tryReceive(&msgq, sizeof(msgq));
-            mbusUnlock();
+            unlock();
         }
         
         if (stat == -1) {
             epicsThreadSleep(_tout);
         } else {
-            mbusLock();
+            lock();
             status = mbusMemIO(msgq);
-            mbusUnlock();
+            unlock();
             if (status) {
                 fflush(0);
             }
@@ -116,20 +113,6 @@ void drvMBus::exitHndl(){
   _halt = 1;
 }
 
-void drvMBus::mbusLock(){
-/*-----------------------------------------------------------------------------
- * Lock access to resource.
- *---------------------------------------------------------------------------*/
-  epicsMutexMustLock(_mutexId);
-}
-
-void drvMBus::mbusUnlock(){
-/*-----------------------------------------------------------------------------
- * Unlock access to resource.
- *---------------------------------------------------------------------------*/
-  epicsMutexUnlock(_mutexId);
-}
-
 void drvMBus::mbusPurgeQueue(prio_t ix){
 /*-----------------------------------------------------------------------------
  * empties the specified queue of all entries.
@@ -142,9 +125,9 @@ void drvMBus::mbusPurgeQueue(prio_t ix){
     pmq = _pmqL;
   }
 
-  mbusLock();
+  lock();
   _emptyQueue(pmq);
-  mbusUnlock();
+  unlock();
 }
 
 void drvMBus::_emptyQueue(epicsMessageQueue* pmq){
