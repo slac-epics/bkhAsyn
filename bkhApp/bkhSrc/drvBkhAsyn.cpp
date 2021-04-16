@@ -84,6 +84,7 @@ drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func,
  *  priority
  *  stack size
  *---------------------------------------------------------------------------*/
+  const char *iam = "drvBkhAsyn";
   _port = port;
   _name = epicsStrDup(name);
   _nchan = nchan; 
@@ -139,17 +140,17 @@ drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func,
   createParam(loPollTmoStr,     asynParamInt32,         &_loPollTmo);
   createParam(refreshRWStr,     asynParamInt32,         &_refreshRW);
 
-  _pmbus = findMBus(_name);
+  _pmbus = (drvMBus*)findAsynPortDriver(_name);
+  if (!_pmbus) {
+    printf("%s::%s: ERROR: Modbus port %s not found\n",
+           dname, iam, _name);
+    _setError("ERROR: Modbus port not found", ERROR);
+  } else {
+    _pmbus->registerCB(IODoneCB);
+    _setError("No error", OK);
+  }
 
   if (pbkherr) _myErrId = pbkherr->registerClient(port);
-
-  if (!_pmbus) {
-    _setError("ERROR: Modbus pointer is null", 1);
-  }
-  else {
-    _pmbus->registerCB(IODoneCB);
-    _setError("No error", 0);
-  }
 
   if ((func <= MODBUS_READ_INPUT_REGISTERS) && msec) {
     epicsThreadCreate(dname, epicsThreadPriorityLow,

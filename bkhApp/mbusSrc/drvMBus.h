@@ -26,8 +26,6 @@
 
 #include <epicsMessageQueue.h>
 #include <epicsMutex.h>
-#include <shareLib.h>
-#include <ellLib.h>
 #include <drvModbusAsyn.h>
 
 #ifndef SIZE
@@ -124,13 +122,6 @@ private:
   int        _npurgHQ;    // number of times hi prio queue was purged.
 };
 
-typedef struct {
-    ELLNODE  node;
-    char     *name;
-    drvMBus  *pmbus;
-} mbusList_t;
-
-drvMBus* findMBus(char *name);
 
 #endif // _drvMBus_h
 

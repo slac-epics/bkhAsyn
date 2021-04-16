@@ -18,7 +18,6 @@
 #include <epicsExit.h>
 #include <envDefs.h>
 #include <epicsExport.h>
-#include <ellLib.h>
 #include <iocsh.h>
 
 #include "drvMBus.h"
@@ -26,8 +25,6 @@
 #define STRLEN    128
 
 static const char *dname = "drvMBus";
-
-static ELLLIST *pmbus_list = NULL;
 
 static char* __getTime(){
 /*------------------------------------------------------------------------------
@@ -50,38 +47,6 @@ static void IOThreadC(void* p){
   drvMBus* pthis = (drvMBus*)p;
   pthis->IOThread();
 }
-}
-
-static void init_pmbus_list(void) {
-/*-----------------------------------------------------------------------------
- *---------------------------------------------------------------------------*/
-  if(!pmbus_list) {
-    pmbus_list = (ELLLIST*) malloc(sizeof(ELLLIST));
-    ellInit(pmbus_list);
-  }
-}
-
-drvMBus* findMBus(char *name) {
-/*-----------------------------------------------------------------------------
- *---------------------------------------------------------------------------*/
-    mbusList_t *p = NULL;
-
-    if (!pmbus_list || !ellCount(pmbus_list)) {
-      return (drvMBus*) NULL;
-    }
-
-    p = (mbusList_t *) ellFirst(pmbus_list);
-    
-    while(p) {
-      if(!strcmp(name, p->name)) break;
-      p = (mbusList_t *)ellNext(&p->node);
-    }
-
-    if (p && p->pmbus) {
-      return p->pmbus;
-    } else {
-      return (drvMBus*) NULL;
-    }
 }
 
 drvMBus::drvMBus(drvd_t dd, int msec):
@@ -559,27 +524,22 @@ int drvMBusConfig(const char* port, int slave, int addr, int len,
         int dtype, const char* name, int msec){
 /*-----------------------------------------------------------------------------
  * EPICS iocsh callable function to call constructor for the drvMBus class.
- *  port is the octet port, slave is a modbus slave, addr is modbus starting
- *  address, len is memory length in units of bit or 16 bit word, dtype is
- *  data type (0 if two's complement), name is used in print statements, and
- *  msec is poll routine timeout in mili seconds.
+ *  port is the octet port,
+ *  slave is the modbus slave,
+ *  addr is the modbus starting address,
+ *  len is the memory length in units of bits or 16 bit words,
+ *  dtype is the data type (0 if two's complement),
+ *  name is used in print statements,
+ *  msec is poll routine timeout in miliseconds.
  *---------------------------------------------------------------------------*/
   modbusDataType_t dt = (modbusDataType_t)dtype;
   drvd_t dd;
-
-  drvMBus *pmbus = NULL;
-  mbusList_t *p  = (mbusList_t *)malloc(sizeof(mbusList_t));
 
   strncpy(dd.port, port, PLEN); dd.port[PLEN-1] = 0;
   strncpy(dd.name, name, PLEN); dd.name[PLEN-1] = 0;
   dd.slave = slave; dd.addr = addr; dd.len = len; dd.dt = dt;
 
-  pmbus = new drvMBus(dd, msec);
-
-  init_pmbus_list();
-  p->name = epicsStrDup(dd.name);
-  p->pmbus = pmbus;
-  ellAdd(pmbus_list, &p->node);
+  new drvMBus(dd, msec);
 
   return(asynSuccess);
 }

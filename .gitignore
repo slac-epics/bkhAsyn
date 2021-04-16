@@ -2,6 +2,7 @@
 O.*
 *.log
 *.swp
+*.bak
 bin/
 db/
 dbd/

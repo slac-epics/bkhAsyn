@@ -33,6 +33,8 @@ static const int RWRegs[] = {0, 1, 22, 23, 24, 25};
 // data and analogUE is for unsigned analog data.
 typedef enum {couplerE, analogSE, analogUE, digiInE, digiOutE, motorE} type_e;
 
+enum {OK, ERROR};
+
 #define NWFBYT 100
 
 #define wfMessageStr    "WF_MESSAGE"
