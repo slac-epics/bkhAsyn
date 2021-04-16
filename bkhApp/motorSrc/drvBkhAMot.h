@@ -153,7 +153,7 @@ enum{ unknownH,moveToLimH,atLimMoveH,homedH};
 
 class drvBkhAMot: public drvBkhAsyn{
 public:
-  drvBkhAMot(const char* name, int id, const char* port, int addr, int func, int len,
+  drvBkhAMot(const char* port, const char* modbusPort, int id, int addr, int func, int len,
 		int nchan, int msec, int ro);
 
   void		motorSetup( const char* port,int home,int nlim,int plim);
@@ -221,7 +221,7 @@ enum{	ixLiAbsPos,  ixLoSetPos, ixLiSPos,    ixLiSetPos,  ixState,
 private:
   int		_id;		// unique type identifier for this driver
   char*		_port;
-	char* _name;
+	char* _modbusPort;
 	int		_saddr;
   int		_mfunc;		// modbus function for this driver
   int		_mlen;

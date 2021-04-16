@@ -87,7 +87,7 @@ enum {OK, ERROR};
 
 class drvBkhAsyn: public asynPortDriver{
 public:
-  drvBkhAsyn(char* name, int id, const char* port, int addr, int func, int len,
+  drvBkhAsyn(const char* port, const char* modbusPort, int id, int addr, int func, int len,
         int nchan, int msec, int mflag=0);
 
   virtual void resultCB(iodone_t* p);
@@ -187,7 +187,7 @@ enum {ixWfMessage,   ixSiName,      ixLiRReg,    ixLiSByte,   ixLiDataIn,
 private:
   int         _id;        // unique type identifier for this driver,
   std::string _port;
-  char*       _name;
+  char*       _modbusPort;
   drvMBus     *_pmbus;
   int         _saddr;        // modbus start memory address for this
   int         _mfunc;        // modbus function for this driver

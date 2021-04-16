@@ -50,7 +50,7 @@ static void IOThreadC(void* p){
 }
 
 drvMBus::drvMBus(drvd_t dd, int msec):
-    drvModbusAsyn(dd.name, dd.port, dd.slave, 3, dd.addr, dd.len, dataTypeUInt16, dd.dt, "bkh") {
+    drvModbusAsyn(dd.port, dd.octetPort, dd.slave, 3, dd.addr, dd.len, dataTypeUInt16, dd.dt, "bkh") {
 /*-----------------------------------------------------------------------------
  * Constructor for the drvMBus class. Configures modbus IO routine using data
  * in structure dd. Parameters:
@@ -519,24 +519,25 @@ void drvMBus::registerCB(iocb_t cb){
 
 
 extern "C" {
-
-int drvMBusConfig(const char* port, int slave, int addr, int len,
-        int dtype, const char* name, int msec){
+//int drvMBusConfig(const char* port, int slave, int addr, int len,
+//        int dtype, const char* name, int msec){
+int drvMBusConfig(const char* port, const char* octetPort, int slave, int addr, int len,
+        int dtype, int msec){
 /*-----------------------------------------------------------------------------
  * EPICS iocsh callable function to call constructor for the drvMBus class.
- *  port is the octet port,
+ *  port is the port name,
+ *  port is the octet port name (typically created with drvAsynIPPortConfigure()),
  *  slave is the modbus slave,
  *  addr is the modbus starting address,
  *  len is the memory length in units of bits or 16 bit words,
  *  dtype is the data type (0 if two's complement),
- *  name is used in print statements,
  *  msec is poll routine timeout in miliseconds.
  *---------------------------------------------------------------------------*/
   modbusDataType_t dt = (modbusDataType_t)dtype;
   drvd_t dd;
 
   strncpy(dd.port, port, PLEN); dd.port[PLEN-1] = 0;
-  strncpy(dd.name, name, PLEN); dd.name[PLEN-1] = 0;
+  strncpy(dd.octetPort, octetPort, PLEN); dd.octetPort[PLEN-1] = 0;
   dd.slave = slave; dd.addr = addr; dd.len = len; dd.dt = dt;
 
   new drvMBus(dd, msec);
@@ -545,19 +546,19 @@ int drvMBusConfig(const char* port, int slave, int addr, int len,
 }
 
 static const iocshArg confArg0 = {"port", iocshArgString};
-static const iocshArg confArg1 = {"slave", iocshArgInt};
-static const iocshArg confArg2 = {"addr", iocshArgInt};
-static const iocshArg confArg3 = {"len", iocshArgInt};
-static const iocshArg confArg4 = {"dtype", iocshArgInt};
-static const iocshArg confArg5 = {"mbus_name", iocshArgString};
+static const iocshArg confArg1 = {"octetPort", iocshArgString};
+static const iocshArg confArg2 = {"slave", iocshArgInt};
+static const iocshArg confArg3 = {"addr", iocshArgInt};
+static const iocshArg confArg4 = {"len", iocshArgInt};
+static const iocshArg confArg5 = {"dtype", iocshArgInt};
 static const iocshArg confArg6 = {"msec", iocshArgInt};
 static const iocshArg* const confArgs[] = {&confArg0, &confArg1, &confArg2,
                 &confArg3, &confArg4, &confArg5, &confArg6};
 static const iocshFuncDef confFuncDef = {"drvMBusConfig", 7, confArgs};
 
 static void confCallFunc(const iocshArgBuf *args){
-  drvMBusConfig(args[0].sval, args[1].ival, args[2].ival, args[3].ival,
-                args[4].ival, args[5].sval, args[6].ival);
+  drvMBusConfig(args[0].sval, args[1].sval, args[2].ival, args[3].ival, args[4].ival,
+                args[5].ival, args[6].ival);
 }
 
 void drvMBusRegister(void){

@@ -56,7 +56,7 @@ static void updateThreadC(void* p){
 }
 }
 
-drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func, int len,
+drvBkhAsyn::drvBkhAsyn(const char* port, const char* modbusPort, int id, int addr, int func, int len,
     int nchan, int msec, int mflag):
     asynPortDriver(port, nchan,
         asynInt32Mask|asynInt32ArrayMask|asynOctetMask|asynDrvUserMask,
@@ -65,9 +65,9 @@ drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func,
 /*-----------------------------------------------------------------------------
  * Constructor for the drvBkhAsyn class. Calls constructor for the
  * asynPortDriver base class. Parameters:
- *  name is the modbus name used in drvMBusConfig()
- *  id is the module type from drvBkhAsynConfig()
  *  port is the asyn port
+ *  modbusPort is the modbus port created with drvMBusConfig()
+ *  id is the module type from drvBkhAsynConfig()
  *  addr is the modbus memory segment start address
  *  func is modbus function for this object
  *  len is modbus memory segment length
@@ -86,7 +86,7 @@ drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func,
  *---------------------------------------------------------------------------*/
   const char *iam = "drvBkhAsyn";
   _port = port;
-  _name = epicsStrDup(name);
+  _modbusPort = epicsStrDup(modbusPort);
   _nchan = nchan; 
   _tout = msec/1000.0;
   _saddr = addr; _mfunc = func; _mlen = len; _motor = mflag; _id = id;
@@ -140,10 +140,10 @@ drvBkhAsyn::drvBkhAsyn(char* name, int id, const char* port, int addr, int func,
   createParam(loPollTmoStr,     asynParamInt32,         &_loPollTmo);
   createParam(refreshRWStr,     asynParamInt32,         &_refreshRW);
 
-  _pmbus = (drvMBus*)findAsynPortDriver(_name);
+  _pmbus = (drvMBus*)findAsynPortDriver(_modbusPort);
   if (!_pmbus) {
     printf("%s::%s: ERROR: Modbus port %s not found\n",
-           dname, iam, _name);
+           dname, iam, _modbusPort);
     _setError("ERROR: Modbus port not found", ERROR);
   } else {
     _pmbus->registerCB(IODoneCB);
@@ -945,11 +945,11 @@ void drvBkhAsyn::_setError(const char* msg, int flag){
 // Configuration routine.  Called directly, or from the iocsh function below
 extern "C" {
 
-int drvBkhAsynConfig(char *name, int id, const char* port, int func, int addr, int len,
+int drvBkhAsynConfig(const char* port, const char *modbusPort, int id, int func, int addr, int len,
         int nchan, int msec){
 /*-----------------------------------------------------------------------------
  * EPICS iocsh callable function to call constructor for the drvBkhAsyn class.
- *  name is the modbus name used in drvMBusConfig()
+ *  modbusPort is the modbus name used in drvMBusConfig()
  *  id is a unique module type identifier: 0 - coupler, 1 - analogSigned,
  *      2 - analogUnsigned, 3 - digitalIn, 4 - digitalOut, 5 - motor.
  *  port is the asyn port name for the driver (pick a unique short name for each module as below)
@@ -960,14 +960,14 @@ int drvBkhAsynConfig(char *name, int id, const char* port, int func, int addr, i
  *  msec is poll routine timeout in milliseconds
  *---------------------------------------------------------------------------*/
   drvBkhAsyn* p;
-  p = new drvBkhAsyn(name, id, port, addr, func, len, nchan, msec);
+  p = new drvBkhAsyn(port, modbusPort, id, addr, func, len, nchan, msec);
   p->initDone(1);
   return(asynSuccess);
 }
 
-static const iocshArg confArg0={"mbus_name", iocshArgString};
-static const iocshArg confArg1={"id", iocshArgInt};
-static const iocshArg confArg2={"port", iocshArgString};
+static const iocshArg confArg0={"port", iocshArgString};
+static const iocshArg confArg1={"modbusPort", iocshArgString};
+static const iocshArg confArg2={"id", iocshArgInt};
 static const iocshArg confArg3={"func", iocshArgInt};
 static const iocshArg confArg4={"addr", iocshArgInt};
 static const iocshArg confArg5={"len", iocshArgInt};
@@ -978,7 +978,7 @@ static const iocshArg* const confArgs[] = {&confArg0, &confArg1, &confArg2,
 static const iocshFuncDef confFuncDef = {"drvBkhAsynConfig", 8, confArgs};
 
 static void confCallFunc(const iocshArgBuf *args){
-  drvBkhAsynConfig(args[0].sval, args[1].ival, args[2].sval, args[3].ival, args[4].ival,
+  drvBkhAsynConfig(args[0].sval, args[1].sval, args[2].ival, args[3].ival, args[4].ival,
         args[5].ival, args[6].ival, args[7].ival);
 }
 

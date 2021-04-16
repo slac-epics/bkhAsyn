@@ -60,8 +60,11 @@ typedef struct{
 typedef void (*iocb_t)(iodone_t);
 
 typedef struct{
-  char port[PLEN], name[PLEN];
-  int slave, addr, len;
+  char port[PLEN];
+  char octetPort[PLEN];
+  int slave;
+  int addr;
+  int len;
   modbusDataType_t dt;
 } drvd_t;
 
@@ -71,7 +74,7 @@ typedef struct{
   int    addr, chan, a, rn, pix;
   int    d, len;
   int    six;        // special index of type spix_t
-  void*    pdrv;
+  void*  pdrv;
 } msgq_t;
 
 typedef enum {prioH_e, prioL_e} prio_t;
@@ -81,9 +84,8 @@ class drvMBus: public drvModbusAsyn {
 public:
   drvMBus(drvd_t dd, int msec);
   void IOThread();
-  asynStatus mbusDoIO(prio_t prio, int six, int saddr, int addr, int chan, 
-            int n, int a, int rn, int pix, int func, int len, 
-            int d, void* pdrv);
+  asynStatus mbusDoIO(prio_t prio, int six, int saddr, int addr, int chan, int n, 
+        int a, int rn, int pix, int func, int len, int d, void* pdrv);
   void        exitHndl();
   void        mbusLock();
   void        mbusUnlock();
@@ -121,7 +123,6 @@ private:
   int        _npurgLQ;    // number of times low prio queue was purged
   int        _npurgHQ;    // number of times hi prio queue was purged.
 };
-
 
 #endif // _drvMBus_h
 

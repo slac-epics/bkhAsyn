@@ -783,9 +783,9 @@ printf( "%s::writeInt32: ix=%d,kx=%d,addr=%d,v=%d,spos=%d\n",dname,ix,kx,addr,v,
   stat=callParamCallbacks();
   return(stat);
 }
-drvBkhAMot::drvBkhAMot(const char* name, int id, const char* port, int addr, int func,
+drvBkhAMot::drvBkhAMot(const char* port, const char* modbusPort, int id, int addr, int func,
 	int len, int nchan, int tmof, int tmos):
-	drvBkhAsyn((char*)name, id, port, addr, func, len, nchan, tmos, 1){
+	drvBkhAsyn(port, modbusPort, id, addr, func, len, nchan, tmos, 1){
 /*-----------------------------------------------------------------------------
  * Constructor for the drvBkhAMot class. Calls constructor for the drvBkhAsyn
  * base class. Where
@@ -803,7 +803,7 @@ drvBkhAMot::drvBkhAMot(const char* name, int id, const char* port, int addr, int
   _port=(char*)callocMustSucceed( strlen(port)+1,sizeof(char),dname);
 
   strcpy((char*)_port,port);
-  _name = epicsStrDup(name);
+  _modbusPort = epicsStrDup(modbusPort);
   _saddr=addr; _mfunc=func; _mlen=len;
   _toutf=(float)tmof/1000.0;;
   _touts=(float)tmos/1000.0;;
@@ -937,7 +937,7 @@ void drvBkhAMot::motorSetup( const char* port,int h,int n,int p){
 
 extern "C" {
 
-int drvBkhAMotConfig(const char* name, const char* port,int func,int addr,int len,
+int drvBkhAMotConfig(const char* port, const char* modbusPort, int func,int addr,int len,
 		int nchan,int tmof,int tmos){
 /*-----------------------------------------------------------------------------
  * EPICS iocsh callable function to call constructor for the drvBkhAMot class.
@@ -951,7 +951,7 @@ int drvBkhAMotConfig(const char* name, const char* port,int func,int addr,int le
  *---------------------------------------------------------------------------*/
   drvBkhAMot *pthis;
   motorList_t *p;
-  pthis = new drvBkhAMot(name, motorE, port, addr, func, len, nchan, tmof, tmos);
+  pthis = new drvBkhAMot(port, modbusPort, motorE, addr, func, len, nchan, tmof, tmos);
 
   init_pmotor_list();
   p = (motorList_t *) malloc(sizeof(motorList_t));
@@ -961,7 +961,7 @@ int drvBkhAMotConfig(const char* name, const char* port,int func,int addr,int le
 
   return(asynSuccess);
 }
-void drvBkhAMotSetup( const char* port,int home,int nlim,int plim){
+void drvBkhAMotSetup(const char* port, int home, int nlim, int plim){
 /*-----------------------------------------------------------------------------
  * Driver setup.  This must be called after the driver objec has been created.
  * home is 1 at negative limit, 2 at current position, 3 at positive limit.
@@ -977,8 +977,8 @@ void drvBkhAMotSetup( const char* port,int home,int nlim,int plim){
   pthis->motorSetup( port,home,nlim,plim);
 }
 
-static const iocshArg confArg0={"mbus_name", iocshArgString};
-static const iocshArg confArg1={"port",iocshArgString};
+static const iocshArg confArg0={"port",iocshArgString};
+static const iocshArg confArg1={"modbusPort", iocshArgString};
 static const iocshArg confArg2={"func",iocshArgInt};
 static const iocshArg confArg3={"addr",iocshArgInt};
 static const iocshArg confArg4={"len",iocshArgInt};
