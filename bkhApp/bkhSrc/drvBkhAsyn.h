@@ -67,13 +67,7 @@ enum {OK, ERROR};
 #define boInitStr    "BO_INIT"
 #define boRefreshStr    "BO_REFRESH"
 
-#define loMAddrStr    "LO_MADDR"
-#define loMValStr    "LO_MVAL"
-#define liMValStr    "LI_MVAL"
-#define loMFuncStr    "LO_MFUNC"
-#define boMGetStr    "BO_MGET"
-
-#define boMPutStr    "BO_MPUT"
+#define refreshRWStr    "REFRESH_RW"
 #define boWDRstStr    "BO_WDRST"
 #define biErrorStr    "BI_ERROR"
 #define boTestStr    "BO_TEST"
@@ -83,7 +77,6 @@ enum {OK, ERROR};
 #define loAllowInLQStr    "LO_ALLOWINLQ"
 #define liPollTmoStr    "LI_POLLTMO"
 #define loPollTmoStr    "LO_POLLTMO"
-#define refreshRWStr    "REFRESH_RW"
 
 class drvBkhAsyn: public asynPortDriver{
 public:
@@ -157,13 +150,7 @@ protected:
   int _boInit;
   int _boRefresh;
   
-  int _loMAddr;
-  int _loMVal;
-  int _liMVal;
-  int _loMFunc;
-  int _boMGet;
-  
-  int _boMPut;
+  int _refreshRW;
   int _boWDRst;
   int _biError;
   int _boTest;
@@ -173,16 +160,14 @@ protected:
   int _loAllowInLQ;
   int _liPollTmo;
   int _loPollTmo;
-  int _refreshRW;
 
 enum {ixWfMessage,   ixSiName,      ixLiRReg,    ixLiSByte,   ixLiDataIn,
       ixLiSWord,     ixLoCByte,     ixLiCByte,   ixLoDataOut, ixLiDataOut,
       ixLoCWord,     ixLiCWord,     ixLoRChan,   ixLoRegNum,  ixLiSBVal,
       ixLiRegVal,    ixLoWRegVal,   ixLiWRegVal, ixSiMID,     ixLoCReg,
       ixLiCReg,      ixBoBitVal,    ixBiBitVal,  ixBoInit,    ixBoRefresh,
-      ixLoMAddr,     ixLoMVal,      ixLiMVal,    ixLoMFunc,   ixBoMGet,
-      ixBoMPut,      ixBoWDRst,     ixBiError,   ixBoTest,    ixBoCInit,  
-      ixLiAllowInLQ, ixLoAllowInLQ, ixLiPollTmo, ixLoPollTmo, ixRefreshRW};
+      ixRefreshRW,   ixBoWDRst,     ixBiError,   ixBoTest,    ixBoCInit,  
+      ixLiAllowInLQ, ixLoAllowInLQ, ixLiPollTmo, ixLoPollTmo};
 
 private:
   int         _id;        // unique type identifier for this driver,

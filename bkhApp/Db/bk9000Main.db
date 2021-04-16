@@ -56,56 +56,6 @@ record(bo, "$(P):ReadRWData"){
   field(VAL,  "0")
 }
 
-#----- Read/write memory address
-record(longout, "$(P):MemAddr"){
-  field(DESC, "Memory address")
-  field(DTYP, "asynInt32")
-  field(OUT,  "@asyn($(DPORT),0,1) LO_MADDR")
-  field(VAL,  "0")
-  field(PINI, "YES")
-}
-
-record(longout, "$(P):MBFunc"){
-  field(DESC, "Modbus function")
-  field(DTYP, "asynInt32")
-  field(OUT,  "@asyn($(DPORT),0,1) LO_MFUNC")
-  field(VAL,  "3")
-  field(PINI, "YES")
-}
-
-record(longout, "$(P):MemVal"){
-  field(DESC, "Memory val to write")
-  field(DTYP, "asynInt32")
-  field(OUT,  "@asyn($(DPORT),0,1) LO_MVAL")
-}
-
-record(longout, "$(P):MemVal_RBV"){
-  field(DESC, "Memory value RBV")
-  field(DTYP, "asynInt32")
-  field(SCAN, "I/O Intr")
-  field(OUT,  "@asyn($(DPORT),0,1) LI_MVAL")
-}
-
-record(bo, "$(P):GetMem"){
-  field(DESC, "Get memory value")
-  field(DTYP, "asynInt32")
-  field(OUT,  "@asyn($(DPORT),0,1) BO_MGET")
-  field(ZNAM, "off")
-  field(ONAM, "on")
-  field(VAL,  "0")
-}
-
-record(bo, "$(P):PutMem"){
-  field(DESC, "Put memory value")
-  field(DTYP, "asynInt32")
-  field(OUT,  "@asyn($(DPORT),0,1) BO_MPUT")
-  field(HIGH, "0.1")
-  field(ZNAM, "off")
-  field(ONAM, "on")
-  field(VAL,  "0")
-}
-#-------------------------------------
-
 #--- The next 4 records are used to control how many messages
 #--- are allowed in the low priority message queue (in drvMBus) ----
 record(longout, "$(P):NumLPQMax"){

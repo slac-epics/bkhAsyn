@@ -122,13 +122,7 @@ drvBkhAsyn::drvBkhAsyn(const char* port, const char* modbusPort, int id, int add
   createParam(boInitStr,     asynParamInt32,         &_boInit);
   createParam(boRefreshStr,     asynParamInt32,         &_boRefresh);
 
-  createParam(loMAddrStr,     asynParamInt32,         &_loMAddr);
-  createParam(loMValStr,     asynParamInt32,         &_loMVal);
-  createParam(liMValStr,     asynParamInt32,         &_liMVal);
-  createParam(loMFuncStr,     asynParamInt32,         &_loMFunc);
-  createParam(boMGetStr,     asynParamInt32,         &_boMGet);
-
-  createParam(boMPutStr,     asynParamInt32,         &_boMPut);
+  createParam(refreshRWStr,     asynParamInt32,         &_refreshRW);
   createParam(boWDRstStr,     asynParamInt32,         &_boWDRst);
   createParam(biErrorStr,     asynParamInt32,         &_biError);
   createParam(boTestStr,     asynParamInt32,         &_boTest);
@@ -138,7 +132,6 @@ drvBkhAsyn::drvBkhAsyn(const char* port, const char* modbusPort, int id, int add
   createParam(loAllowInLQStr,     asynParamInt32,         &_loAllowInLQ);
   createParam(liPollTmoStr,     asynParamInt32,         &_liPollTmo);
   createParam(loPollTmoStr,     asynParamInt32,         &_loPollTmo);
-  createParam(refreshRWStr,     asynParamInt32,         &_refreshRW);
 
   _pmbus = (drvMBus*)findAsynPortDriver(_modbusPort);
   if (!_pmbus) {
@@ -769,7 +762,7 @@ asynStatus drvBkhAsyn::writeInt32(asynUser* pau, epicsInt32 v){
  *        paUser->reason define the command to be sent.
  *---------------------------------------------------------------------------*/
   asynStatus stat = asynSuccess; 
-  int maddr, ix, addr, chan, wfunc, aa, ff, vv, rnum;
+  int maddr, ix, addr, chan, wfunc, vv, rnum;
   
   ix = pau->reason;
 
@@ -835,27 +828,6 @@ asynStatus drvBkhAsyn::writeInt32(asynUser* pau, epicsInt32 v){
             break;
     case ixBoWDRst:
             stat = watchdogReset();
-            break;
-    case ixLoMAddr:
-            setIntegerParam(0, _loMAddr, v);
-            break;
-    case ixLoMVal:
-            setIntegerParam(0, _loMVal, v);
-            break;
-    case ixLoMFunc:
-            setIntegerParam(0, _loMFunc, v);
-            break;
-    case ixBoMGet:
-            if (!v) break;
-            getIntegerParam(0, _loMAddr, &aa);
-            getIntegerParam(0, _loMFunc, &ff);
-            stat = doIO(prioH_e, normal_e, aa, 0, ff, _liMVal, 0);
-            break;
-    case ixBoMPut:
-            getIntegerParam(0, _loMAddr, &aa);
-            getIntegerParam(0, _loMFunc, &ff);
-            getIntegerParam(0, _loMVal, &vv);
-            stat = doIO(prioH_e, normal_e, aa, 0, ff, 0, vv);
             break;
     case ixLoAllowInLQ:
             _pmbus->putAllowInLQ(v);
