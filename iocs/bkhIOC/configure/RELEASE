@@ -21,6 +21,7 @@
 # could match a directory name.
 # ==========================================================
 ASYN_MODULE_VERSION = R4.39-0.0.1
+MODBUS_MODULE_VERSION = R3.0-0.0.1
 
 # ==========================================================
 # Define module paths using pattern
@@ -29,6 +30,7 @@ ASYN_MODULE_VERSION = R4.39-0.0.1
 # FOO = /Full/Path/To/Development/Version 
 # ==========================================================
 ASYN = $(EPICS_MODULES)/asyn/$(ASYN_MODULE_VERSION)
+MODBUS = $(EPICS_MODULES)/modbus/$(MODBUS_MODULE_VERSION)
 
 BKHASYN = $(TOP)/../..
 

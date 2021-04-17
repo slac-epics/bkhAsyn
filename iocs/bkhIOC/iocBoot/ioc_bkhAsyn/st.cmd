@@ -15,63 +15,65 @@ epicsEnvSet("LOC",  "B34")
 epicsEnvSet("PORT", "BKH1")
 
 # Initialize IP port
-drvAsynIPPortConfigure("$(PORT)", "134.79.218.123:502", 0,0,1)
+drvAsynIPPortConfigure("$(OPORT)", "134.79.218.123:502", 0,0,1)
 
-#asynSetTraceIOMask("$(PORT)", 0, 4)
-#asynSetTraceMask("$(PORT)", 0, 0x9)
+#asynSetTraceIOMask("$(OPORT)", 0, 4)
+#asynSetTraceMask("$(OPORT)", 0, 0x9)
 
 # modbusInterposeConfig(portName, linkType, timeoutMsec, writeDelayMsec)
-# portName    Name of the asynIPPort previously created with drvAsynIPPortConfigure()
+# portName    Name of the octet port previously created with drvAsynIPPortConfigure()
 # linkType    Modbus link layer type (0 = TCP/IP)
 # timeoutMsec The timeout in milliseconds for write and read operations (0 = default = 2000 milliseconds).
 # writeDelayMsec  The delay in milliseconds before each write from EPICS to the device (default = 0).
 #------------------------------------------------------------------------------
-modbusInterposeConfig("$(PORT)", 0, 1000)
+modbusInterposeConfig("$(OPORT)", 0, 1000)
 
-# drvMBusConfig(port, slave, addr, len, dtype, mbus_name, msec)
-# port is the name of the asynIPPort created with drvAsynIPPortConfigure()
-# slave is a modbus slave (0 for Beckhoff)
-# addr is modbus starting address (0 for Beckhoff)
-# len is memory length in units of bits or 16 bit words (125 for Beckhoff)
+# drvMBusConfig(port, octetPort, slave, addr, len, dtype, msec)
+# port is the asyn port name,
+# octetPort is the octet port name (typically created with drvAsynIPPortConfigure()),
+# slave is the modbus slave (0 for Beckhoff)
+# addr is the modbus starting address (0 for Beckhoff)
+# len is the memory length in units of bits or 16 bit words (125 for Beckhoff)
 # dtype is data type (0 if two's complement) (0 for Beckhoff)
-# mbus_name is a unique identifier for the bus coupler instance
-# msec is the poll routine timeout in milliseconds (10 is fine)
+# msec is the IO thread poll period in milliseconds (10 is fine)
 #------------------------------------------------------------------------------
-drvMBusConfig("$(PORT)", 0, 0, 125, 0, "$(PORT)", 10)
+drvMBusConfig("$(PORT)", "$(OPORT)", 0, 0, 125, 0, 10)
 
-# drvBkhAsynConfig(mbus_name, id, port, func, addr, len, nch, msec)
-# mbus_name is the modbus name used in drvMBusConfig()
+# drvBkhAsynConfig(port, modbusPort, id, func, addr, len, nch, msec)
+# port is the asyn port name for the driver (pick a unique short name for each module as below)
+# modbusPort is the modbus port created with drvMBusConfig()
 # id is a unique module type identifier: 0 - coupler, 1 - analogSigned,
 #     2 - analogUnsigned, 3 - digitalIn, 4 - digitalOut, 5 - motor.
-# port is the asyn port name for the driver (pick a unique short name for each module as below)
 # func is the modbus function (e.g. 5 - digitalOut, 2 - digitalIn, 3 - analog In/Out)
 # addr is the modbus starting address of the memory image (group all modules of the same modbus function together)
 # len is the length of the memory image, in bits (digital modules) or 16 bit words (analog modules)
 # nch is the number of channels
-# msec is poll routine timeout in milliseconds
+# msec is the poller thread period in milliseconds
 #------------------------------------------------------------------------------
 # Note: if you have only digital output modules in your setup, you must create an
 #     update thread so the I/O won't timeout.  Like this:
-# drvBkhAsynConfig(mbus, 3, "update", 2,      0,   0,  0, 1000)
+# drvBkhAsynConfig("update", mbus, 3, 2,      0,   0,  0, 1000)
 #------------------------------------------------------------------------------
 # These are standard bus coupler commands
-drvBkhAsynConfig("$(PORT)", 0, "$(PORT)_DEBUG",   3,      0, 125,  2,    0)
-drvBkhAsynConfig("$(PORT)", 0, "$(PORT)_BK9000R", 3, 0x1000,  33, 33,    0)
-drvBkhAsynConfig("$(PORT)", 0, "$(PORT)_BK9000W", 3, 0x110a,  26, 26,    0)
+drvBkhAsynConfig("$(PORT)_DEBUG",   "$(PORT)", 0, 3,      0, 125,  2,    0)
+drvBkhAsynConfig("$(PORT)_BK9000R", "$(PORT)", 0, 3, 0x1000,  33, 33,    0)
+drvBkhAsynConfig("$(PORT)_BK9000W", "$(PORT)", 0, 3, 0x110a,  26, 26,    0)
 
 # These are for the bus terminals
-drvBkhAsynConfig("$(PORT)", 4, "$(PORT)_2114_01", 5,      0,   4,  4, 1000)
-drvBkhAsynConfig("$(PORT)", 3, "$(PORT)_1104_01", 2,      0,   4,  4,  200)
-drvBkhAsynConfig("$(PORT)", 2, "$(PORT)_3172_01", 3,      0,   4,  2,  200)
-drvBkhAsynConfig("$(PORT)", 1, "$(PORT)_3102_01", 3,      4,   4,  2,  200)
-drvBkhAsynConfig("$(PORT)", 1, "$(PORT)_3314_01", 3,      8,   8,  4,  500)
-drvBkhAsynConfig("$(PORT)", 1, "$(PORT)_4132_01", 3,     16,   4,  2,    0)
+drvBkhAsynConfig("$(PORT)_2114_01", "$(PORT)", 4, 5,      0,   4,  4, 1000)
+drvBkhAsynConfig("$(PORT)_1104_01", "$(PORT)", 3, 2,      0,   4,  4,  200)
+drvBkhAsynConfig("$(PORT)_3172_01", "$(PORT)", 2, 3,      0,   4,  2,  200)
+drvBkhAsynConfig("$(PORT)_3102_01", "$(PORT)", 1, 3,      4,   4,  2,  200)
+drvBkhAsynConfig("$(PORT)_3314_01", "$(PORT)", 1, 3,      8,   8,  4,  500)
+drvBkhAsynConfig("$(PORT)_4132_01", "$(PORT)", 1, 3,     16,   4,  2,    0)
 
 #asynSetTraceIOMask("3172_01", 0, 4)
 #asynSetTraceMask("3172_01", 0, 0x9)
 
 # Load record instances
-dbLoadRecords("db/testIOC.db", "P=$(P), M=$(PORT), LOC=$(LOC), IOC=$(IOC)")
+dbLoadRecords("db/testIOC.db", "P=$(P),M=$(PORT),LOC=$(LOC),IOC=$(IOC)")
+dbLoadRecords("db/asynRecord.db", "P=$(P):,R=Asyn,PORT=$(PORT),ADDR=0,IMAX=0,OMAX=0")
+dbLoadRecords("db/statistics.template", "P=$(P):,R=Asyn,PORT=$(PORT),SCAN=10 second")
 
 cd ${TOP}/iocBoot/${IOC}
 iocInit

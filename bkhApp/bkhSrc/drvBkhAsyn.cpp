@@ -968,10 +968,10 @@ int drvBkhAsynConfig(const char* port, const char *modbusPort, int id, int func,
         int nchan, int pollPeriod){
 /*-----------------------------------------------------------------------------
  * EPICS iocsh callable function to call constructor for the drvBkhAsyn class.
- *  modbusPort is the modbus name used in drvMBusConfig()
+ *  port is the asyn port name for the driver (pick a unique short name for each module as below)
+ *  modbusPort is the modbus port created with drvMBusConfig()
  *  id is a unique module type identifier: 0 - coupler, 1 - analogSigned,
  *      2 - analogUnsigned, 3 - digitalIn, 4 - digitalOut, 5 - motor.
- *  port is the asyn port name for the driver (pick a unique short name for each module as below)
  *  func is the modbus function (e.g. 5 - digitalOut, 2 - digitalIn, 3 - analog In/Out)
  *  addr is the modbus starting address of the memory image (group all modules of the same modbus function together)
  *  len is the length of the memory image, in bits (digital modules) or 16 bit words (analog modules)

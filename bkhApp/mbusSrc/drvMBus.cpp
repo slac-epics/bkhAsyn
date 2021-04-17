@@ -502,14 +502,12 @@ void drvMBus::registerCB(iocb_t cb){
 
 
 extern "C" {
-//int drvMBusConfig(const char* port, int slave, int addr, int len,
-//        int dtype, const char* name, int msec){
 int drvMBusConfig(const char* port, const char* octetPort, int slave, int addr, int len,
         int dtype, int msec){
 /*-----------------------------------------------------------------------------
  * EPICS iocsh callable function to call constructor for the drvMBus class.
- *  port is the port name,
- *  port is the octet port name (typically created with drvAsynIPPortConfigure()),
+ *  port is the asyn port name,
+ *  octetPort is the octet port name (typically created with drvAsynIPPortConfigure()),
  *  slave is the modbus slave,
  *  addr is the modbus starting address,
  *  len is the memory length in units of bits or 16 bit words,

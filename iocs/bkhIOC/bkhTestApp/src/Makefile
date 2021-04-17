@@ -10,6 +10,7 @@ DBD += $(PROD_NAME).dbd
 $(PROD_NAME)_DBD += base.dbd
 $(PROD_NAME)_DBD += asyn.dbd
 $(PROD_NAME)_DBD += drvAsynIPPort.dbd
+$(PROD_NAME)_DBD += modbusSupport.dbd
 #$(PROD_NAME)_DBD += asSupport.dbd
 $(PROD_NAME)_DBD += drvMBus.dbd
 $(PROD_NAME)_DBD += drvBkhAMot.dbd
@@ -21,6 +22,7 @@ $(PROD_NAME)_LIBS += $(PROD_NAME)MBus
 $(PROD_NAME)_LIBS += $(PROD_NAME)Asyn
 $(PROD_NAME)_LIBS += $(PROD_NAME)Mot
 #$(PROD_NAME)_LIBS += autosave
+$(PROD_NAME)_LIBS += modbus
 $(PROD_NAME)_LIBS += asyn
 
 # $(PROD_NAME)_registerRecordDeviceDriver.cpp derives from $(PROD_NAME).dbd
