@@ -2,7 +2,7 @@
 R0.3.0  M. Dunning - 2021-04-14
     - drvMBus: inherit from drvModbusAsyn and remove custom modbus code.  
             Now drvMBus is an asynPortDriver and can call modbus and 
-            asynPortDriver methods directly.
+            asynPortDriver methods directly.  This requires modbus version >= R3.0.
     - Fix issue with data leakage between ports when running multiple 
             couplers in a single ioc
     - Use findAsynPortDriver() instead of linked list to return pointer to drvMBus driver
