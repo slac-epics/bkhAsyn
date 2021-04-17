@@ -37,9 +37,9 @@ static char* __getTime(){
 }
 
 extern "C"{
-static void exitHndlC(void* pvt){
+static void exitHandlerC(void* pvt){
   drvMBus* pthis = (drvMBus*)pvt;
-  pthis->exitHndl();
+  pthis->exitHandler();
 }
 
 static void IOThreadC(void* p){
@@ -68,7 +68,7 @@ drvMBus::drvMBus(drvd_t dd, int msec):
                 (EPICSTHREADFUNC)IOThreadC, this);
   }
   
-  epicsAtExit(exitHndlC, this);
+  epicsAtExit(exitHandlerC, this);
   
   printf("%s::%s: Port %s configured, octet port=%s\n", dname, dname, dd.port, dd.octetPort);
 }
@@ -107,7 +107,7 @@ void drvMBus::IOThread(){
     }
 }
 
-void drvMBus::exitHndl(){
+void drvMBus::exitHandler(){
 /*-----------------------------------------------------------------------------
  *---------------------------------------------------------------------------*/
   _halt = 1;

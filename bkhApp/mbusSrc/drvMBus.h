@@ -86,7 +86,7 @@ public:
   void IOThread();
   asynStatus mbusDoIO(prio_t prio, int six, int saddr, int addr, int chan, int n, 
         int a, int rn, int pix, int func, int len, int d, void* pdrv);
-  void        exitHndl();
+  void        exitHandler();
   void        mbusPurgeQueue(prio_t ix);
   void        registerCB(iocb_t cb);
   void        report();

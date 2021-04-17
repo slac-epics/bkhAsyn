@@ -220,7 +220,7 @@ void drvBkhAMot::exitHndl(){
  *---------------------------------------------------------------------------*/
   errlogPrintf( "%s::%s:exitHndl: Clear ID\n",dname,_port);
 }
-void drvBkhAMot::resultCB( iodone_t* p){
+void drvBkhAMot::resultCallback( iodone_t* p){
 /*-----------------------------------------------------------------------------
  * This is a callback routine that drvMBus driver call for each completed
  * IO request.
@@ -230,10 +230,10 @@ void drvBkhAMot::resultCB( iodone_t* p){
  *---------------------------------------------------------------------------*/
   int ix=p->pix-_firstix;
   if(p->stat){
-    errlogPrintf( "%s::%s:resultCB: failed status\n",dname,_port);
+    errlogPrintf( "%s::%s:resultCallback: failed status\n",dname,_port);
     fflush(0);
     if(p->pix==_liAbsPos) _gotAPos=1;
-    drvBkhAsyn::_setError( "Bad Status in resultCB",1);
+    drvBkhAsyn::_setError( "Bad Status in resultCallback",1);
     _errInMotResult=1;
     return;
   }
@@ -245,7 +245,7 @@ void drvBkhAMot::resultCB( iodone_t* p){
     _autoStopOnOff( 1);
     // jump start reading absolute position
     _gotAPos=1;
-    errlogPrintf( "%s::%s:resultCB:INITEND\n",dname,_port);
+    errlogPrintf( "%s::%s:resultCallback:INITEND\n",dname,_port);
     _mstate=motReady;
     setIntegerParam( 0,_liState,_mstate);
     callParamCallbacks(0);
@@ -255,7 +255,7 @@ void drvBkhAMot::resultCB( iodone_t* p){
     switch(ix){
       case ixLiAbsPos:	_getAbsPos( p); _gotAPos=1; break;
       case ixLiSPos:	_getSetPoint( p); break;
-      default:		drvBkhAsyn::resultCB(p); break;
+      default:		drvBkhAsyn::resultCallback(p); break;
     }
   }
   else if(p->func==WRFUNC){
@@ -517,7 +517,7 @@ asynStatus drvBkhAMot::_stop( int ix){
     cb|=0x20;
     stat=doWrite( _saddr+WOFFST,0,1,0,WRFUNC,cb,_loCByte);
   }
-  setTimeOut(_touts);
+  setPollPeriod(_touts);
   setIntegerParam( 0,_loCByte,cb);
   if(stat!=asynSuccess) return(stat);
   _mstate=motStopped;
@@ -594,7 +594,7 @@ asynStatus drvBkhAMot::_start(){
  *---------------------------------------------------------------------------*/
   asynStatus stat=asynSuccess; int cb;
   cb=_cb|5;
-  setTimeOut(_toutf);
+  setPollPeriod(_toutf);
   setIntegerParam( 0,_loCByte,cb);
   stat=doWrite( _saddr+WOFFST,0,1,0,WRFUNC,cb,_loCByte);
   if(stat!=asynSuccess) return(stat);
@@ -756,7 +756,7 @@ printf( "%s::writeInt32: ix=%d,kx=%d,addr=%d,v=%d,spos=%d\n",dname,ix,kx,addr,v,
 			_setPosition( spos);
 			getIntegerParam( 0,_liCWord,&spos);
 			spos|=0x400;
-			stat=writeCWord(0,spos);
+			stat=writeControlWord(0,spos);
 			break;
     case ixMbboHomeT:	_homet=(home_e)v; break;
     case ixLoMRange:	setIntegerParam( addr,_loMRange,v); break;

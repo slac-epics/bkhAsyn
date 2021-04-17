@@ -157,7 +157,7 @@ public:
 		int nchan, int msec, int ro);
 
   void		motorSetup( const char* port,int home,int nlim,int plim);
-  virtual void resultCB( iodone_t* p);
+  virtual void resultCallback( iodone_t* p);
   virtual void updateUser( double tmo);
   virtual void report( FILE* fp,int level);
   virtual asynStatus readInt32( asynUser* pau,epicsInt32* v);

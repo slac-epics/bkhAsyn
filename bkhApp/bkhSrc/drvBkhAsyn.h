@@ -21,6 +21,9 @@
 #define INITEND         993     // pix value to indicate initialization end
 #define CHNUPDT         998     // pix value to label non motor update
 #define MOTUPDT         999     // pix value to label motor update request.
+#define WDOG_REG        23      // Watchdog timeout register offset (decimal), assuming start address is 0x110a.
+#define WDOG_VAL1       0xbecf
+#define WDOG_VAL2       0xaffe
 
 // Coupler read-only register offsets, starting at address 0x1000.
 static const int RRegs[] = {10, 11, 12, 16, 17, 18, 19, 32};
@@ -81,43 +84,42 @@ enum {OK, ERROR};
 class drvBkhAsyn: public asynPortDriver{
 public:
   drvBkhAsyn(const char* port, const char* modbusPort, int id, int addr, int func, int len,
-        int nchan, int msec, int mflag=0);
+        int nchan, int pollPeriod, int motorFlag=0);
 
-  virtual void resultCB(iodone_t* p);
+  virtual void resultCallback(iodone_t* p);
   virtual void updateUser(double tmo);
   virtual asynStatus readInt32(asynUser* pau, epicsInt32* v);
   virtual asynStatus writeInt32(asynUser* pau, epicsInt32 v);
   virtual void report(FILE* fp, int level);
-  void        exitHndl();
+  void        exitHandler();
   void        initDone(int flg);
-  void        updateThread();
-  void        setTimeOut(double tmo){_tout = tmo;}
+  void        pollerThread();
+  void        setPollPeriod(double tmo) {_pollPeriodSec = tmo;}
 
 protected:
   asynStatus   doIO(prio_t pr, int six, int maddr, int rn, int func, int pix, int d);
   asynStatus   doReadH(int saddr, int addr, int n, int a, int pix);
   asynStatus   doReadL(int saddr, int addr, int n, int a, int pix);
-  asynStatus   doWrite(int saddr, int addr, int n, int a,
-                       int func, int d, int pix=0);
+  asynStatus   doWrite(int saddr, int addr, int n, int a, int func, int d, int pix=0);
   asynStatus   readChannel(int addr, int pix1, int pix2);
+  asynStatus   writeChannel(int addr, int v);
   asynStatus   readOne(int addr, int pix);
-  asynStatus   writeChan(int addr, int v);
   asynStatus   writeOne(int addr, int v);
   asynStatus   readHReg(int cbe, int addr, int chan, int rnum, int pix);
   asynStatus   writeHReg(int addr, int chan, int rnum, int v, int pix);
   asynStatus   writeHRAM(int addr, int chan, int rnum, int v, int pix);
-  asynStatus   readMID(int pix);
-  asynStatus   readChanls(int pix);
+  asynStatus   readModuleID(int pix);
+  asynStatus   readChannels(int pix);
   asynStatus   watchdogReset();
-  asynStatus   writeCWord(int addr, int v);
-  void         _message(const char*);
-  void         _setError(const char* msg, int flag);
-  asynStatus   _getChans(char* pd, int nch, int len, int pix);
+  asynStatus   writeControlWord(int addr, int v);
+  void         _message(std::string);
+  void         _setError(std::string msg, int flag);
+  asynStatus   _getChannels(char* pd, int nch, int len, int pix);
   asynStatus   _getBits(char* pd, int nch);
-  void         _gotMID(word* pd, int len);
+  void         _gotModuleID(word* pd, int len);
   void         _gotData(int addr, int pix, word* pd, int len);
   void         _gotChannels(int func, word* pd, int len, int pix);
-  void         _refresh(const int arr[], int size);
+  void         _readRegisters(const int arr[], int size);
   void         _getRegisters();
 
   int _wfMessage;
@@ -177,7 +179,7 @@ private:
   int         _saddr;        // modbus start memory address for this
   int         _mfunc;        // modbus function for this driver
   int         _mlen;        //modbus memory segment length
-  double      _tout;        // sleep period in sec for IOThread
+  double      _pollPeriodSec;        // sleep period in sec for IOThread
   int         _initdone;
   int         _nchan;
   char        _msg[NWFBYT];    // for _wfMessage record
