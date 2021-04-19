@@ -15,6 +15,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <sstream>
 #include <stdio.h>
 #include <errno.h>
 #include <math.h>
@@ -62,7 +63,19 @@ drvBkhAsyn::drvBkhAsyn(const char* port, const char* modbusPort, int id, int add
     asynPortDriver(port, nchan,
         asynInt32Mask|asynInt32ArrayMask|asynOctetMask|asynDrvUserMask,
         asynInt32Mask|asynInt32ArrayMask|asynOctetMask,
-        ASYN_CANBLOCK|ASYN_MULTIDEVICE, 1, 0, 0){
+        ASYN_CANBLOCK|ASYN_MULTIDEVICE, 1, 0, 0),
+        _port(port),
+        _modbusPort(modbusPort),
+        _id(id),
+        _saddr(addr),
+        _mfunc(func),
+        _mlen(len),
+        _nchan(nchan),
+        _pollPeriodSec(pollPeriod/1000.0),
+        _motor(motorFlag),
+        _errInResult(0),
+        _errInWrite(0)
+{
 /*-----------------------------------------------------------------------------
  * Constructor for the drvBkhAsyn class. Calls constructor for the
  * asynPortDriver base class. Parameters:
@@ -86,12 +99,12 @@ drvBkhAsyn::drvBkhAsyn(const char* port, const char* modbusPort, int id, int add
  *  stack size
  *---------------------------------------------------------------------------*/
   const char *functionName = "drvBkhAsyn";
-  _port = port;
-  _modbusPort = epicsStrDup(modbusPort);
-  _nchan = nchan; 
-  _pollPeriodSec = pollPeriod/1000.0;
-  _saddr = addr; _mfunc = func; _mlen = len; _motor = motorFlag; _id = id;
-  _errInResult = _errInWrite = 0;
+  //_port = port;
+  //_modbusPort = modbusPort;
+  //_nchan = nchan; 
+  //_pollPeriodSec = pollPeriod/1000.0;
+  //_saddr = addr; _mfunc = func; _mlen = len; _motor = motorFlag; _id = id;
+  //_errInResult = _errInWrite = 0;
 
   createParam(wfMessageStr,    asynParamOctet,         &_wfMessage);
   createParam(siNameStr,     asynParamOctet,         &_siName);
@@ -134,10 +147,10 @@ drvBkhAsyn::drvBkhAsyn(const char* port, const char* modbusPort, int id, int add
   createParam(liPollTmoStr,     asynParamInt32,         &_liPollTmo);
   createParam(loPollTmoStr,     asynParamInt32,         &_loPollTmo);
 
-  _pmbus = (drvMBus*)findAsynPortDriver(_modbusPort);
+  _pmbus = (drvMBus*)findAsynPortDriver(_modbusPort.c_str());
   if (!_pmbus) {
     printf("%s::%s: ERROR: Modbus port %s not found\n",
-           driverName, functionName, _modbusPort);
+           driverName, functionName, _modbusPort.c_str());
     _setError("ERROR: Modbus port not found", ERROR);
   } else {
     _pmbus->registerCB(IODoneCallback);
@@ -853,6 +866,7 @@ asynStatus drvBkhAsyn::writeInt32(asynUser* pau, epicsInt32 v){
  *---------------------------------------------------------------------------*/
   asynStatus stat = asynSuccess; 
   int maddr, ix, addr, chan, wfunc, vv, rnum;
+  std::stringstream msg;
   
   ix = pau->reason;
 
@@ -934,8 +948,8 @@ asynStatus drvBkhAsyn::writeInt32(asynUser* pau, epicsInt32 v){
   }
 
   if (stat != asynSuccess) {
-    sprintf(_msg, "ERROR: writeInt32: ix=%d, addr=%d", ix, addr);
-    _setError(_msg, ERROR); 
+    msg << "ERROR: writeInt32: func= " << ix << ", addr= " << addr;
+    _setError(msg.str(), ERROR); 
     _errInWrite = 1;
   } else if (_errInWrite) {
     _setError("No error", OK);

@@ -112,13 +112,13 @@ private:
   int        _halt;        // if true disallow IO
   iocb_t     _cb;        // IO done callback
   double     _tout;
-  int        _inLQ;        // number of items in low priority queue
-  int        _inHQ;        // number of items in high priority queue
   int        _maxInLQ;    // max number in low prio queue
   int        _maxInHQ;    // max number in high prio queue
-  int        _allowInLQ;    // max number allowed in low prio queue
   int        _npurgLQ;    // number of times low prio queue was purged
   int        _npurgHQ;    // number of times hi prio queue was purged.
+  int        _allowInLQ;    // max number allowed in low prio queue
+  int        _inLQ;        // number of items in low priority queue
+  int        _inHQ;        // number of items in high priority queue
 };
 
 #endif // _drvMBus_h

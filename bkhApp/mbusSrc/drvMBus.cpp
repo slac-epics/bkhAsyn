@@ -49,18 +49,25 @@ static void IOThreadC(void* p){
 }
 
 drvMBus::drvMBus(drvd_t dd, int msec):
-    drvModbusAsyn(dd.port, dd.octetPort, dd.slave, 3, dd.addr, dd.len, dataTypeUInt16, dd.dt, "bkh") {
+    drvModbusAsyn(dd.port, dd.octetPort, dd.slave, 3, dd.addr, dd.len, dataTypeUInt16, dd.dt, "bkh"),
+        _halt(0),
+        _cb(0),
+        _tout(msec/1000.0),
+        _maxInLQ(0),
+        _maxInHQ(0),
+        _npurgLQ(0),
+        _npurgHQ(0),
+        _allowInLQ(NMSGQL)
+{
 /*-----------------------------------------------------------------------------
  * Constructor for the drvMBus class. Configures modbus IO routine using data
  * in structure dd. Parameters:
  * dd is the data structure
  * msec is the IOThread delay in miliseconds
  *---------------------------------------------------------------------------*/
-   _halt = 0; _cb = 0; _tout = msec/1000.0;
-  _maxInLQ = _maxInHQ = _npurgLQ = _npurgHQ = 0; _allowInLQ = NMSGQL;
   
-  _pmqH= new epicsMessageQueue(NMSGQH, sizeof(msgq_t));
-  _pmqL= new epicsMessageQueue(NMSGQL, sizeof(msgq_t));
+  _pmqH = new epicsMessageQueue(NMSGQH, sizeof(msgq_t));
+  _pmqL = new epicsMessageQueue(NMSGQL, sizeof(msgq_t));
 
   if (msec) {
     epicsThreadCreate(dname, epicsThreadPriorityHigh,

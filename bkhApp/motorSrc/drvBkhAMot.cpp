@@ -32,6 +32,7 @@
  *---------------------------------------------------------------------------*/
 #include <stdlib.h>
 #include <string.h>
+#include <sstream>
 #include <stdio.h>
 #include <errno.h>
 #include <math.h>
@@ -684,6 +685,7 @@ asynStatus drvBkhAMot::writeInt32( asynUser* pau,epicsInt32 v){
  *---------------------------------------------------------------------------*/
   asynStatus stat=asynSuccess; const char* iam="writeInt32";
   int addr,ix=pau->reason-_firstix,jx,kx=pau->reason,lx,spos;
+  std::stringstream msg;
 
   stat=getAddress(pau,&addr); if(stat!=asynSuccess) return(stat);
   _gotAPos=1;
@@ -776,8 +778,9 @@ printf( "%s::writeInt32: ix=%d,kx=%d,addr=%d,v=%d,spos=%d\n",dname,ix,kx,addr,v,
     default:		stat=drvBkhAsyn::writeInt32( pau,v); break;
   }
   if(stat!=asynSuccess){
-    sprintf( _msg,"Error in writeInt32: ix=%d,addr=%d",ix,addr);
-    _setError( _msg,1); _errInMotWrite=1;
+    msg << "ERROR: writeInt32: func= " << ix << ", addr= " << addr;
+    _setError(msg.str(), 1);
+    _errInMotWrite = 1;
   }
   else if(_errInMotWrite){ _errInMotWrite=0; _setError( "No error",0);}
   stat=callParamCallbacks();

@@ -232,7 +232,6 @@ private:
   int		_mready;	// ready for regular activities
   int		_firstix;
   int		_nchan;
-  char          _msg[NWFBYT];   // for _wfMessage record
   int		_errInMotResult;
   int		_errInMotWrite;
   int		_softlimlo;	// negative soft limit in motor steps

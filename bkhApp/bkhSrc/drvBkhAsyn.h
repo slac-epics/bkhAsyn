@@ -38,7 +38,6 @@ typedef enum {couplerE, analogSE, analogUE, digiInE, digiOutE, motorE} type_e;
 
 enum {OK, ERROR};
 
-#define NWFBYT 100
 
 #define wfMessageStr    "WF_MESSAGE"
 #define siNameStr    "SI_NAME"
@@ -172,21 +171,20 @@ enum {ixWfMessage,   ixSiName,      ixLiRReg,    ixLiSByte,   ixLiDataIn,
       ixLiAllowInLQ, ixLoAllowInLQ, ixLiPollTmo, ixLoPollTmo};
 
 private:
-  int         _id;        // unique type identifier for this driver,
   std::string _port;
-  char*       _modbusPort;
-  drvMBus     *_pmbus;
+  std::string _modbusPort;
+  int         _id;        // unique type identifier for this driver,
   int         _saddr;        // modbus start memory address for this
   int         _mfunc;        // modbus function for this driver
   int         _mlen;        //modbus memory segment length
-  double      _pollPeriodSec;        // sleep period in sec for IOThread
-  int         _initdone;
   int         _nchan;
-  char        _msg[NWFBYT];    // for _wfMessage record
-  int         _myErrId;    // returned by registerClient in drvBkhErr
+  double      _pollPeriodSec;        // sleep period in sec for IOThread
+  int         _motor;        // when true this driver does motor control
   int         _errInResult;
   int         _errInWrite;
-  int         _motor;        // when true this driver does motor control
+  drvMBus     *_pmbus;
+  int         _initdone;
+  int         _myErrId;    // returned by registerClient in drvBkhErr
 };
 
 #endif // _drvBkhAsyn_h
