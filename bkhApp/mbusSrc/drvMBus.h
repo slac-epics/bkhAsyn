@@ -112,7 +112,7 @@ protected:
   epicsMessageQueue* _pmqH;     // high priority message queue
 
 private:
-  int        _halt;        // if true disallow IO
+  bool       _exiting;        // if true disallow IO
   iocb_t     _cb;        // IO done callback
   double     _tout;
   int        _maxInLQ;    // max number in low prio queue

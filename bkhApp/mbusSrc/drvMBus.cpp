@@ -50,7 +50,7 @@ static void IOThreadC(void* p){
 
 drvMBus::drvMBus(drvd_t dd, int msec):
     drvModbusAsyn(dd.port, dd.octetPort, dd.slave, 3, dd.addr, dd.len, dataTypeUInt16, dd.dt, "bkh"),
-        _halt(0),
+        _exiting(false),
         _cb(0),
         _tout(msec/1000.0),
         _maxInLQ(0),
@@ -118,7 +118,7 @@ void drvMBus::IOThread(){
 void drvMBus::exitHandler(){
 /*-----------------------------------------------------------------------------
  *---------------------------------------------------------------------------*/
-  _halt = 1;
+  _exiting = true;
 }
 
 void drvMBus::mbusPurgeQueue(prio_t ix){
@@ -239,7 +239,7 @@ asynStatus drvMBus::mbusMemIO(msgq_t msgq){
   int st = 0; 
   epicsUInt16* pw = (epicsUInt16*)iodone.data;
 
-  if(_halt) return(asynSuccess);
+  if (_exiting) return asynSuccess;
 
   switch(msgq.six){
     case spix0_e:    _doSpecial0(msgq); break;
