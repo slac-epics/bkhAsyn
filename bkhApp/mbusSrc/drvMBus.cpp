@@ -153,16 +153,15 @@ void drvMBus::_emptyQueue(epicsMessageQueue* pmq){
   }
 }
 
-void drvMBus::report(){
+void drvMBus::report(FILE* fp, int level){
 /*-----------------------------------------------------------------------------
  * Prints a report to the console.
  *---------------------------------------------------------------------------*/
-  printf("Report for driver %s --- %s ---\n", dname, __getTime());
+  printf("Report for %s --- %s ---\n", dname, __getTime());
   printf("   %d in Low  prio queue (%d max, limit=%d)\n", _inLQ, _maxInLQ, _allowInLQ);
   printf("   %d in High prio queue (%d max, limit=%d)\n", _inHQ, _maxInHQ, NMSGQH);
   printf("   Number of purges: LowPQ = %d, HiPQ = %d\n", _npurgLQ, _npurgHQ);
-  _pmqL->show(5);
-  _pmqH->show(5);
+  drvModbusAsyn::report(fp, level);
 }
 
 asynStatus drvMBus::mbusDoIO(prio_t prio, int six, int saddr, int addr, int chan,

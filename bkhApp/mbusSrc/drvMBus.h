@@ -86,15 +86,15 @@ public:
   void IOThread();
   asynStatus mbusDoIO(prio_t prio, int six, int saddr, int addr, int chan, int n, 
         int a, int rn, int pix, int func, int len, int d, void* pdrv);
-  void        exitHandler();
-  void        mbusPurgeQueue(prio_t ix);
-  void        registerCB(iocb_t cb);
-  void        report();
-  int         getAllowInLQ() {return(_allowInLQ);}
-  void        putAllowInLQ(int n) {_allowInLQ=n;}
-  int         getAllowInHQ() {return(_allowInHQ);}
-  int         getNumInLQ() {return(_inLQ);}
-  int         getNumInHQ() {return(_inHQ);}
+  void         exitHandler();
+  void         mbusPurgeQueue(prio_t ix);
+  void         registerCB(iocb_t cb);
+  virtual void report(FILE* fp, int level);
+  int          getAllowInLQ() {return(_allowInLQ);}
+  void         putAllowInLQ(int n) {_allowInLQ=n;}
+  int          getAllowInHQ() {return(_allowInHQ);}
+  int          getNumInLQ() {return(_inLQ);}
+  int          getNumInHQ() {return(_inHQ);}
 
 protected:
   void        _emptyQueue(epicsMessageQueue* pmq);

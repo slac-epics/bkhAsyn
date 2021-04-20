@@ -971,9 +971,8 @@ void drvBkhAsyn::report(FILE* fp, int level){
 /*-----------------------------------------------------------------------------
  * Print some parameters and statistics.
  *---------------------------------------------------------------------------*/
-  _pmbus->report();
-  printf("Report for %s::%s -- id=%d -------------\n", driverName, _port.c_str(), _id);
-  printf("  Start modbus address = %d (0x%x), ", _saddr, _saddr);
+  printf("\nReport for %s port %s -- id=%d -------------\n", driverName, _port.c_str(), _id);
+  printf("  Modbus start address = %d (0x%x), ", _saddr, _saddr);
   printf("  Modbus function = %d, Length = %d\n", _mfunc, _mlen);
   printf("  Number of channels = %d\n", _nchan);
   asynPortDriver::report(fp, level);
