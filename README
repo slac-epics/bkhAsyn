@@ -1,7 +1,14 @@
 
-This is a support module for Beckhoff Bus Couplers and Bus Terminals,
-created by Zen Szalata.
-It has been tested successfully with BK9000 couplers and many different bus terminals.
+bkhAsyn EPICS support module
+2012-2021
+Z. Szalata
+M. Dunning
+K. Kim
+
+This is a support module for Beckhoff BK**** Modbus/TCP Bus Couplers and Bus Terminals.
+It has been tested extensively with BK9000 couplers and many different bus terminals,
+and *should* support all analog and digital I/O modules.
+It also supports multiple couplers per IOC.
 
 Configuring a new IOC involves two major steps:
 1. Add config commands to st.cmd file.
@@ -11,69 +18,12 @@ or create your own.
 This module contains an example IOC for a setup with ADCs, a DAC, Digital Input/Output,
 and Temperature modules.
 
-Note: when configuring your bus coupler's network settings,
-it is wise to set the "Watchdog Timeout" to zero, otherwise the I/O might
-time out.  It can also be set via channel access, with the following PV:
-$(P):900W_REG22
+Note: To prevent the I/O from timimg out, one should set the "Watchdog Timeout" to zero.
+This can be done with the records provided in this module, or when configuring your bus 
+coupler's network settings using KS2000.
 
 For documentation on Beckhoff hardware, see:
 https://beckhoff.com/
 
+See the example IOC included in this module for help with IOC configuration.
 
--------------------------------------
-Support Mulitple Instances in an ioc
--------------------------------------
-
-
-# ===========================================
-#              DRIVER SETUP
-# ===========================================
-
-# ************************************
-# **** Driver setup for Beckhoff ****
-drvAsynIPPortConfigure("$(BKH_P)", "$(BKH_IP):502", 0,0,1)
-modbusInterposeConfig("$(BKH_P)", 0, 1000)
-drvMBusConfig("$(BKH_P)", 0, 0, 125, 0, "$(MBUS_NAME)", 10)
-#
-#
-# drvBkhAsynConfig(mbus_name, id, port, func, addr, len, nch, msec)
-# mbus_name is a unique identifier for bus couplers
-# id is a unique module type identifier: 0 - coupler, 1 - analogSigned,
-#     2 - analogUnsigned, 3 - digitalIn, 4 - digitalOut, 5 - motor.
-# port is the asyn port name for the driver (pick a unique short name for each module as below)
-# func is the modbus function (e.g. 5 - digitalOut, 2 - digitalIn, 3 - analog In/Out)
-# addr is the modbus starting address of the memory image (group all modules of the same modbus function together)
-# len is the length of the memory image, in bits (digital modules) or 16 bit words (analog modules)
-# nch is the number of channels
-# msec is poll routine timeout in milliseconds
-#
-# These are standard bus coupler commands
-drvBkhAsynConfig($(MBUS_NAME), 0,   "$(MBUS_NAME)_DEBUG", 3,      0, 125,  2,    0)
-drvBkhAsynConfig($(MBUS_NAME), 0,   "$(MBUS_NAME)_B900R", 3, 0x1000,  33, 33,    0)
-drvBkhAsynConfig($(MBUS_NAME), 0,   "$(MBUS_NAME)_B900W", 3, 0x110a,  26, 26,    0)
-#
-# These are for the bus terminals
-drvBkhAsynConfig($(MBUS_NAME), 3, "1408_01", 2,      0,  16, 16,  200)
-drvBkhAsynConfig($(MBUS_NAME), 4, "2408_01", 5,      0,   8,  8,    0)
-drvBkhAsynConfig($(MBUS_NAME), 4, "2124_01", 5,      8,  24, 24,    0)
-drvBkhAsynConfig($(MBUS_NAME), 1, "3222_01", 3,      0,   4,  2,  200)
-drvBkhAsynConfig($(MBUS_NAME), 2, "3172_01", 3,      4,  12,  6,  200)
-drvBkhAsynConfig($(MBUS_NAME), 2, "3122_01", 3,     16,   4,  2,  200)
-
-
-#
-# drvBkhAMotConfig(mbus_name, port, func, addr, len, nch, tmof, tmos)
-# mbus_name is a unique identifier for bus couplers
-# port is the asyn port name for the driver (pck a unique short name for each module)
-# func is the modbus function
-# addr is the modbus starting address of the memory image (group all modules of the same modbus function toghter)
-# len is the length of the memory image
-# nch is the number of channels
-# tmof is the timeout in ms for fast update
-# tmos is the timeout in ms for slow update
-
-# drvBkhMotSetup(port, home, nlim, plim)
-# port is the asyn port name, should be matched with drvBkhMotConfig()
-# home is 1 at negative limit, 2 at current position, 3 at positive limit.
-# nlim if 1 negative limit switch is present, 0 not present.
-# plim if 1 positive limit switch is present, 0 not present.
