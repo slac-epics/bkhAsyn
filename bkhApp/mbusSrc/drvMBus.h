@@ -9,14 +9,13 @@
  * placing them in an epics message queue.  Entries are removed from the
  * message queue in the IOThread() function and processed in the order received.
  *
- * This device driver does not know anything about Beckhoffs per se, so the requests
- * must be properly phrased.  Update: this is no longer true.  I have implemented
- * a handful of "special" methods which implement a sequence of IO operations
- * needed to achieve complex tasks which need to be done for a single end, like
- * read from or write to a Beckhoff hidden register.  Some of these "special"
- * methods perform functions specific to the KL2531 (KL2541) stepper motor
+ * This driver includes a handful of "special" methods which implement a sequence 
+ * of IO operations needed to achieve complex tasks which need to be done for a 
+ * single end, like to read from or write to a Beckhoff hidden register.  Some of these 
+ * "special" methods perform functions specific to the KL2531 (KL2541) stepper motor
  * controller bus terminals.  Thus with these functions, complex operations
  * are performed with a single request.
+ * 
  * Started on 6/26/2013, zms
  * Updated 2019-20121 mdunning
  *---------------------------------------------------------------------------*/
@@ -45,9 +44,9 @@ typedef epicsUInt16  word;
 typedef unsigned int uint;
 
 #define PLEN    16
-#define NMSGQL    400
-#define NMSGQH    50
-#define NDATA    128
+#define NMSGQL  400
+#define NMSGQH  50
+#define NDATA   128
 
 typedef struct{
   void*    pdrv;
@@ -112,6 +111,8 @@ protected:
   epicsMessageQueue* _pmqH;     // high priority message queue
 
 private:
+  asynUser   *pasynUser;
+  std::string _port;
   bool       _exiting;        // if true disallow IO
   iocb_t     _cb;        // IO done callback
   double     _tout;

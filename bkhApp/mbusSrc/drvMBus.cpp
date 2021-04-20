@@ -1,5 +1,5 @@
 /* drvMBus.cpp
- * This device driver is a self contained class that does the modbus IO.
+ *
  * Started on 6/26/2013, zms
  * Updated 2019-2021 mdunning
  *---------------------------------------------------------------------------*/
@@ -20,8 +20,6 @@
 #include <iocsh.h>
 
 #include "drvMBus.h"
-
-#define STRLEN    128
 
 static const char *dname = "drvMBus";
 
@@ -50,6 +48,7 @@ static void IOThreadC(void* p){
 
 drvMBus::drvMBus(drvd_t dd, int msec):
     drvModbusAsyn(dd.port, dd.octetPort, dd.slave, 3, dd.addr, dd.len, dataTypeUInt16, dd.dt, "bkh"),
+        _port(dd.port),
         _exiting(false),
         _cb(0),
         _tout(msec/1000.0),
@@ -157,7 +156,7 @@ void drvMBus::report(FILE* fp, int level){
 /*-----------------------------------------------------------------------------
  * Prints a report to the console.
  *---------------------------------------------------------------------------*/
-  printf("Report for %s --- %s ---\n", dname, __getTime());
+  printf("\nReport for %s port %s -- %s ---------------\n", dname, _port.c_str(), __getTime());
   printf("   %d in Low  prio queue (%d max, limit=%d)\n", _inLQ, _maxInLQ, _allowInLQ);
   printf("   %d in High prio queue (%d max, limit=%d)\n", _inHQ, _maxInHQ, NMSGQH);
   printf("   Number of purges: LowPQ = %d, HiPQ = %d\n", _npurgLQ, _npurgHQ);
@@ -214,6 +213,10 @@ asynStatus drvMBus::mbusDoIO(prio_t prio, int six, int saddr, int addr, int chan
 
   stat = pmq->trySend(&msgq, sizeof(msgq));
 
+  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+          "%s::mbusDoIO: port=%s, stat=%d, prio=%d, inqL=%d, allowL=%d, inqH=%d, purgL=%d, purgH=%d\n",
+          dname, _port.c_str(), stat, prio, j, _allowInLQ, k, _npurgLQ, _npurgHQ);
+
   if (stat == -1) {
     _emptyQueue(pmq);
     if (prio == prioH_e) {
@@ -222,9 +225,6 @@ asynStatus drvMBus::mbusDoIO(prio_t prio, int six, int saddr, int addr, int chan
       _npurgLQ++;
     }
     stat = pmq->trySend(&msgq, sizeof(msgq));
-    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-            "%s::mbusDoIO: prio=%d, inqL=%d, allow=%d, inqH=%d, purg=%d, %d\n",
-            dname, prio, j, _allowInLQ, k, _npurgLQ, _npurgHQ);
   }
 
   return(asynSuccess);
