@@ -92,6 +92,9 @@ public:
   void        report();
   int         getAllowInLQ() {return(_allowInLQ);}
   void        putAllowInLQ(int n) {_allowInLQ=n;}
+  int         getAllowInHQ() {return(_allowInHQ);}
+  int         getNumInLQ() {return(_inLQ);}
+  int         getNumInHQ() {return(_inHQ);}
 
 protected:
   void        _emptyQueue(epicsMessageQueue* pmq);
@@ -117,6 +120,7 @@ private:
   int        _npurgLQ;    // number of times low prio queue was purged
   int        _npurgHQ;    // number of times hi prio queue was purged.
   int        _allowInLQ;    // max number allowed in low prio queue
+  int        _allowInHQ;    // max number allowed in high prio queue
   int        _inLQ;        // number of items in low priority queue
   int        _inHQ;        // number of items in high priority queue
 };

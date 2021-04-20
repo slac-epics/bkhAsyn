@@ -57,7 +57,8 @@ drvMBus::drvMBus(drvd_t dd, int msec):
         _maxInHQ(0),
         _npurgLQ(0),
         _npurgHQ(0),
-        _allowInLQ(NMSGQL)
+        _allowInLQ(NMSGQL),
+        _allowInHQ(NMSGQH)
 {
 /*-----------------------------------------------------------------------------
  * Constructor for the drvMBus class. Configures modbus IO routine using data
@@ -157,9 +158,11 @@ void drvMBus::report(){
  * Prints a report to the console.
  *---------------------------------------------------------------------------*/
   printf("Report for driver %s --- %s ---\n", dname, __getTime());
-  printf("   %d in Low  prio queue (%d max)\n", _inLQ, _maxInLQ);
-  printf("   %d in High prio queue (%d max)\n", _inHQ, _maxInHQ);
+  printf("   %d in Low  prio queue (%d max, limit=%d)\n", _inLQ, _maxInLQ, _allowInLQ);
+  printf("   %d in High prio queue (%d max, limit=%d)\n", _inHQ, _maxInHQ, NMSGQH);
   printf("   Number of purges: LowPQ = %d, HiPQ = %d\n", _npurgLQ, _npurgHQ);
+  _pmqL->show(5);
+  _pmqH->show(5);
 }
 
 asynStatus drvMBus::mbusDoIO(prio_t prio, int six, int saddr, int addr, int chan,

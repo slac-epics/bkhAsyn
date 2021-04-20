@@ -31,7 +31,7 @@ record(bo, "$(P):ReadData"){
   field(ONAM, "on")
   field(VAL,  "0")
   field(PINI, "$(PINI=1)")
-  field(SCAN, "$(SCAN="10 second")")
+  field(SCAN, "$(SCANS="10 second")")
   field(FLNK, "$(P):ReadID")
 }
 
@@ -82,6 +82,31 @@ record(longout, "$(P):NumLPQMax_Sync"){
   field(OUT,  "$(P):NumLPQMax PP")
 }
 #-------------------------------------
+
+#--- High priority message queue length
+record(longin, "$(P):NumHPQMax_RBV"){
+  field(DESC, "Hi prio queue length")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(DPORT),0,1) LI_ALLOWINHQ")
+  field(PINI, "YES")
+}
+
+#--- Number of messages in queues
+record(longin, "$(P):NumLPQ_RBV"){
+  field(DESC, "Num in low prio queue")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(DPORT),0,1) NUMINLQ")
+  field(SCAN, "$(SCANM="5 second")")
+  field(PINI, "YES")
+}
+
+record(longin, "$(P):NumHPQ_RBV"){
+  field(DESC, "Num in hi prio queue")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(DPORT),0,1) NUMINHQ")
+  field(SCAN, "$(SCANM="5 second")")
+  field(PINI, "YES")
+}
 
 #-- Global error flag  -----------------
 record(bi, "$(P):Error"){

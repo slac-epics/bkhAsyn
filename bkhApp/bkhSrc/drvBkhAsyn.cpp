@@ -99,12 +99,6 @@ drvBkhAsyn::drvBkhAsyn(const char* port, const char* modbusPort, int id, int add
  *  stack size
  *---------------------------------------------------------------------------*/
   const char *functionName = "drvBkhAsyn";
-  //_port = port;
-  //_modbusPort = modbusPort;
-  //_nchan = nchan; 
-  //_pollPeriodSec = pollPeriod/1000.0;
-  //_saddr = addr; _mfunc = func; _mlen = len; _motor = motorFlag; _id = id;
-  //_errInResult = _errInWrite = 0;
 
   createParam(wfMessageStr,    asynParamOctet,         &_wfMessage);
   createParam(siNameStr,     asynParamOctet,         &_siName);
@@ -144,8 +138,11 @@ drvBkhAsyn::drvBkhAsyn(const char* port, const char* modbusPort, int id, int add
 
   createParam(liAllowInLQStr,     asynParamInt32,         &_liAllowInLQ);
   createParam(loAllowInLQStr,     asynParamInt32,         &_loAllowInLQ);
-  createParam(liPollTmoStr,     asynParamInt32,         &_liPollTmo);
-  createParam(loPollTmoStr,     asynParamInt32,         &_loPollTmo);
+  createParam(liAllowInHQStr,     asynParamInt32,         &_liAllowInHQ);
+  createParam(liPollTmoStr,       asynParamInt32,         &_liPollTmo);
+  createParam(loPollTmoStr,       asynParamInt32,         &_loPollTmo);
+  createParam(numInLQStr,         asynParamInt32,         &_numInLQ);
+  createParam(numInHQStr,         asynParamInt32,         &_numInHQ);
 
   _pmbus = (drvMBus*)findAsynPortDriver(_modbusPort.c_str());
   if (!_pmbus) {
@@ -836,6 +833,15 @@ asynStatus drvBkhAsyn::readInt32(asynUser* pau, epicsInt32* v){
         break;
     case ixLiAllowInLQ:
         *v = _pmbus->getAllowInLQ();
+        break;
+    case ixLiAllowInHQ:
+        *v = _pmbus->getAllowInHQ();
+        break;
+    case ixNumInLQ:
+        *v = _pmbus->getNumInLQ();
+        break;
+    case ixNumInHQ:
+        *v = _pmbus->getNumInHQ();
         break;
     case ixBiError:
         *v = 0;

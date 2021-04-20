@@ -75,10 +75,13 @@ enum {OK, ERROR};
 #define boTestStr    "BO_TEST"
 #define boCInitStr    "BO_CINIT"
 
-#define liAllowInLQStr    "LI_ALLOWINLQ"
-#define loAllowInLQStr    "LO_ALLOWINLQ"
+#define liAllowInLQStr  "LI_ALLOWINLQ"
+#define loAllowInLQStr  "LO_ALLOWINLQ"
+#define liAllowInHQStr  "LI_ALLOWINHQ"
 #define liPollTmoStr    "LI_POLLTMO"
 #define loPollTmoStr    "LO_POLLTMO"
+#define numInLQStr      "NUMINLQ"
+#define numInHQStr      "NUMINHQ"
 
 class drvBkhAsyn: public asynPortDriver{
 public:
@@ -159,16 +162,21 @@ protected:
   
   int _liAllowInLQ;
   int _loAllowInLQ;
+  int _liAllowInHQ;
   int _liPollTmo;
   int _loPollTmo;
 
-enum {ixWfMessage,   ixSiName,      ixLiRReg,    ixLiSByte,   ixLiDataIn,
-      ixLiSWord,     ixLoCByte,     ixLiCByte,   ixLoDataOut, ixLiDataOut,
-      ixLoCWord,     ixLiCWord,     ixLoRChan,   ixLoRegNum,  ixLiSBVal,
-      ixLiRegVal,    ixLoWRegVal,   ixLiWRegVal, ixSiMID,     ixLoCReg,
-      ixLiCReg,      ixBoBitVal,    ixBiBitVal,  ixBoInit,    ixBoRefresh,
-      ixRefreshRW,   ixBoWDRst,     ixBiError,   ixBoTest,    ixBoCInit,  
-      ixLiAllowInLQ, ixLoAllowInLQ, ixLiPollTmo, ixLoPollTmo};
+  int _numInLQ;
+  int _numInHQ;
+
+enum {ixWfMessage,   ixSiName,      ixLiRReg,      ixLiSByte,   ixLiDataIn,
+      ixLiSWord,     ixLoCByte,     ixLiCByte,     ixLoDataOut, ixLiDataOut,
+      ixLoCWord,     ixLiCWord,     ixLoRChan,     ixLoRegNum,  ixLiSBVal,
+      ixLiRegVal,    ixLoWRegVal,   ixLiWRegVal,   ixSiMID,     ixLoCReg,
+      ixLiCReg,      ixBoBitVal,    ixBiBitVal,    ixBoInit,    ixBoRefresh,
+      ixRefreshRW,   ixBoWDRst,     ixBiError,     ixBoTest,    ixBoCInit,  
+      ixLiAllowInLQ, ixLoAllowInLQ, ixLiAllowInHQ, ixLiPollTmo, ixLoPollTmo,
+      ixNumInLQ,     ixNumInHQ};
 
 private:
   std::string _port;
