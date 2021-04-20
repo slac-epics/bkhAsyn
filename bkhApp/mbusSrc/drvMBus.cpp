@@ -222,8 +222,9 @@ asynStatus drvMBus::mbusDoIO(prio_t prio, int six, int saddr, int addr, int chan
       _npurgLQ++;
     }
     stat = pmq->trySend(&msgq, sizeof(msgq));
-    //printf("%s::mbusDoIO: prio=%d, inqL=%d, allow=%d, inqH=%d, purg=%d, %d\n",
-    //    dname, prio, j, _allowInLQ, k, _npurgLQ, _npurgHQ);
+    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
+            "%s::mbusDoIO: prio=%d, inqL=%d, allow=%d, inqH=%d, purg=%d, %d\n",
+            dname, prio, j, _allowInLQ, k, _npurgLQ, _npurgHQ);
   }
 
   return(asynSuccess);
@@ -257,7 +258,8 @@ asynStatus drvMBus::mbusMemIO(msgq_t msgq){
       iodone.stat = st;
 
       if(!_cb){
-        errlogPrintf("%s::mbusMemIO: bad callback address\n", dname);
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+			"%s::mbusMemIO: bad callback address\n", dname);
         return(asynError);
       }
       if (st) {
@@ -310,7 +312,8 @@ void drvMBus::_doSpecial2(msgq_t msgq){
   iodone.stat = st;
 
   if (!_cb) {
-    errlogPrintf("%s::_doSpecial2: bad callback address\n", dname);
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+			"%s::_doSpecial2: bad callback address\n", dname);
   }
 
   (*_cb)(iodone);
@@ -330,7 +333,8 @@ void drvMBus::_doSpecial3(msgq_t msgq){
   iodone.stat = st;
 
   if (!_cb) {
-    errlogPrintf("%s::_doSpecial3: bad callback address\n", dname);
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+			"%s::_doSpecial3: bad callback address\n", dname);
   }
 
   (*_cb)(iodone);
@@ -385,7 +389,8 @@ void drvMBus::_doSpecial4(msgq_t msgq){
   iodone.stat = st;
 
   if(!_cb){
-    errlogPrintf("%s::_doSpecial4: bad callback address\n", dname);
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+			"%s::_doSpecial4: bad callback address\n", dname);
   }
   (*_cb)(iodone);
 }
@@ -417,7 +422,8 @@ void drvMBus::_doSpecial5(msgq_t msgq){
   iodone.stat = st;
 
   if (!_cb) {
-    errlogPrintf("%s::_doSpecial5: bad callback address\n", dname);
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+			"%s::_doSpecial5: bad callback address\n", dname);
   }
 
   (*_cb)(iodone);
@@ -471,7 +477,8 @@ void drvMBus::_readSpecial(msgq_t msgq, int r1, int r2){
   iodone.stat = st;
 
   if(!_cb){
-    errlogPrintf("%s::_readSpecial: bad callback address\n", dname);
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+			"%s::_readSpecial: bad callback address\n", dname);
   }
 
   (*_cb)(iodone);
