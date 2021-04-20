@@ -73,8 +73,8 @@ drvBkhAsyn::drvBkhAsyn(const char* port, const char* modbusPort, int id, int add
         _nchan(nchan),
         _pollPeriodSec(pollPeriod/1000.0),
         _motor(motorFlag),
-        _errInResult(0),
-        _errInWrite(0)
+        _errInResult(OK),
+        _errInWrite(OK)
 {
 /*-----------------------------------------------------------------------------
  * Constructor for the drvBkhAsyn class. Calls constructor for the
@@ -235,12 +235,12 @@ void drvBkhAsyn::resultCallback(iodone_t* p){
  *---------------------------------------------------------------------------*/
   if (p->stat) {
     _setError("ERROR: I/O callback", ERROR);
-    _errInResult = 1;
+    _errInResult = ERROR;
     return;
   }
 
   if (_errInResult) {
-     _errInResult = 0;
+     _errInResult = OK;
      _setError("No error", OK);
   }
 
@@ -956,11 +956,11 @@ asynStatus drvBkhAsyn::writeInt32(asynUser* pau, epicsInt32 v){
   if (stat != asynSuccess) {
     msg << "ERROR: writeInt32: func= " << ix << ", addr= " << addr;
     _setError(msg.str(), ERROR); 
-    _errInWrite = 1;
+    _errInWrite = ERROR;
   } else if (_errInWrite) {
     _setError("No error", OK);
   }
-    _errInWrite = 0; 
+    _errInWrite = OK; 
 
   stat = callParamCallbacks(addr);
   return(stat);
