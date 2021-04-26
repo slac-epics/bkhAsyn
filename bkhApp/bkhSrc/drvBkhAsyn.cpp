@@ -100,41 +100,41 @@ drvBkhAsyn::drvBkhAsyn(const char* port, const char* modbusPort, int id, int add
  *---------------------------------------------------------------------------*/
   const char *functionName = "drvBkhAsyn";
 
-  createParam(wfMessageStr,    asynParamOctet,         &_wfMessage);
-  createParam(siNameStr,     asynParamOctet,         &_siName);
-  createParam(liRRegStr,     asynParamInt32,         &_liRReg);
-  createParam(liSByteStr,     asynParamInt32,         &_liSByte);
-  createParam(liDataInStr,     asynParamInt32,         &_liDataIn);
+  createParam(wfMessageStr,       asynParamOctet,         &_wfMessage);
+  createParam(siNameStr,          asynParamOctet,         &_siName);
+  createParam(liRRegStr,          asynParamInt32,         &_liRReg);
+  createParam(liSByteStr,         asynParamInt32,         &_liSByte);
+  createParam(liDataInStr,        asynParamInt32,         &_liDataIn);
 
-  createParam(liSWordStr,     asynParamInt32,         &_liSWord);
-  createParam(loCByteStr,     asynParamInt32,         &_loCByte);
-  createParam(liCByteStr,     asynParamInt32,         &_liCByte);
-  createParam(loDataOutStr,     asynParamInt32,         &_loDataOut);
-  createParam(liDataOutStr,     asynParamInt32,         &_liDataOut);
+  createParam(liSWordStr,         asynParamInt32,         &_liSWord);
+  createParam(loCByteStr,         asynParamInt32,         &_loCByte);
+  createParam(liCByteStr,         asynParamInt32,         &_liCByte);
+  createParam(loDataOutStr,       asynParamInt32,         &_loDataOut);
+  createParam(liDataOutStr,       asynParamInt32,         &_liDataOut);
 
-  createParam(loCWordStr,     asynParamInt32,         &_loCWord);
-  createParam(liCWordStr,     asynParamInt32,         &_liCWord);
-  createParam(loRChanStr,     asynParamInt32,         &_loRChan);
-  createParam(loRegNumStr,     asynParamInt32,         &_loRegNum);
-  createParam(liSBValStr,     asynParamInt32,         &_liSBVal);
+  createParam(loCWordStr,         asynParamInt32,         &_loCWord);
+  createParam(liCWordStr,         asynParamInt32,         &_liCWord);
+  createParam(loRChanStr,         asynParamInt32,         &_loRChan);
+  createParam(loRegNumStr,        asynParamInt32,         &_loRegNum);
+  createParam(liSBValStr,         asynParamInt32,         &_liSBVal);
 
-  createParam(liRegValStr,     asynParamInt32,         &_liRegVal);
-  createParam(loWRegValStr,     asynParamInt32,         &_loWRegVal);
-  createParam(liWRegValStr,     asynParamInt32,         &_liWRegVal);
-  createParam(siMIDStr,     asynParamOctet,         &_siMID);
-  createParam(loCRegStr,     asynParamInt32,         &_loCReg);
+  createParam(liRegValStr,        asynParamInt32,         &_liRegVal);
+  createParam(loWRegValStr,       asynParamInt32,         &_loWRegVal);
+  createParam(liWRegValStr,       asynParamInt32,         &_liWRegVal);
+  createParam(siMIDStr,           asynParamOctet,         &_siMID);
+  createParam(loCRegStr,          asynParamInt32,         &_loCReg);
 
-  createParam(liCRegStr,     asynParamInt32,         &_liCReg);
-  createParam(boBitValStr,     asynParamInt32,         &_boBitVal);
-  createParam(biBitValStr,     asynParamInt32,         &_biBitVal);
-  createParam(boInitStr,     asynParamInt32,         &_boInit);
-  createParam(boRefreshStr,     asynParamInt32,         &_boRefresh);
+  createParam(liCRegStr,          asynParamInt32,         &_liCReg);
+  createParam(boBitValStr,        asynParamInt32,         &_boBitVal);
+  createParam(biBitValStr,        asynParamInt32,         &_biBitVal);
+  createParam(boInitStr,          asynParamInt32,         &_boInit);
+  createParam(boRefreshStr,       asynParamInt32,         &_boRefresh);
 
-  createParam(refreshRWStr,     asynParamInt32,         &_refreshRW);
-  createParam(boWDRstStr,     asynParamInt32,         &_boWDRst);
-  createParam(biErrorStr,     asynParamInt32,         &_biError);
-  createParam(boTestStr,     asynParamInt32,         &_boTest);
-  createParam(boCInitStr,     asynParamInt32,         &_boCInit);
+  createParam(refreshRWStr,       asynParamInt32,         &_refreshRW);
+  createParam(boWDRstStr,         asynParamInt32,         &_boWDRst);
+  createParam(biErrorStr,         asynParamInt32,         &_biError);
+  createParam(boTestStr,          asynParamInt32,         &_boTest);
+  createParam(boCInitStr,         asynParamInt32,         &_boCInit);
 
   createParam(liAllowInLQStr,     asynParamInt32,         &_liAllowInLQ);
   createParam(loAllowInLQStr,     asynParamInt32,         &_loAllowInLQ);
@@ -150,7 +150,7 @@ drvBkhAsyn::drvBkhAsyn(const char* port, const char* modbusPort, int id, int add
            driverName, functionName, _modbusPort.c_str());
     _setError("ERROR: Modbus port not found", ERROR);
   } else {
-    _pmbus->registerCB(IODoneCallback);
+    _pmbus->registerCallback(IODoneCallback);
     _setError("No error", OK);
   }
 

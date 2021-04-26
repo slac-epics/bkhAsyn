@@ -93,36 +93,36 @@ public:
   virtual asynStatus readInt32(asynUser* pau, epicsInt32* v);
   virtual asynStatus writeInt32(asynUser* pau, epicsInt32 v);
   virtual void report(FILE* fp, int level);
-  void        exitHandler();
-  void        initDone(int flg);
-  void        pollerThread();
-  void        setPollPeriod(double tmo) {_pollPeriodSec = tmo;}
+  void exitHandler();
+  void initDone(int flg);
+  void pollerThread();
+  void setPollPeriod(double tmo) {_pollPeriodSec = tmo;}
 
 protected:
-  asynStatus   doIO(prio_t pr, int six, int maddr, int rn, int func, int pix, int d);
-  asynStatus   doReadH(int saddr, int addr, int n, int a, int pix);
-  asynStatus   doReadL(int saddr, int addr, int n, int a, int pix);
-  asynStatus   doWrite(int saddr, int addr, int n, int a, int func, int d, int pix=0);
-  asynStatus   readChannel(int addr, int pix1, int pix2);
-  asynStatus   writeChannel(int addr, int v);
-  asynStatus   readOne(int addr, int pix);
-  asynStatus   writeOne(int addr, int v);
-  asynStatus   readHReg(int cbe, int addr, int chan, int rnum, int pix);
-  asynStatus   writeHReg(int addr, int chan, int rnum, int v, int pix);
-  asynStatus   writeHRAM(int addr, int chan, int rnum, int v, int pix);
-  asynStatus   readModuleID(int pix);
-  asynStatus   readChannels(int pix);
-  asynStatus   watchdogReset();
-  asynStatus   writeControlWord(int addr, int v);
-  void         _message(std::string);
-  void         _setError(std::string msg, int flag);
-  asynStatus   _getChannels(char* pd, int nch, int len, int pix);
-  asynStatus   _getBits(char* pd, int nch);
-  void         _gotModuleID(word* pd, int len);
-  void         _gotData(int addr, int pix, word* pd, int len);
-  void         _gotChannels(int func, word* pd, int len, int pix);
-  void         _readRegisters(const int arr[], int size);
-  void         _getRegisters();
+  asynStatus doIO(prio_t pr, int six, int maddr, int rn, int func, int pix, int d);
+  asynStatus doReadH(int saddr, int addr, int n, int a, int pix);
+  asynStatus doReadL(int saddr, int addr, int n, int a, int pix);
+  asynStatus doWrite(int saddr, int addr, int n, int a, int func, int d, int pix=0);
+  asynStatus readChannel(int addr, int pix1, int pix2);
+  asynStatus writeChannel(int addr, int v);
+  asynStatus readOne(int addr, int pix);
+  asynStatus writeOne(int addr, int v);
+  asynStatus readHReg(int cbe, int addr, int chan, int rnum, int pix);
+  asynStatus writeHReg(int addr, int chan, int rnum, int v, int pix);
+  asynStatus writeHRAM(int addr, int chan, int rnum, int v, int pix);
+  asynStatus readModuleID(int pix);
+  asynStatus readChannels(int pix);
+  asynStatus watchdogReset();
+  asynStatus writeControlWord(int addr, int v);
+  asynStatus _getChannels(char* pd, int nch, int len, int pix);
+  asynStatus _getBits(char* pd, int nch);
+  void _message(std::string);
+  void _setError(std::string msg, int flag);
+  void _gotModuleID(word* pd, int len);
+  void _gotData(int addr, int pix, word* pd, int len);
+  void _gotChannels(int func, word* pd, int len, int pix);
+  void _readRegisters(const int arr[], int size);
+  void _getRegisters();
 
   int _wfMessage;
   int _siName;

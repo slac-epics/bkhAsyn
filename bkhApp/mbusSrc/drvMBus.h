@@ -82,48 +82,48 @@ typedef enum {normal_e, spix0_e, spix1_e, spix2_e, spix3_e, spix4_e, spix5_e} sp
 class drvMBus: public drvModbusAsyn {
 public:
   drvMBus(drvd_t dd, int msec);
-  void IOThread();
   asynStatus mbusDoIO(prio_t prio, int six, int saddr, int addr, int chan, int n, 
         int a, int rn, int pix, int func, int len, int d, void* pdrv);
-  void         exitHandler();
-  void         mbusPurgeQueue(prio_t ix);
-  void         registerCB(iocb_t cb);
+  void IOThread();
+  void exitHandler();
+  void mbusPurgeQueue(prio_t ix);
+  void registerCallback(iocb_t cb);
   virtual void report(FILE* fp, int level);
-  int          getAllowInLQ() {return(_allowInLQ);}
-  void         putAllowInLQ(int n) {_allowInLQ=n;}
-  int          getAllowInHQ() {return(_allowInHQ);}
-  int          getNumInLQ() {return(_inLQ);}
-  int          getNumInHQ() {return(_inHQ);}
+  int getAllowInLQ() {return(_allowInLQ);}
+  void putAllowInLQ(int n) {_allowInLQ=n;}
+  int getAllowInHQ() {return(_allowInHQ);}
+  int getNumInLQ() {return(_inLQ);}
+  int getNumInHQ() {return(_inHQ);}
 
 protected:
-  void        _emptyQueue(epicsMessageQueue* pmq);
   asynStatus   mbusMemIO(msgq_t msgq);
-  void        _doSpecial0(msgq_t msgq);
-  void        _doSpecial1(msgq_t msgq);
-  void        _doSpecial2(msgq_t msgq);
-  void        _doSpecial3(msgq_t msgq);
-  void        _doSpecial4(msgq_t msgq);
-  void        _doSpecial5(msgq_t msgq);
-  int         _readSpecialOne(msgq_t msgq, int r, epicsUInt16* v);
-  int         _writeSpecialOne(msgq_t msgq, int r, epicsUInt16 v);
-  void        _readSpecial(msgq_t msgq, int r1, int r2);
+  void _emptyQueue(epicsMessageQueue* pmq);
+  void _doSpecial0(msgq_t msgq);
+  void _doSpecial1(msgq_t msgq);
+  void _doSpecial2(msgq_t msgq);
+  void _doSpecial3(msgq_t msgq);
+  void _doSpecial4(msgq_t msgq);
+  void _doSpecial5(msgq_t msgq);
+  int _readSpecialOne(msgq_t msgq, int r, epicsUInt16* v);
+  int _writeSpecialOne(msgq_t msgq, int r, epicsUInt16 v);
+  void _readSpecial(msgq_t msgq, int r1, int r2);
   epicsMessageQueue* _pmqL;     // low priority message queue
   epicsMessageQueue* _pmqH;     // high priority message queue
 
 private:
-  asynUser   *pasynUser;
+  asynUser    *pasynUser;
   std::string _port;
-  bool       _exiting;        // if true disallow IO
-  iocb_t     _cb;        // IO done callback
-  double     _tout;
-  int        _maxInLQ;    // max number in low prio queue
-  int        _maxInHQ;    // max number in high prio queue
-  int        _npurgLQ;    // number of times low prio queue was purged
-  int        _npurgHQ;    // number of times hi prio queue was purged.
-  int        _allowInLQ;    // max number allowed in low prio queue
-  int        _allowInHQ;    // max number allowed in high prio queue
-  int        _inLQ;        // number of items in low priority queue
-  int        _inHQ;        // number of items in high priority queue
+  bool        _exiting;        // if true disallow IO
+  iocb_t      _callback;        // IO done callback
+  double      _tout;
+  int         _maxInLQ;    // max number in low prio queue
+  int         _maxInHQ;    // max number in high prio queue
+  int         _npurgLQ;    // number of times low prio queue was purged
+  int         _npurgHQ;    // number of times hi prio queue was purged.
+  int         _allowInLQ;    // max number allowed in low prio queue
+  int         _allowInHQ;    // max number allowed in high prio queue
+  int         _inLQ;        // number of items in low priority queue
+  int         _inHQ;        // number of items in high priority queue
 };
 
 #endif // _drvMBus_h

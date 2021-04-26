@@ -50,7 +50,7 @@ drvMBus::drvMBus(drvd_t dd, int msec):
     drvModbusAsyn(dd.port, dd.octetPort, dd.slave, 3, dd.addr, dd.len, dataTypeUInt16, dd.dt, "bkh"),
         _port(dd.port),
         _exiting(false),
-        _cb(0),
+        _callback(0),
         _tout(msec/1000.0),
         _maxInLQ(0),
         _maxInHQ(0),
@@ -257,7 +257,7 @@ asynStatus drvMBus::mbusMemIO(msgq_t msgq){
       iodone.func = msgq.func; iodone.len = msgq.len; iodone.pdrv = msgq.pdrv;
       iodone.stat = st;
 
-      if(!_cb){
+      if(!_callback){
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
 			"%s::mbusMemIO: bad callback address\n", dname);
         return(asynError);
@@ -265,7 +265,7 @@ asynStatus drvMBus::mbusMemIO(msgq_t msgq){
       if (st) {
         fflush(0);
       }
-      (*_cb)(iodone);
+      (*_callback)(iodone);
       break;
 
     default:    return(asynError);
@@ -311,12 +311,12 @@ void drvMBus::_doSpecial2(msgq_t msgq){
   iodone.func = msgq.func; iodone.len = msgq.len; iodone.pdrv = msgq.pdrv;
   iodone.stat = st;
 
-  if (!_cb) {
+  if (!_callback) {
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
 			"%s::_doSpecial2: bad callback address\n", dname);
   }
 
-  (*_cb)(iodone);
+  (*_callback)(iodone);
 }
 
 void drvMBus::_doSpecial3(msgq_t msgq){
@@ -332,12 +332,12 @@ void drvMBus::_doSpecial3(msgq_t msgq){
   iodone.func = msgq.func; iodone.len = msgq.len; iodone.pdrv = msgq.pdrv;
   iodone.stat = st;
 
-  if (!_cb) {
+  if (!_callback) {
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
 			"%s::_doSpecial3: bad callback address\n", dname);
   }
 
-  (*_cb)(iodone);
+  (*_callback)(iodone);
 }
 
 void drvMBus::_doSpecial4(msgq_t msgq){
@@ -388,11 +388,11 @@ void drvMBus::_doSpecial4(msgq_t msgq){
   iodone.func = msgq.func; iodone.len = msgq.len; iodone.pdrv = msgq.pdrv;
   iodone.stat = st;
 
-  if(!_cb){
+  if(!_callback){
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
 			"%s::_doSpecial4: bad callback address\n", dname);
   }
-  (*_cb)(iodone);
+  (*_callback)(iodone);
 }
 
 void drvMBus::_doSpecial5(msgq_t msgq){
@@ -421,12 +421,12 @@ void drvMBus::_doSpecial5(msgq_t msgq){
   iodone.func = msgq.func; iodone.len = msgq.len; iodone.pdrv = msgq.pdrv;
   iodone.stat = st;
 
-  if (!_cb) {
+  if (!_callback) {
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
 			"%s::_doSpecial5: bad callback address\n", dname);
   }
 
-  (*_cb)(iodone);
+  (*_callback)(iodone);
 }
 
 int drvMBus::_writeSpecialOne(msgq_t msgq, int rn, epicsUInt16 v){
@@ -476,12 +476,12 @@ void drvMBus::_readSpecial(msgq_t msgq, int r1, int r2){
   iodone.func = msgq.func; iodone.len = msgq.len; iodone.pdrv = msgq.pdrv;
   iodone.stat = st;
 
-  if(!_cb){
+  if(!_callback){
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
 			"%s::_readSpecial: bad callback address\n", dname);
   }
 
-  (*_cb)(iodone);
+  (*_callback)(iodone);
 }
 
 int drvMBus::_readSpecialOne(msgq_t msgq, int r, epicsUInt16* v){
@@ -511,9 +511,9 @@ int drvMBus::_readSpecialOne(msgq_t msgq, int r, epicsUInt16* v){
   return(st);
 }
 
-void drvMBus::registerCB(iocb_t cb){
+void drvMBus::registerCallback(iocb_t cb){
 /*--- save callback address for future use ----------------------------------*/
-  _cb = cb;
+  _callback = cb;
 }
 
 
