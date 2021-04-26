@@ -23,6 +23,12 @@
 
 static const char *dname = "drvMBus";
 
+#define ROFF 0x80
+#define WOFF 0x800
+#define CTRL_REG_BASE 0xc0
+#define CTRL_REG 31
+#define CODE_WORD 0x1235
+
 static char* __getTime(){
 /*------------------------------------------------------------------------------
  * Returns a pointer to an ASCI coded string of the current date time.
@@ -297,8 +303,8 @@ void drvMBus::_doSpecial2(msgq_t msgq){
  * Read Beckhoff hidden register.
  *---------------------------------------------------------------------------*/
   iodone_t iodone; 
-  epicsUInt16 w; 
   int st;
+  epicsUInt16 w; 
 
   st = _readSpecialOne(msgq, msgq.rn, &w);
   if (!st) {
@@ -342,30 +348,30 @@ void drvMBus::_doSpecial3(msgq_t msgq){
 
 void drvMBus::_doSpecial4(msgq_t msgq){
 /*-----------------------------------------------------------------------------
- * Write to Beckhof hidden EEPROM register.
+ * Write to Beckhoff hidden serial EEPROM register.
  *---------------------------------------------------------------------------*/
   iodone_t iodone;
+  int st, maddr;
   epicsUInt16 cbe, w; 
-  int st, woff = 0x800, maddr;
   int wfunc = MODBUS_WRITE_SINGLE_REGISTER;
   int rfunc = MODBUS_READ_HOLDING_REGISTERS;
 
-  maddr = msgq.maddr + woff;
+  maddr = msgq.maddr + WOFF;
   st = doModbusIO(0, rfunc, maddr, &cbe, 1);
   if(!st){
-    w = 0xc0 + 31;
+    w = CTRL_REG_BASE + CTRL_REG;
     st = doModbusIO(0, wfunc, maddr, &w, 1);
     if(!st){
-      w = 0x1235;
+      w = CODE_WORD;
       st = doModbusIO(0, wfunc, maddr +1, &w, 1);
       if(!st){
-        w = 0xc0 + msgq.rn;
+        w = CTRL_REG_BASE + msgq.rn;
         st = doModbusIO(0, wfunc, maddr, &w, 1);
         if(!st){
           w = msgq.d;
           st = doModbusIO(0, wfunc, maddr+1, &w, 1);
           if(!st){
-            w = 0xc0 + 31;
+            w = CTRL_REG_BASE + CTRL_REG;
             st = doModbusIO(0, wfunc, maddr, &w, 1);
             if(!st){
               w = 0;
@@ -400,11 +406,10 @@ void drvMBus::_doSpecial5(msgq_t msgq){
  * Write 32 bit value to Beckhof hidden set point registers (RAM).
  *---------------------------------------------------------------------------*/
   iodone_t iodone; 
-  int st; 
+  int st, maddr;
+  epicsUInt16 w = 0;
   epicsUInt16* pw = (epicsUInt16*)&msgq.d;
   int wfunc = MODBUS_WRITE_SINGLE_REGISTER;
-  int woff = 0x800, maddr;
-  epicsUInt16 w = 0;
 
   st = _writeSpecialOne(msgq, msgq.rn, pw[0]);
   if (!st) {
@@ -412,7 +417,7 @@ void drvMBus::_doSpecial5(msgq_t msgq){
   }
 
   // next write 0 to data out register, needed for next move
-  maddr = msgq.maddr + woff + 1;
+  maddr = msgq.maddr + WOFF + 1;
   if (!st) {
     st = doModbusIO(0, wfunc, maddr, &w, 1);
   }
@@ -433,17 +438,17 @@ int drvMBus::_writeSpecialOne(msgq_t msgq, int rn, epicsUInt16 v){
 /*-----------------------------------------------------------------------------
  * write to one Beckhoff hidden RAM register.
  *---------------------------------------------------------------------------*/
+  int st, maddr;
   epicsUInt16 cbe, w; 
-  int st, woff = 0x800, maddr;
   int wfunc = MODBUS_WRITE_SINGLE_REGISTER;
   int rfunc = MODBUS_READ_HOLDING_REGISTERS;
 
-  maddr = msgq.maddr + woff;
+  maddr = msgq.maddr + WOFF;
 
   st = doModbusIO(0, rfunc, maddr, &cbe, 1);
   if(st) return(st);
 
-  w = 0xc0 + rn;        // register number to control byte
+  w = CTRL_REG_BASE + rn;        // register number to control byte
   st = doModbusIO(0, wfunc, maddr, &w, 1);
   if(st) return(st);
 
@@ -461,7 +466,8 @@ void drvMBus::_readSpecial(msgq_t msgq, int r1, int r2){
  * value from two Beckhoff 16 bit hidden registers, register number r1 and r2.
  *---------------------------------------------------------------------------*/
   iodone_t iodone;
-  int st; epicsUInt16 w;
+  int st;
+  epicsUInt16 w;
 
   iodone.data[0] = iodone.data[1] = 0;
 
@@ -488,14 +494,13 @@ int drvMBus::_readSpecialOne(msgq_t msgq, int r, epicsUInt16* v){
 /*-----------------------------------------------------------------------------
  * Read from a Beckhoff hidden register number r and return value in v.
  *---------------------------------------------------------------------------*/
-  int wfunc = MODBUS_WRITE_SINGLE_REGISTER; 
-  int st;
-  int rfunc = MODBUS_READ_HOLDING_REGISTERS;
-  int woff = 0x800, maddr; 
+  int st, maddr;
   epicsUInt16 cb, cbe;
+  int rfunc = MODBUS_READ_HOLDING_REGISTERS;
+  int wfunc = MODBUS_WRITE_SINGLE_REGISTER; 
 
-  maddr = msgq.maddr + woff; 
-  cb = 0x80 + r; 
+  maddr = msgq.maddr + WOFF; 
+  cb = ROFF + r; 
   *v = 0;
 
   st = doModbusIO(0, rfunc, maddr, &cbe, 1);

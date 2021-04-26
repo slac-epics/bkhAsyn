@@ -49,9 +49,9 @@ typedef unsigned int uint;
 #define NDATA   128
 
 typedef struct{
-  void*    pdrv;
+  void*  pdrv;
   int    addr, chan, a, rn, pix, func;
-  word    data[NDATA];
+  word   data[NDATA];
   int    len;
   int    stat;
 } iodone_t;
@@ -59,11 +59,11 @@ typedef struct{
 typedef void (*iocb_t)(iodone_t);
 
 typedef struct{
-  char port[PLEN];
-  char octetPort[PLEN];
-  int slave;
-  int addr;
-  int len;
+  char  port[PLEN];
+  char  octetPort[PLEN];
+  int   slave;
+  int   addr;
+  int   len;
   modbusDataType_t dt;
 } drvd_t;
 
@@ -72,11 +72,14 @@ typedef struct{
   int    func;
   int    addr, chan, a, rn, pix;
   int    d, len;
-  int    six;        // special index of type spix_t
+  int    six;        // IO type index of type spix_t
   void*  pdrv;
 } msgq_t;
 
+// Message queue priority
 typedef enum {prioH_e, prioL_e} prio_t;
+
+// IO type index: normal or special
 typedef enum {normal_e, spix0_e, spix1_e, spix2_e, spix3_e, spix4_e, spix5_e} spix_t;
 
 class drvMBus: public drvModbusAsyn {
