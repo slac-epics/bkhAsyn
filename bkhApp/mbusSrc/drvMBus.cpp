@@ -29,17 +29,6 @@ static const char *dname = "drvMBus";
 #define CTRL_REG 31
 #define CODE_WORD 0x1235
 
-static char* __getTime(){
-/*------------------------------------------------------------------------------
- * Returns a pointer to an ASCI coded string of the current date time.
- *----------------------------------------------------------------------------*/
-  epicsTimeStamp etm; 
-  static char tms[64];
-  epicsTimeGetCurrent(&etm);
-  epicsTimeToStrftime(tms, sizeof(tms), "%Y%m%d_%H:%M:%S.%06f", &etm);
-  return(tms);
-}
-
 extern "C"{
 static void exitHandlerC(void* pvt){
   drvMBus* pthis = (drvMBus*)pvt;
@@ -162,10 +151,10 @@ void drvMBus::report(FILE* fp, int level){
 /*-----------------------------------------------------------------------------
  * Prints a report to the console.
  *---------------------------------------------------------------------------*/
-  printf("\nReport for %s port %s -- %s ---------------\n", dname, _port.c_str(), __getTime());
-  printf("   %d in Low  prio queue (%d max, limit=%d)\n", _inLQ, _maxInLQ, _allowInLQ);
-  printf("   %d in High prio queue (%d max, limit=%d)\n", _inHQ, _maxInHQ, NMSGQH);
-  printf("   Number of purges: LowPQ = %d, HiPQ = %d\n", _npurgLQ, _npurgHQ);
+  printf("\nReport for %s port %s ---------------\n", dname, _port.c_str());
+  printf("    %d in Low  prio queue (%d max, limit=%d)\n", _inLQ, _maxInLQ, _allowInLQ);
+  printf("    %d in High prio queue (%d max, limit=%d)\n", _inHQ, _maxInHQ, NMSGQH);
+  printf("    Number of purges: LowPQ = %d, HiPQ = %d\n", _npurgLQ, _npurgHQ);
   drvModbusAsyn::report(fp, level);
 }
 

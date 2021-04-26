@@ -972,9 +972,9 @@ void drvBkhAsyn::report(FILE* fp, int level){
  * Print some parameters and statistics.
  *---------------------------------------------------------------------------*/
   printf("\nReport for %s port %s -- id=%d -------------\n", driverName, _port.c_str(), _id);
-  printf("  Modbus start address = %d (0x%x), ", _saddr, _saddr);
-  printf("  Modbus function = %d, Length = %d\n", _mfunc, _mlen);
-  printf("  Number of channels = %d\n", _nchan);
+  printf("    Modbus start address = %d (0x%x), ", _saddr, _saddr);
+  printf("    Modbus function = %d, Length = %d\n", _mfunc, _mlen);
+  printf("    Number of channels = %d\n", _nchan);
   asynPortDriver::report(fp, level);
   errlogFlush();
 }
@@ -982,7 +982,6 @@ void drvBkhAsyn::report(FILE* fp, int level){
 
 // Configuration routine.  Called directly, or from the iocsh function below
 extern "C" {
-
 int drvBkhAsynConfig(const char* port, const char *modbusPort, int id, int func, int addr, int len,
         int nchan, int pollPeriod){
 /*-----------------------------------------------------------------------------
