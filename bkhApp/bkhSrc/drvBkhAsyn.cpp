@@ -971,10 +971,12 @@ void drvBkhAsyn::report(FILE* fp, int level){
 /*-----------------------------------------------------------------------------
  * Print some parameters and statistics.
  *---------------------------------------------------------------------------*/
-  printf("\nReport for %s port %s -- id=%d -------------\n", driverName, _port.c_str(), _id);
-  printf("    Modbus start address = %d (0x%x), ", _saddr, _saddr);
-  printf("    Modbus function = %d, Length = %d\n", _mfunc, _mlen);
+  printf("\nReport for %s port %s --------------\n", driverName, _port.c_str());
+  printf("    Module type = %s (%d)\n", moduleType[_id].c_str(), _id);
   printf("    Number of channels = %d\n", _nchan);
+  printf("    Modbus start address = %d (0x%x)\n", _saddr, _saddr);
+  printf("    Modbus function = %d\n", _mfunc);
+  printf("    Modbus length = %d (0x%x)\n", _mlen, _mlen);
   asynPortDriver::report(fp, level);
   errlogFlush();
 }

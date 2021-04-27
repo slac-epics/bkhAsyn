@@ -35,45 +35,47 @@ static const int RWRegs[] = {0, 1, 22, 23, 24, 25};
 // represented.  analogSE is for signed analog
 // data and analogUE is for unsigned analog data.
 typedef enum {couplerE, analogSE, analogUE, digiInE, digiOutE, motorE} type_e;
+const std::string moduleType[6] = {"Coupler", "Analog signed", "Analog unsigned", 
+        "Digital in", "Digital out", "Motor"};
 
 enum {OK, ERROR};
 
 
 #define wfMessageStr    "WF_MESSAGE"
-#define siNameStr    "SI_NAME"
-#define liRRegStr    "LI_RREG"
-#define liSByteStr    "LI_SBYTE"
-#define liDataInStr    "LI_DATA"
+#define siNameStr       "SI_NAME"
+#define liRRegStr       "LI_RREG"
+#define liSByteStr      "LI_SBYTE"
+#define liDataInStr     "LI_DATA"
 
-#define liSWordStr    "LI_SWORD"
-#define loCByteStr    "LO_CBYTE"
-#define liCByteStr    "LI_CBYTE"
+#define liSWordStr      "LI_SWORD"
+#define loCByteStr      "LO_CBYTE"
+#define liCByteStr      "LI_CBYTE"
 #define loDataOutStr    "LO_DATAOUT"
 #define liDataOutStr    "LI_DATAOUT"
 
-#define loCWordStr    "LO_CWORD"
-#define liCWordStr    "LI_CWORD"
-#define loRChanStr    "LO_RCHAN"
-#define loRegNumStr    "LO_REGN"
-#define liSBValStr    "LI_SBVAL"
+#define loCWordStr      "LO_CWORD"
+#define liCWordStr      "LI_CWORD"
+#define loRChanStr      "LO_RCHAN"
+#define loRegNumStr     "LO_REGN"
+#define liSBValStr      "LI_SBVAL"
 
-#define liRegValStr    "LI_RVAL"
+#define liRegValStr     "LI_RVAL"
 #define loWRegValStr    "LO_WRVAL"
 #define liWRegValStr    "LI_WRVAL"
-#define siMIDStr    "SI_MID"
-#define loCRegStr    "LO_CREG"
+#define siMIDStr        "SI_MID"
+#define loCRegStr       "LO_CREG"
 
-#define liCRegStr    "LI_CREG"
-#define boBitValStr    "BO_BVAL"
-#define biBitValStr    "BI_BVAL"
-#define boInitStr    "BO_INIT"
+#define liCRegStr       "LI_CREG"
+#define boBitValStr     "BO_BVAL"
+#define biBitValStr     "BI_BVAL"
+#define boInitStr       "BO_INIT"
 #define boRefreshStr    "BO_REFRESH"
 
 #define refreshRWStr    "REFRESH_RW"
-#define boWDRstStr    "BO_WDRST"
-#define biErrorStr    "BI_ERROR"
-#define boTestStr    "BO_TEST"
-#define boCInitStr    "BO_CINIT"
+#define boWDRstStr      "BO_WDRST"
+#define biErrorStr      "BI_ERROR"
+#define boTestStr       "BO_TEST"
+#define boCInitStr      "BO_CINIT"
 
 #define liAllowInLQStr  "LI_ALLOWINLQ"
 #define loAllowInLQStr  "LO_ALLOWINLQ"
