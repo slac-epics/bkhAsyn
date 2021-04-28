@@ -35,3 +35,24 @@ record(longin, "$(P):$(MOD)_WREG_RBV"){
   field(INP,  "@asyn($(PORT) 0 1)LI_WRVAL")
 }
 
+# Get the module ID.  This should return the module number,
+#     i.e. "3314" for a KL3314.
+record(seq, "$(P):$(MOD)_MODULE_ID_SEQ"){
+  field(DESC, "Module ID read sequence")
+  field(DLY1, "2.0")
+  field(DOL1, "0")
+  field(LNK1, "$(P):$(MOD)_CHAN PP")
+  field(DOL2, "8")
+  field(LNK2, "$(P):$(MOD)_REG_N PP")
+  field(DLY3, "0.5")
+  field(DOL3, "1")
+  field(LNK3, "$(P):$(MOD)_MODULE_ID.PROC")
+  field(PINI, "1")
+  field(SCAN, "10 second")
+}
+
+record(longin, "$(P):$(MOD)_MODULE_ID"){
+  field(DESC, "Module ID")
+  field(INP,  "$(P):$(MOD)_REG_VAL NPP MS")
+}
+
