@@ -50,7 +50,6 @@
 #include <asynOctetSyncIO.h>
 #include <asynInt32SyncIO.h>
 
-#include "drvBkhErr.h"
 #include "drvBkhAMot.h"
 
 #define STRLEN	128

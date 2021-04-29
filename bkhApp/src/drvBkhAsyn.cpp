@@ -32,7 +32,6 @@
 #include <alarm.h>
 #include <db_access_routines.h>
 
-#include "drvBkhErr.h"
 #include "drvBkhAsyn.h"
 
 static const char *driverName = "drvBkhAsyn";
@@ -153,8 +152,6 @@ drvBkhAsyn::drvBkhAsyn(const char* port, const char* modbusPort, int id, int add
     _pmbus->registerCallback(IODoneCallback);
     _setError("No error", OK);
   }
-
-  if (pbkherr) _myErrId = pbkherr->registerClient(port);
 
   if ((func <= MODBUS_READ_INPUT_REGISTERS) && pollPeriod) {
     epicsThreadId tid = epicsThreadCreate(driverName, epicsThreadPriorityLow,
@@ -781,7 +778,6 @@ void drvBkhAsyn::_setError(std::string msg, int flag){
     setIntegerParam(_biError, flag + 1);
     setIntegerParam(_biError, flag);
     _message(msg);
-    if(pbkherr) pbkherr->setErrorFlag(_myErrId, flag);
   
     callParamCallbacks();
 }

@@ -1,0 +1,4 @@
+registrar("drvMBusRegister")
+registrar("drvBkhAsynRegister")
+registrar("drvBkhAMotRegister")
+
