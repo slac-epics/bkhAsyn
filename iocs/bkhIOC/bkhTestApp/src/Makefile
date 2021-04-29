@@ -12,15 +12,9 @@ $(PROD_NAME)_DBD += asyn.dbd
 $(PROD_NAME)_DBD += drvAsynIPPort.dbd
 $(PROD_NAME)_DBD += modbusSupport.dbd
 #$(PROD_NAME)_DBD += asSupport.dbd
-$(PROD_NAME)_DBD += drvMBus.dbd
-$(PROD_NAME)_DBD += drvBkhAMot.dbd
-$(PROD_NAME)_DBD += drvBkhErr.dbd
 $(PROD_NAME)_DBD += drvBkhAsyn.dbd
 
-$(PROD_NAME)_LIBS += $(PROD_NAME)Err
-$(PROD_NAME)_LIBS += $(PROD_NAME)MBus
-$(PROD_NAME)_LIBS += $(PROD_NAME)Asyn
-$(PROD_NAME)_LIBS += $(PROD_NAME)Mot
+$(PROD_NAME)_LIBS += bkhAsyn
 #$(PROD_NAME)_LIBS += autosave
 $(PROD_NAME)_LIBS += modbus
 $(PROD_NAME)_LIBS += asyn

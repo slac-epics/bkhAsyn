@@ -1,4 +1,10 @@
 
+R0.4.0  M. Dunning - 2021-04-29
+    - Flatten src dir structure and remove drvBkhErr which is not used.  
+            This change is not backward compatible.  IOC apps must update their 
+            src/Makefile.  See example IOC.
+    - drvBkhAMot: replace linked list with findAsynPortDriver()
+
 R0.3.0  M. Dunning - 2021-04-14
     - drvMBus: inherit from drvModbusAsyn and remove custom modbus code.  
             Now drvMBus is an asynPortDriver and can call modbus and 
