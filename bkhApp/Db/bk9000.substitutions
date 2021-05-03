@@ -23,7 +23,12 @@ pattern
     {   DiagW,  1, "Bus Term Diag. Inter.", $(WPORT),   ""}
     {  WDTout, 22,      "Watchdog Timeout", $(WPORT), "ms",    1, MINOR}
     {WDRstReg, 23,    "Watchdog Reset Reg", $(WPORT),   ""}
-    {  WDType, 24,         "Watchdog Type", $(WPORT),   ""}
-    {MTCPMode, 25,       "Modbus TCP Mode", $(WPORT),   ""}
+}
+
+file bk9000WriteRegBiBo.db {
+pattern
+    {    ATTR,  N,                    DESC,     PORT,         ZNAM,      ONAM,      ZSV,      OSV}
+    {  WDType, 24,         "Watchdog Type", $(WPORT), "Write tel.", "Default",    MINOR, NO_ALARM}
+    {MTCPMode, 25,       "Modbus TCP Mode", $(WPORT),    "Default",    "Fast", NO_ALARM,    MINOR}
 }
 

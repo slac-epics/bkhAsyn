@@ -1,0 +1,36 @@
+
+#----- Bus coupler read/write register -------------
+record(bo, "$(P):$(ATTR)"){
+  field(DESC, "$(DESC="")")
+  field(ZNAM, "$(ZNAM="Off")")
+  field(ONAM, "$(ONAM="On")")
+  field(ZSV,  "$(ZSV="NO_ALARM")")
+  field(OSV,  "$(OSV="NO_ALARM")")
+  field(OUT,  "$(P):$(ATTR)_Write PP")
+}
+
+record(longout, "$(P):$(ATTR)_Write"){
+  field(DTYP, "asynInt32")
+  field(SDIS, "$(P):$(ATTR)_Sync.PACT")
+  field(DISV, "1")
+  field(OUT,  "@asyn($(PORT) $(N) 1)LO_CREG")
+}
+
+record(bi, "$(P):$(ATTR)_RBV"){
+  field(DESC, "$(DESC="") RBV")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT) $(N) 1)LI_CREG")
+  field(ZNAM, "$(ZNAM="Off")")
+  field(ONAM, "$(ONAM="On")")
+  field(ZSV,  "$(ZSV="NO_ALARM")")
+  field(OSV,  "$(OSV="NO_ALARM")")
+  field(SCAN, "I/O Intr")
+  field(FLNK, "$(P):$(ATTR)_Sync")
+}
+
+record(longout, "$(P):$(ATTR)_Sync"){
+  field(DOL,  "$(P):$(ATTR)_RBV NPP")
+  field(OMSL, "closed_loop")
+  field(OUT,  "$(P):$(ATTR) PP")
+}
+
