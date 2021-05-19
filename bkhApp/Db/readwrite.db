@@ -48,7 +48,6 @@ record(seq, "$(P):$(MOD)_MODULE_ID_SEQ"){
   field(DOL3, "1")
   field(LNK3, "$(P):$(MOD)_MODULE_ID.PROC")
   field(PINI, "1")
-  field(SCAN, "10 second")
 }
 
 record(longin, "$(P):$(MOD)_MODULE_ID"){
