@@ -1,8 +1,9 @@
 
 record(bo, "$(INPV)") {
     field(DESC, "$(DESC="")")
-    field(OUT,  "$(OUTPV) PP")
     field(ZNAM, "$(ZNAM="Off")")
-    field(ONAM, "$(ONAM=On)")
+    field(ONAM, "$(ONAM="On")")
+    field(HIGH, "$(HIGH=0)")
+    field(OUT,  "$(OUTPV) PP")
 }
 
