@@ -1,3 +1,8 @@
+# bkhAsyn RELEASE_NOTES
+====================================
+
+R0.4.1  M. Dunning - 2021-10-11
+    - Add ao_convert_autosave.template.  This is for DAC control with optional polynomial conversion.
 
 R0.4.0  M. Dunning - 2021-04-29
     - Flatten src dir structure and remove drvBkhErr which is not used.  
