@@ -1,0 +1,75 @@
+
+record(ao, "$(INPV)_C0") {
+    field(DESC, "0th order coeff.")
+    field(VAL,  "$(C0=0)")
+    field(PREC, "4")
+    field(FLNK, "$(INPV)_conv")
+    info(autosaveFields, "VAL")
+}
+
+record(ao, "$(INPV)_C1") {
+    field(DESC, "1st order coeff.")
+    field(VAL,  "$(C1=0)")
+    field(PREC, "4")
+    field(FLNK, "$(INPV)_conv")
+    info(autosaveFields, "VAL")
+}
+
+record(ao, "$(INPV)_C2") {
+    field(DESC, "2nd order coeff.")
+    field(VAL,  "$(C2=0)")
+    field(PREC, "4")
+    field(FLNK, "$(INPV)_conv")
+    info(autosaveFields, "VAL")
+}
+
+record(ao, "$(INPV)_C3") {
+    field(DESC, "3rd order coeff.")
+    field(VAL,  "$(C3=0)")
+    field(PREC, "4")
+    field(FLNK, "$(INPV)_conv")
+    info(autosaveFields, "VAL")
+}
+
+record(ao, "$(INPV)_C4") {
+    field(DESC, "4th order coeff.")
+    field(VAL,  "$(C4=0)")
+    field(PREC, "4")
+    field(FLNK, "$(INPV)_conv")
+    info(autosaveFields, "VAL")
+}
+
+record(ao, "$(INPV)_C5") {
+    field(DESC, "5th order coeff.")
+    field(VAL,  "$(C5=0)")
+    field(PREC, "4")
+    field(FLNK, "$(INPV)_conv")
+    info(autosaveFields, "VAL")
+}
+
+record(ao, "$(INPV)") {
+    field(DESC, "$(DESC="")")
+    field(PREC, "$(PREC=2)")
+    field(EGU,  "$(EGU="")")
+    field(DRVL, "$(DRVL=0)")
+    field(DRVH, "$(DRVH=100)")
+    field(LOPR, "$(LOPR=0)")
+    field(HOPR, "$(HOPR=100)")
+    field(FLNK, "$(INPV)_conv")
+    info(autosaveFields, "VAL")
+}
+
+record(calcout, "$(INPV)_conv") {
+    field(DESC, "Convert using poly coeff")
+    field(ASG,  "Internal")
+    field(INPA, "$(INPV) NPP MS")
+    field(INPB, "$(INPV)_C0")
+    field(INPC, "$(INPV)_C1")
+    field(INPD, "$(INPV)_C2")
+    field(INPE, "$(INPV)_C3")
+    field(INPF, "$(INPV)_C4")
+    field(INPG, "$(INPV)_C5")
+    field(CALC, "B + A*C + A^2*D + A^3*E + A^4*F + A^5*G")
+    field(OUT,  "$(OUTPV) PP")
+}
+

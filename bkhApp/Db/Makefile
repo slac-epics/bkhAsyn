@@ -25,6 +25,7 @@ DB += bi_convert.template
 DB += bo_convert.template
 DB += ai_convert.template
 DB += ai_convert_autosave.template
+DB += ao_convert_autosave.template
 
 include $(TOP)/configure/RULES
 
