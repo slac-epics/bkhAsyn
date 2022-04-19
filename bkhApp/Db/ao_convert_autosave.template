@@ -63,7 +63,7 @@ record(ao, "$(INPV)") {
     field(HOPR, "$(HOPR=100)")
     field(PINI, "1")
     field(FLNK, "$(INPV)_conv")
-    info(autosaveFields, "VAL")
+    info(autosaveFields, "VAL PREC EGU DRVL DRVH LOPR HOPR")
 }
 
 record(calcout, "$(INPV)_conv") {

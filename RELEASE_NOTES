@@ -1,6 +1,9 @@
 # bkhAsyn RELEASE_NOTES
 ====================================
 
+R0.4.3  M. Dunning - 2022-04-19
+    - ao_convert_autosave.template: update autosave fields
+
 R0.4.2  egumtow - 2022-02-29
     - Updated to asyn/R4.39-1.0.1 and modbus/R3.2-1.0.1.
 
