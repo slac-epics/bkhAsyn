@@ -1,6 +1,9 @@
 # bkhAsyn RELEASE_NOTES
 ====================================
 
+R0.4.4  M. Dunning - 2022-08-23
+    - ai_convert_autosave.template: add MS flag
+
 R0.4.3  M. Dunning - 2022-04-19
     - ao_convert_autosave.template: update autosave fields
 

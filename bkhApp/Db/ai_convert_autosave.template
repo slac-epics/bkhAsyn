@@ -70,7 +70,7 @@ record(calc, "$(OUTPV)_conv") {
 
 record(ai, "$(OUTPV)") {
     field(DESC, "$(DESC="")")
-    field(INP,  "$(OUTPV)_conv")
+    field(INP,  "$(OUTPV)_conv NPP MS")
     field(EGU,  "$(EGU="")")
     field(PREC, "$(PREC=2)")
     field(LOLO, "$(LOLO="")")
