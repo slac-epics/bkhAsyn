@@ -1,5 +1,7 @@
 # bkhAsyn RELEASE_NOTES
 ====================================
+R0.4.5  G. Brown - 2023-01-30
+      - Add templates with autosave, based on the *_simple templates
 
 R0.4.4  M. Dunning - 2022-08-23
     - ai_convert_autosave.template: add MS flag
