@@ -1,0 +1,58 @@
+# This template is for an analog output module (DAC).
+#----------------------------------------------------------
+record(longin, "$(P)$(R="")$(ATTR)_SBYTE"){
+  field(DESC, "$(DESC="Status byte")")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT) $(ADDR) 1)LI_SBYTE")
+  field(SCAN, "I/O Intr")
+}
+record(ao, "$(P)$(R="")$(ATTR)"){
+  field(DESC, "$(DESC="Setpoint")")
+  field(DTYP, "Raw Soft Channel")
+  field(EGU,  "$(EGU=V)")
+  field(LINR, "SLOPE")
+  field(ESLO, "$(ESLO=1)")
+  field(EOFF, "$(EOFF=0)")
+  field(PREC, "$(PREC=3)")
+  field(DRVL, "$(DRVL="")")
+  field(DRVH, "$(DRVH="")")
+  field(LOPR, "$(LOPR="")")
+  field(HOPR, "$(HOPR="")")
+#  field(PINI, "YES")
+  field(FLNK, "$(P)$(R="")$(ATTR)_write")
+  info(autosaveFields, "DESC EGU PREC DRVH DRVL HOPR LOPR LOLO LOW HIGH HIHI LLSV LSV HSV HHSV HYST ADEL MDEL")
+}
+record(longout, "$(P)$(R="")$(ATTR)_write"){
+  field(DTYP, "asynInt32")
+  field(ASG,  "Internal")
+  field(SDIS, "$(P)$(R="")$(ATTR)_sync.PACT")
+  field(DISV, "1")
+  field(DOL,  "$(P)$(R="")$(ATTR).RVAL NPP")
+  field(OMSL, "closed_loop")
+  field(OUT,  "@asyn($(PORT) $(ADDR) 1)LO_DATAOUT")
+}
+record(longin, "$(P)$(R="")$(ATTR)_RAW"){
+  field(DESC, "$(DESC="Raw output")")
+  field(DTYP, "asynInt32")
+  field(SCAN, "I/O Intr")
+  field(INP,  "@asyn($(PORT) $(ADDR) 1)LI_DATAOUT")
+  field(PINI, "YES")
+  field(FLNK, "$(P)$(R="")$(ATTR)_conv")
+}
+record(calc, "$(P)$(R="")$(ATTR)_conv"){
+  field(DESC, "$(DESC="")")
+  field(ASG,  "Internal")
+  field(CALC, "C+A*B")
+  field(INPA, "$(P)$(R="")$(ATTR)_RAW")
+  field(INPB, "$(P)$(R="")$(ATTR).ESLO")
+  field(INPC, "$(P)$(R="")$(ATTR).EOFF")
+  field(PREC, "$(PREC)")
+  field(FLNK, "$(P)$(R="")$(ATTR)_sync")
+}
+record(ao, "$(P)$(R="")$(ATTR)_sync"){
+  field(ASG,  "Internal")
+  field(DOL,  "$(P)$(R="")$(ATTR)_conv NPP")
+  field(OMSL, "closed_loop")
+  field(OUT,  "$(P)$(R="")$(ATTR) PP")
+}
+

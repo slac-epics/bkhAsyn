@@ -1,0 +1,34 @@
+# This template is for an analog input module.
+#----------------------------------------------------------
+record(longin, "$(P)$(R="")$(ATTR)_SBYTE"){
+  field(DESC, "$(DESC="Status byte")")
+  field(DTYP, "asynInt32")
+  field(SCAN, "I/O Intr")
+  field(INP,  "@asyn($(PORT) $(ADDR) 1)LI_SBYTE")
+}
+record(longin, "$(P)$(R="")$(ATTR)_RAW"){
+  field(DESC, "$(DESC="Raw input")")
+  field(DTYP, "asynInt32")
+  field(SCAN, "I/O Intr")
+  field(INP,  "@asyn($(PORT) $(ADDR) 1)LI_DATA")
+  field(FLNK, "$(P)$(R="")$(ATTR)")
+}
+record(ai, "$(P)$(R="")$(ATTR)"){
+  field(DESC, "$(DESC="Analog value")")
+  field(DTYP, "Raw Soft Channel")
+  field(INP,  "$(P)$(R="")$(ATTR)_RAW NPP MS")
+  field(LINR, "SLOPE")
+  field(EGU,  "$(EGU=V)")
+  field(ESLO, "$(ESLO=1)")
+  field(EOFF, "$(EOFF=0)")
+  field(PREC, "$(PREC=3)")
+  field(LOLO, "$(LOLO="")")
+  field(LOW,  "$(LOW="")")
+  field(HIGH, "$(HIGH="")")
+  field(HIHI, "$(HIHI="")")
+  field(LSV,  "$(LSV="")")
+  field(LLSV, "$(LLSV="")")
+  field(HSV,  "$(HSV="")")
+  field(HHSV, "$(HHSV="")")
+  info(autosaveFields, "DESC EGU PREC LOLO LOW HIGH HIHI LLSV LSV HSV HHSV HYST ADEL MDEL")
+}
