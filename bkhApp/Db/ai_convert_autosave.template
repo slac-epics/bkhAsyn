@@ -82,6 +82,6 @@ record(ai, "$(OUTPV)") {
     field(HSV,  "$(HSV=NO_ALARM)")
     field(HHSV, "$(HHSV=NO_ALARM)")
     field(HYST, "$(HYST="")")
-    info(autosaveFields, "EGU PREC")
+    info(autosaveFields, "LOLO LOW HIGH HIHI LLSV LSV HSV HHSV HYST EGU PREC")
 }
 

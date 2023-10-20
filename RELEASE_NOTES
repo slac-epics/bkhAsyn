@@ -1,5 +1,9 @@
 # bkhAsyn RELEASE_NOTES
 ====================================
+
+R0.4.6  M. Dunning - 2023-10-20
+    - ai_convert_autosave.template: update autosave fields
+
 R0.4.5  G. Brown - 2023-01-30
       - Add templates with autosave, based on the *_simple templates
 
