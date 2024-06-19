@@ -1,0 +1,132 @@
+
+record(ao, "$(OUTPV)_C0") {
+    field(DESC, "0th order coeff.")
+    field(VAL,  "$(C0=0)")
+    field(PREC, "4")
+    field(FLNK, "$(OUTPV)_conv")
+    info(autosaveFields, "VAL")
+}
+
+record(ao, "$(OUTPV)_C1") {
+    field(DESC, "1st order coeff.")
+    field(VAL,  "$(C1=0)")
+    field(PREC, "4")
+    field(FLNK, "$(OUTPV)_conv")
+    info(autosaveFields, "VAL")
+}
+
+record(ao, "$(OUTPV)_C2") {
+    field(DESC, "2nd order coeff.")
+    field(VAL,  "$(C2=0)")
+    field(PREC, "4")
+    field(FLNK, "$(OUTPV)_conv")
+    info(autosaveFields, "VAL")
+}
+
+record(ao, "$(OUTPV)_C3") {
+    field(DESC, "3rd order coeff.")
+    field(VAL,  "$(C3=0)")
+    field(PREC, "4")
+    field(FLNK, "$(OUTPV)_conv")
+    info(autosaveFields, "VAL")
+}
+
+record(ao, "$(OUTPV)_C4") {
+    field(DESC, "4th order coeff.")
+    field(VAL,  "$(C4=0)")
+    field(PREC, "4")
+    field(FLNK, "$(OUTPV)_conv")
+    info(autosaveFields, "VAL")
+}
+
+record(ao, "$(OUTPV)_C5") {
+    field(DESC, "5th order coeff.")
+    field(VAL,  "$(C5=0)")
+    field(PREC, "4")
+    field(FLNK, "$(OUTPV)_conv")
+    info(autosaveFields, "VAL")
+}
+
+record(ao, "$(OUTPV)_C6") {
+    field(DESC, "6th order coeff.")
+    field(VAL,  "$(C6=0)")
+    field(PREC, "4")
+    field(FLNK, "$(OUTPV)_conv")
+    info(autosaveFields, "VAL")
+}
+
+record(ao, "$(OUTPV)_C7") {
+    field(DESC, "7th order coeff.")
+    field(VAL,  "$(C7=0)")
+    field(PREC, "4")
+    field(FLNK, "$(OUTPV)_conv")
+    info(autosaveFields, "VAL")
+}
+
+record(ao, "$(OUTPV)_C8") {
+    field(DESC, "8th order coeff.")
+    field(VAL,  "$(C8=0)")
+    field(PREC, "4")
+    field(FLNK, "$(OUTPV)_conv")
+    info(autosaveFields, "VAL")
+}
+
+record(ao, "$(OUTPV)_C9") {
+    field(DESC, "9th order coeff.")
+    field(VAL,  "$(C9=0)")
+    field(PREC, "4")
+    field(FLNK, "$(OUTPV)_conv")
+    info(autosaveFields, "VAL")
+}
+
+record(ao, "$(OUTPV)_C10") {
+    field(DESC, "10th order coeff.")
+    field(VAL,  "$(C10=0)")
+    field(PREC, "4")
+    field(FLNK, "$(OUTPV)_conv")
+    info(autosaveFields, "VAL")
+}
+
+record(ai, "$(OUTPV)_RAW") {
+    field(DESC, "$(DESC="")")
+    field(INP,  "$(INPV) CP MS")
+    field(PREC, "$(PREC=2)")
+    field(FLNK, "$(OUTPV)_conv")
+}
+
+record(calc, "$(OUTPV)_conv") {
+    field(DESC, "Convert using poly coeff")
+    field(ASG,  "Internal")
+    field(INPA, "$(OUTPV)_RAW NPP MS")
+    field(INPB, "$(OUTPV)_C0")
+    field(INPC, "$(OUTPV)_C1")
+    field(INPD, "$(OUTPV)_C2")
+    field(INPE, "$(OUTPV)_C3")
+    field(INPF, "$(OUTPV)_C4")
+    field(INPG, "$(OUTPV)_C5")
+    field(INPH, "$(OUTPV)_C6")
+    field(INPI, "$(OUTPV)_C7")
+    field(INPJ, "$(OUTPV)_C8")
+    field(INPK, "$(OUTPV)_C9")
+    field(INPL, "$(OUTPV)_C10")
+    field(CALC, "B+A*C+A^2*D+A^3*E+A^4*F+A^5*G+A^6*H+A^7*I+A^8*J+A^9*K+A^10*L")
+    field(FLNK, "$(OUTPV)")
+}
+
+record(ai, "$(OUTPV)") {
+    field(DESC, "$(DESC="")")
+    field(INP,  "$(OUTPV)_conv NPP MS")
+    field(EGU,  "$(EGU="")")
+    field(PREC, "$(PREC=2)")
+    field(LOLO, "$(LOLO="")")
+    field(LOW,  "$(LOW="")")
+    field(HIGH, "$(HIGH="")")
+    field(HIHI, "$(HIHI="")")
+    field(LLSV, "$(LLSV=NO_ALARM)")
+    field(LSV,  "$(LSV=NO_ALARM)")
+    field(HSV,  "$(HSV=NO_ALARM)")
+    field(HHSV, "$(HHSV=NO_ALARM)")
+    field(HYST, "$(HYST="")")
+    info(autosaveFields, "DESC LOLO LOW HIGH HIHI LLSV LSV HSV HHSV HYST EGU PREC")
+}
+
