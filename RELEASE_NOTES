@@ -1,6 +1,10 @@
 # bkhAsyn RELEASE_NOTES
 ====================================
 
+R0.4.7  M. Dunning - 2024-06-19
+    Add bkhTemp_autosave.db
+    Add ai_convert_10th_autosave.template
+
 R0.4.6  M. Dunning - 2023-10-20
     - ai_convert_autosave.template: update autosave fields
 
